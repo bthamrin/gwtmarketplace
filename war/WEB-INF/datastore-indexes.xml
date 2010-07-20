@@ -1,0 +1,8 @@
+<datastore-indexes>
+
+    <!-- Used 2 times in query history -->
+    <datastore-index kind="prdt_cmt" ancestor="true" source="auto">
+        <property name="createdDate" direction="desc"/>
+    </datastore-index>
+
+</datastore-indexes>
