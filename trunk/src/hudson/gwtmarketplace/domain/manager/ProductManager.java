@@ -1,0 +1,532 @@
+package hudson.gwtmarketplace.domain.manager;
+
+import hudson.gwtmarketplace.client.exception.ExistingEntityException;
+import hudson.gwtmarketplace.client.exception.InvalidAccessException;
+import hudson.gwtmarketplace.client.model.Category;
+import hudson.gwtmarketplace.client.model.Pair;
+import hudson.gwtmarketplace.client.model.Product;
+import hudson.gwtmarketplace.client.model.ProductComment;
+import hudson.gwtmarketplace.client.model.Top10Lists;
+import hudson.gwtmarketplace.client.model.Triple;
+import hudson.gwtmarketplace.client.model.search.SearchResults;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import com.google.appengine.api.datastore.EntityNotFoundException;
+import com.google.appengine.api.users.User;
+import com.google.appengine.api.users.UserServiceFactory;
+import com.googlecode.objectify.Key;
+import com.googlecode.objectify.Objectify;
+
+public class ProductManager extends AbstractManager {
+
+	private static final String TOKEN_CATEGORIES = "categories";
+	private static final String TOKEN_TOP10_MOST_VIEWED = "top10MostViewed";
+	private static final String TOKEN_VIEWS_BY_IP = "viewsByIP";
+	private static final String TOKEN_TOP10_HIGHEST_RATED = "top10HighestRates";
+	private static final String TOKEN_TOP10_RECENT_UPDATED = "top10RecentUpdated";
+
+	private static final Comparator<Product> top10Comparator = new Comparator<Product>() {
+		public int compare(Product obj1, Product obj2) {
+			if (null == obj1)
+				return -1;
+			else if (null == obj2)
+				return 1;
+			else
+				return (obj1.getNumDailyViews() > obj2.getNumDailyViews()) ? 1
+						: -1;
+		};
+	};
+	private static final Comparator<Product> top10BestRatedComparator = new Comparator<Product>() {
+		public int compare(Product obj1, Product obj2) {
+			if (null == obj1 || null == obj1.getRating())
+				return -1;
+			else if (null == obj2 || null == obj2.getRating())
+				return 1;
+			else
+				return (obj1.getRating() > obj2.getRating()) ? 1 : -1;
+		};
+	};
+	private static final Comparator<Product> top10RecentUpdatesComparator = new Comparator<Product>() {
+		public int compare(Product obj1, Product obj2) {
+			if (null == obj1)
+				return -1;
+			else if (null == obj2)
+				return 1;
+			else
+				return (obj1.getUpdatedDate().getTime() > obj2.getUpdatedDate()
+						.getTime()) ? 1 : -1;
+		};
+	};
+
+	public ArrayList<Category> getCategories() {
+		ArrayList<Category> categories = (ArrayList<Category>) getCache().get(TOKEN_CATEGORIES);
+		if (null == categories) {
+			categories = toList(noTx().query(Category.class).order("name"));
+			getCache().put(TOKEN_CATEGORIES, categories);
+		}
+		return categories;
+	}
+
+	private Category addCategory(String id, String name) {
+		Category c = new Category();
+		c.setId(id);
+		c.setName(name);
+		c.setNumProducts(0);
+		noTx().put(c);
+		return c;
+	}
+	
+	public Top10Lists getTops(Date highestKnownDate) {
+		
+		// FIXME initialize the categories in a better place
+		int count = noTx().query(Category.class).countAll();
+		getCache().remove(TOKEN_CATEGORIES);
+		if (count == 0) {
+			addCategory("components", "Components");
+			addCategory("designers", "Designers");
+			addCategory("tools", "Tools");
+			addCategory("frameworks", "Frameworks");
+			addCategory("libraries", "Libraries");
+			addCategory("codegen", "Code Generators");
+			addCategory("other", "Other");
+		}
+		
+		Top10Lists rtn = new Top10Lists(getTop10BestRated(),
+				getTop10RecentUpdates(), getTop10MostViewed());
+		if (null == rtn.getMaxDate() || null == highestKnownDate
+				|| rtn.getMaxDate().getTime() > highestKnownDate.getTime())
+			return rtn;
+		else
+			return rtn;
+	}
+
+	public SearchResults<ProductComment> getComments(long productId,
+			int pageNumber, int pageSize) {
+		return toSearchResults(
+				noTx().query(ProductComment.class)
+						.ancestor(new Key<Product>(Product.class, productId))
+						.order("-createdDate").limit(pageSize)
+						.offset(pageNumber * pageSize), -1);
+	}
+
+	public Product getByAlias(String alias) {
+		String cacheKey = "productByAlias:" + alias;
+		if (getCache().containsKey(cacheKey))
+			return (Product) getCache().get(cacheKey);
+		return getByAlias(alias, noTx());
+	}
+
+	Product getByAlias(String alias, Objectify ofy) {
+		String cacheKey = "productByAlias:" + alias;
+		Product product = singleResult(ofy.query(Product.class).filter("alias",
+				alias));
+		getCache().put(cacheKey, product);
+		return product;
+	}
+
+	public Product getById(long id) {
+		String cacheKey = "productByKey:" + id;
+		if (getCache().containsKey(cacheKey))
+			return (Product) getCache().get(cacheKey);
+		return getById(id, noTx());
+	}
+
+	public Product getById(long id, Objectify ofy) {
+		String cacheKey = "productByKey:" + id;
+		Product product = ofy.find(new Key<Product>(Product.class, id));
+		getCache().put(cacheKey, product);
+		return product;
+	}
+
+	public Pair<Product, Date> getForViewing(String alias, String ipAddress) {
+		Product product = getByAlias(alias);
+		if (null == product) return null;
+		String prodToken = alias + ":" + ipAddress;
+		Map<String, Boolean> viewCache = (Map<String, Boolean>) getCache().get(TOKEN_VIEWS_BY_IP);
+		if (null == viewCache) {
+			viewCache = new HashMap<String, Boolean>();
+			// we don't need to put it here because we will once we add the entry
+		}
+		if (null == viewCache.get(prodToken)) {
+			viewCache.put(prodToken, Boolean.TRUE);
+			getCache().put(TOKEN_VIEWS_BY_IP, viewCache);
+			if (null == product.getNumMonthlyViews()) product.setNumMonthlyViews(0);
+			product.setNumDailyViews(product.getNumDailyViews().intValue() + 1);
+			product.setNumMonthlyViews(product.getNumMonthlyViews().intValue() + 1);
+			
+			try {
+				boolean reordered = updateTop10MostViewed(product);
+				if (reordered) {
+					product.setActivityDate(new Date());
+				}
+				updateCache(product);
+				noTx().put(product);
+	
+				return new Pair<Product, Date>(product,
+						reordered ? product.getActivityDate() : toTopsDate(product));
+			} catch (Exception e) {
+				wrap(e);
+				return null;
+			}
+		}
+		else {
+			return new Pair(product, toTopsDate(product));
+		}
+	}
+
+	public ArrayList<Product> getTop10MostViewed() {
+		String cacheKey = TOKEN_TOP10_MOST_VIEWED;
+		ArrayList<Product> products = (ArrayList<Product>) getCache().get(cacheKey);
+		if (null == products) {
+			products = toList(noTx().query(Product.class).order("-numDailyViews")
+					.limit(10));
+			getCache().put(cacheKey, products);
+		}
+		return products;
+	}
+
+	public ArrayList<Product> getTop10BestRated() {
+		ArrayList<Product> products = null;
+		String cacheKey = TOKEN_TOP10_HIGHEST_RATED;
+		if (getCache().containsKey(cacheKey)) {
+			products = (ArrayList<Product>) getCache().get(cacheKey);
+		} else {
+			products = toList(noTx().query(Product.class).filter("rating !=", null).order("-rating")
+					.limit(10));
+			getCache().put(cacheKey, products);
+		}
+		return products;
+	}
+
+	public ArrayList<Product> getTop10RecentUpdates() {
+		ArrayList<Product> products = null;
+		String cacheKey = TOKEN_TOP10_RECENT_UPDATED;
+		if (getCache().containsKey(cacheKey)) {
+			products = (ArrayList<Product>) getCache().get(cacheKey);
+		} else {
+			products = toList(noTx().query(Product.class).order("-updatedDate")
+					.limit(10));
+			getCache().put(cacheKey, products);
+		}
+		return products;
+	}
+
+	public Pair<Product, Date> addRating(long productId, int rating, Long userId) {
+		Objectify ofy = tx();
+		try {
+			Key<Product> productKey = new Key<Product>(Product.class, productId);
+			Product product = ofy.find(productKey);
+			product.setTotalRatings(product.getTotalRatings() + 1);
+			product.setTotalRatingScore(product.getTotalRatingScore() + rating);
+			product.setRating((float) ((float) product.getTotalRatingScore() / (float) product
+					.getTotalRatings()));
+			product.setUpdatedDate(new Date());
+			product.setActivityDate(new Date());
+			ofy.put(product);
+			updateCache(product);
+			ofy.getTxn().commit();
+			return new Pair<Product, Date>(product, toTopsDate(product));
+		} catch (Exception e) {
+			ofy.getTxn().rollback();
+			wrap(e);
+			return null;
+		}
+	}
+
+	public Triple<ProductComment, Product, Date> addComment(long productId,
+			ProductComment comment) {
+		Objectify ofy = tx();
+		try {
+			Key<Product> productKey = new Key<Product>(Product.class, productId);
+			Product product = ofy.find(productKey);
+			comment.setCreatedDate(new Date());
+			comment.setProductId(productKey);
+			List<Serializable> thingsToSave = new ArrayList<Serializable>();
+			thingsToSave.add(comment);
+
+			// deal with the rating
+			if (null != comment.getRating()
+					&& comment.getRating().intValue() > 0) {
+				int rating = comment.getRating().intValue();
+				if (null == product.getTotalRatings())
+					product.setTotalRatings(1);
+				else
+					product.setTotalRatings(product.getTotalRatings() + 1);
+				if (null == product.getTotalRatingScore())
+					product.setTotalRatingScore(rating);
+				else
+					product.setTotalRatingScore(product.getTotalRatingScore()
+							+ rating);
+				product.setRating((float) ((float) product
+						.getTotalRatingScore() / (float) product
+						.getTotalRatings()));
+				product.setUpdatedDate(new Date());
+				getCache().remove(TOKEN_TOP10_HIGHEST_RATED);
+			}
+			if (null == product.getNumComments())
+				product.setNumComments(1);
+			else
+				product.setNumComments(product.getNumComments() + 1);
+			product.setActivityDate(new Date());
+			thingsToSave.add(product);
+			ofy.put((Iterable) thingsToSave);
+			updateCache(product);
+			ofy.getTxn().commit();
+			return new Triple<ProductComment, Product, Date>(comment, product,
+					toTopsDate(product));
+		} catch (Exception e) {
+			ofy.getTxn().rollback();
+			wrap(e);
+			return null;
+		}
+	}
+
+	public void update(Product product) throws InvalidAccessException {
+		try {
+			User user = UserServiceFactory.getUserService().getCurrentUser();			
+			Product orig = noTx().get(new Key<Product>(Product.class, product.getId()));
+			if (null == user || !user.getUserId().equals(orig.getUserId()))
+				throw new InvalidAccessException();
+			if (!orig.getCategoryId().equals(product.getCategoryId())) {
+				Category category1 = singleResult(noTx().query(Category.class).filter("id", orig.getCategoryId()));
+				category1.setNumProducts(category1.getNumProducts().intValue()-1);
+				Category category2 = singleResult(noTx().query(Category.class).filter("id", product.getCategoryId()));
+				category2.setNumProducts(category1.getNumProducts().intValue()+1);
+				List<Category> toUpdate = new ArrayList<Category>();
+				toUpdate.add(category1);
+				toUpdate.add(category2);
+				noTx().put(toUpdate);
+				getCache().remove(TOKEN_CATEGORIES);
+				product.setCategoryName(category2.getName());
+			}
+		}
+		catch (EntityNotFoundException e) {
+			// this is a problem - we should be saving here
+			throw new RuntimeException(e);
+		}
+		
+		product.setUpdatedDate(new Date());
+		// FIXME add indexing
+		noTx().put(product);
+		updateCache(product);
+		getCache().remove(TOKEN_TOP10_RECENT_UPDATED);
+	}
+
+	public Product save(Product product)
+			throws ExistingEntityException, InvalidAccessException {
+		User user = getCurrentUser();
+		if (null == user)
+			throw new InvalidAccessException();
+		product.setUserId(user.getUserId());
+		Date date = new Date();
+		product.setUpdatedDate(date);
+		product.setCreatedDate(date);
+		product.setActivityDate(date);
+		Integer zero = new Integer(0);
+		product.setNumComments(zero);
+		product.setNumDailyViews(zero);
+		product.setNumMonthlyViews(zero);
+		product.setTotalRatings(zero);
+		product.setAlias(product.getName().replace(' ', '_').toLowerCase());
+		while (product.getAlias().startsWith("_"))
+			product.setAlias(product.getAlias().substring(1));
+		Product another = getByAlias(product.getAlias());
+		if (null != another) {
+			throw new ExistingEntityException("alias");
+		}
+		Category category = singleResult(noTx().query(Category.class).filter("id", product.getCategoryId()));
+		product.setCategoryName(category.getName());
+		// FIXME add indexing
+		noTx().put(product);
+		updateCache(product);
+		category.setNumProducts(category.getNumProducts().intValue()+1);
+		noTx().put(category);
+		getCache().remove(TOKEN_CATEGORIES);
+		getCache().remove(TOKEN_TOP10_RECENT_UPDATED);
+		return product;
+	}
+
+	private Date toTopsDate(Product product) {
+		long maxTime = -1;
+		ArrayList<Product> products = getTop10MostViewed();
+		for (Product _product : products) {
+			if (_product.getActivityDate().getTime() > maxTime)
+				maxTime = _product.getActivityDate().getTime();
+		}
+		products = getTop10BestRated();
+		for (Product _product : products) {
+			if (_product.getActivityDate().getTime() > maxTime)
+				maxTime = _product.getActivityDate().getTime();
+		}
+		products = getTop10RecentUpdates();
+		for (Product _product : products) {
+			if (_product.getActivityDate().getTime() > maxTime)
+				maxTime = _product.getActivityDate().getTime();
+		}
+
+		if (maxTime == -1)
+			return null;
+		else
+			return new Date(maxTime);
+	}
+
+	private void updateCache(Product product) {
+		String cacheKey = "productByKey:" + product.getId();
+		getCache().put(cacheKey, product);
+		cacheKey = "productByAlias:" + product.getAlias();
+		getCache().put(cacheKey, product);
+	}
+
+	private boolean updateTop10MostViewed(Product product) {
+		int dailyViews = product.getNumDailyViews();
+		List<Product> top10 = getTop10MostViewed();
+		// see if we need to re-order
+		boolean needsReordering = false;
+		boolean entityFound = false;
+		for (int i = 0; i < top10.size(); i++) {
+			Product _p = top10.get(i);
+			if (_p.equals(product)) {
+				entityFound = true;
+				if (i > 0) {
+					_p = top10.get(i - 1);
+					int _ndv = _p.getNumDailyViews();
+					if (_ndv < dailyViews)
+						needsReordering = true;
+				}
+				if (i < (top10.size() - 1)) {
+					_p = top10.get(i + 1);
+					int _ndv = _p.getNumDailyViews();
+					if (_ndv > dailyViews)
+						needsReordering = true;
+				}
+				if (!needsReordering) {
+					int _ndv = _p.getNumDailyViews();
+					if (_ndv != dailyViews) {
+						needsReordering = true;
+						top10.remove(i);
+						top10.add(i, product);
+					}
+				}
+				break;
+			}
+		}
+		if (!entityFound) {
+			if (top10.size() < 10) {
+				needsReordering = true;
+			} else if (top10.get(9).getNumDailyViews() < dailyViews) {
+				needsReordering = true;
+			}
+		}
+		synchronized (ProductManager.class) {
+			if (needsReordering) {
+				if (!entityFound) {
+					top10.add(product);
+				}
+				Collections.sort(top10, top10Comparator);
+				String cacheKey = TOKEN_TOP10_MOST_VIEWED;
+				getCache().put(cacheKey, top10);
+				return true;
+			} else {
+				return false;
+			}
+		}
+	}
+
+	private void updateTop10HighestRated(Product product) {
+		if (null == product.getRating())
+			return;
+		float rating = product.getRating();
+		List<Product> top10 = getTop10BestRated();
+		// see if we need to re-order
+		boolean needsReordering = false;
+		boolean entityFound = false;
+		for (int i = 0; i < top10.size(); i++) {
+			Product _p = top10.get(i);
+			if (_p.equals(product)) {
+				entityFound = true;
+				if (i > 0) {
+					_p = top10.get(i - 1);
+					float _rating = _p.getRating();
+					if (_rating < rating)
+						needsReordering = true;
+				}
+				if (i < (top10.size() - 1)) {
+					_p = top10.get(i + 1);
+					float _rating = _p.getRating();
+					if (_rating > rating)
+						needsReordering = true;
+				}
+				break;
+			}
+		}
+		if (!entityFound) {
+			if (top10.size() < 10) {
+				needsReordering = true;
+			} else if (top10.get(9).getRating() < rating) {
+				needsReordering = true;
+			}
+		}
+		synchronized (ProductManager.class) {
+			if (needsReordering) {
+				if (!entityFound) {
+					top10.add(product);
+				}
+				Collections.sort(top10, top10BestRatedComparator);
+				String cacheKey = TOKEN_TOP10_HIGHEST_RATED;
+				getCache().put(cacheKey, top10);
+			}
+		}
+	}
+
+	private void updateTop10RecentUpdated(Product product) {
+		long date = product.getUpdatedDate().getTime();
+		List<Product> top10 = getTop10RecentUpdates();
+		// see if we need to re-order
+		boolean needsReordering = false;
+		boolean entityFound = false;
+		for (int i = 0; i < top10.size(); i++) {
+			Product _p = top10.get(i);
+			if (_p.equals(product)) {
+				entityFound = true;
+				if (i > 0) {
+					_p = top10.get(i - 1);
+					long _date = _p.getUpdatedDate().getTime();
+					if (_date < date)
+						needsReordering = true;
+				}
+				if (i < (top10.size() - 1)) {
+					_p = top10.get(i + 1);
+					long _date = _p.getUpdatedDate().getTime();
+					if (_date > date)
+						needsReordering = true;
+				}
+				break;
+			}
+		}
+		if (!entityFound) {
+			if (top10.size() < 10) {
+				needsReordering = true;
+			} else if (top10.get(9).getUpdatedDate().getTime() < date) {
+				needsReordering = true;
+			}
+		}
+		synchronized (ProductManager.class) {
+			if (needsReordering) {
+				if (!entityFound) {
+					top10.add(product);
+				}
+				Collections.sort(top10, top10RecentUpdatesComparator);
+				String cacheKey = TOKEN_TOP10_RECENT_UPDATED;
+				getCache().put(cacheKey, top10);
+			}
+		}
+	}
+}

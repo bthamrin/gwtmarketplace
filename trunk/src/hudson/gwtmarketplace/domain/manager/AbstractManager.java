@@ -1,0 +1,100 @@
+package hudson.gwtmarketplace.domain.manager;
+
+import hudson.gwtmarketplace.client.model.Category;
+import hudson.gwtmarketplace.client.model.Product;
+import hudson.gwtmarketplace.client.model.ProductComment;
+import hudson.gwtmarketplace.client.model.search.SearchResults;
+
+import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+
+import net.sf.jsr107cache.Cache;
+import net.sf.jsr107cache.CacheException;
+import net.sf.jsr107cache.CacheFactory;
+import net.sf.jsr107cache.CacheManager;
+
+import com.google.appengine.api.users.User;
+import com.google.appengine.api.users.UserServiceFactory;
+import com.googlecode.objectify.Objectify;
+import com.googlecode.objectify.ObjectifyService;
+import com.googlecode.objectify.Query;
+
+public abstract class AbstractManager {
+
+	ThreadLocal<Objectify> current = new ThreadLocal<Objectify>();
+	private static Cache cache;
+
+	static {
+		ObjectifyService.register(Product.class);
+		ObjectifyService.register(ProductComment.class);
+		ObjectifyService.register(Category.class);
+
+		try {
+			CacheFactory cacheFactory = CacheManager.getInstance()
+					.getCacheFactory();
+			cache = cacheFactory.createCache(new HashMap());
+		} catch (CacheException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public User getCurrentUser() {
+		return UserServiceFactory.getUserService().getCurrentUser();
+	}
+
+	protected Cache getCache() {
+		return cache;
+	}
+
+	protected void wrap(Exception e) {
+		if (e instanceof RuntimeException)
+			throw (RuntimeException) e;
+		else
+			throw new RuntimeException(e);
+	}
+
+	protected Objectify noTx() {
+		Objectify ofy = ObjectifyService.begin();
+		if (null == current.get())
+			current.set(ofy);
+		return ofy;
+	}
+
+	protected Objectify tx() {
+		Objectify ofy = ObjectifyService.beginTransaction();
+		current.set(ofy);
+		return ofy;
+	}
+
+	protected void commit(Objectify ofy) {
+		ofy.getTxn().commit();
+	}
+
+	protected <T extends Serializable> T singleResult(Query<T> query) {
+		Iterator<T> i = query.iterator();
+		if (i.hasNext())
+			return i.next();
+		else
+			return null;
+	}
+
+	protected <T extends Serializable> ArrayList<T> toList(Query<T> query) {
+		Iterator<T> i = query.iterator();
+		ArrayList<T> rtn = new ArrayList<T>();
+		while (i.hasNext())
+			rtn.add(i.next());
+		return rtn;
+	}
+
+	protected <T extends Serializable> SearchResults<T> toSearchResults(
+			Query<T> query, int knownCount) {
+		int count = (knownCount > 0) ? knownCount : query.countAll();
+		Iterator<T> i = query.iterator();
+		ArrayList<T> rtn = new ArrayList<T>();
+		while (i.hasNext())
+			rtn.add(i.next());
+		return new SearchResults<T>(rtn, count);
+	}
+}
