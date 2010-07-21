@@ -1,10 +1,10 @@
 package hudson.gwtmarketplace.client.commands;
 
-import com.google.gwt.user.client.rpc.AsyncCallback;
-
 import hudson.gwtmarketplace.client.Session;
 import hudson.gwtmarketplace.client.event.ProductUpdatedEvent;
 import hudson.gwtmarketplace.client.model.Product;
+
+import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public abstract class SaveProductCommand extends AbstractAsyncCommand<Product> {
 

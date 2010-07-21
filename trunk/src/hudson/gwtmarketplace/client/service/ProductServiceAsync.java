@@ -10,6 +10,7 @@ import hudson.gwtmarketplace.client.model.search.SearchResults;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
@@ -35,4 +36,9 @@ public interface ProductServiceAsync {
 
 	public void getComments(long productId,
 			int startIndex, int pageSize, AsyncCallback<SearchResults<ProductComment>> callback);
+
+	public void search(
+			HashMap<String, String> namedParameters,
+			ArrayList<String> generalParameters, int startIndex, int limit,
+			String ordering, boolean ascending, Integer knownRowCount, AsyncCallback<SearchResults<Product>> callback);
 }

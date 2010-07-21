@@ -59,6 +59,8 @@ public class Product implements Serializable {
 	@Column
 	private String[] tags;
 	@Column
+	private String[] searchFields;
+	@Column
 	@Unindexed
 	private String versionNumber;
 	@Column
@@ -284,5 +286,13 @@ public class Product implements Serializable {
 
 	public void setCategoryName(String categoryName) {
 		this.categoryName = categoryName;
+	}
+
+	public String[] getSearchFields() {
+		return searchFields;
+	}
+
+	public void setSearchFields(String[] searchFields) {
+		this.searchFields = searchFields;
 	}
 }

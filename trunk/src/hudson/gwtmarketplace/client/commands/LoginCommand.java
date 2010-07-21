@@ -1,12 +1,12 @@
 package hudson.gwtmarketplace.client.commands;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import hudson.gwtmarketplace.client.Session;
 import hudson.gwtmarketplace.client.model.UserInfo;
 import hudson.gwtmarketplace.client.service.UserInfoService;
 import hudson.gwtmarketplace.client.service.UserInfoServiceAsync;
+
+import java.util.ArrayList;
+import java.util.List;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.Window;

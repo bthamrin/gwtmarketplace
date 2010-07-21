@@ -1,9 +1,5 @@
 package hudson.gwtmarketplace.client.pages;
 
-import java.util.List;
-
-import hudson.gwtmarketplace.client.Pages;
-import hudson.gwtmarketplace.client.ajaxfeeds.Entry;
 import hudson.gwtmarketplace.client.ajaxfeeds.EntryDiv;
 import hudson.gwtmarketplace.client.ajaxfeeds.Feed;
 import hudson.gwtmarketplace.client.ajaxfeeds.FeedListener;
@@ -13,14 +9,14 @@ import hudson.gwtmarketplace.client.model.Product;
 import hudson.gwtmarketplace.client.model.Top10Lists;
 import hudson.gwtmarketplace.client.pages.product.ProductSectionEntry;
 
+import java.util.List;
+
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Hyperlink;
 
 public class MainPage extends Composite implements PageStateAware, FeedListener {
 

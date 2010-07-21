@@ -7,10 +7,8 @@ import hudson.gwtmarketplace.client.event.PageChangeEvent.PageChangeHandler;
 import hudson.gwtmarketplace.client.model.UserInfo;
 import hudson.gwtmarketplace.client.pages.LayoutPage;
 import hudson.gwtmarketplace.client.pages.PageStateAware;
-import hudson.gwtmarketplace.client.service.UserInfoService;
 
 import com.google.gwt.core.client.EntryPoint;
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.History;

@@ -60,6 +60,7 @@ public class ViewProductPage extends Composite implements
 
 	public void show(Product product) {
 		this.product = product;
+		tabs.selectTab(0);
 		if (null != product)
 			siteTitle.setInnerText(product.getName());
 		else

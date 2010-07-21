@@ -1,7 +1,5 @@
 package hudson.gwtmarketplace.client.event;
 
-import hudson.gwtmarketplace.client.event.TopsUpdatedEvent.TopsUpdatedHandler;
-
 import java.util.Date;
 
 import com.google.gwt.event.shared.EventHandler;

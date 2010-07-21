@@ -5,6 +5,7 @@ import hudson.gwtmarketplace.client.pages.MainPage;
 import hudson.gwtmarketplace.client.pages.PageStateAware;
 import hudson.gwtmarketplace.client.pages.product.EditProductPage;
 import hudson.gwtmarketplace.client.pages.product.NewProductPage;
+import hudson.gwtmarketplace.client.pages.product.ProductSearchPage;
 import hudson.gwtmarketplace.client.pages.product.ViewProductPage;
 import hudson.gwtmarketplace.client.util.Message;
 
@@ -31,6 +32,7 @@ public class Pages {
 		pMap.put(PAGE_NEW_PRODUCT, Boolean.TRUE);
 		pMap.put(PAGE_VIEW_PRODUCT, Boolean.TRUE);
 		pMap.put(PAGE_EDIT_PRODUCT, Boolean.TRUE);
+		pMap.put(PAGE_SEARCH, Boolean.TRUE);
 	}
 
 	public static void gotoPage(String token, String... params) {
@@ -102,6 +104,8 @@ public class Pages {
 				page = new ViewProductPage();
 			else if (token.equals(PAGE_EDIT_PRODUCT))
 				page = new EditProductPage();
+			else if (token.equals(PAGE_SEARCH))
+				page = new ProductSearchPage();
 			if (null != page)
 				pinstMap.put(token, page);
 		}

@@ -24,6 +24,7 @@ import com.google.appengine.api.users.User;
 import com.google.appengine.api.users.UserServiceFactory;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.Objectify;
+import com.googlecode.objectify.Query;
 
 public class ProductManager extends AbstractManager {
 
@@ -67,7 +68,8 @@ public class ProductManager extends AbstractManager {
 	};
 
 	public ArrayList<Category> getCategories() {
-		ArrayList<Category> categories = (ArrayList<Category>) getCache().get(TOKEN_CATEGORIES);
+		ArrayList<Category> categories = (ArrayList<Category>) getCache().get(
+				TOKEN_CATEGORIES);
 		if (null == categories) {
 			categories = toList(noTx().query(Category.class).order("name"));
 			getCache().put(TOKEN_CATEGORIES, categories);
@@ -83,9 +85,9 @@ public class ProductManager extends AbstractManager {
 		noTx().put(c);
 		return c;
 	}
-	
+
 	public Top10Lists getTops(Date highestKnownDate) {
-		
+
 		// FIXME initialize the categories in a better place
 		int count = noTx().query(Category.class).countAll();
 		getCache().remove(TOKEN_CATEGORIES);
@@ -98,7 +100,7 @@ public class ProductManager extends AbstractManager {
 			addCategory("codegen", "Code Generators");
 			addCategory("other", "Other");
 		}
-		
+
 		Top10Lists rtn = new Top10Lists(getTop10BestRated(),
 				getTop10RecentUpdates(), getTop10MostViewed());
 		if (null == rtn.getMaxDate() || null == highestKnownDate
@@ -114,7 +116,7 @@ public class ProductManager extends AbstractManager {
 				noTx().query(ProductComment.class)
 						.ancestor(new Key<Product>(Product.class, productId))
 						.order("-createdDate").limit(pageSize)
-						.offset(pageNumber * pageSize), -1);
+						.offset(pageNumber * pageSize), null);
 	}
 
 	public Product getByAlias(String alias) {
@@ -148,20 +150,24 @@ public class ProductManager extends AbstractManager {
 
 	public Pair<Product, Date> getForViewing(String alias, String ipAddress) {
 		Product product = getByAlias(alias);
-		if (null == product) return null;
+		if (null == product)
+			return null;
 		String prodToken = alias + ":" + ipAddress;
-		Map<String, Boolean> viewCache = (Map<String, Boolean>) getCache().get(TOKEN_VIEWS_BY_IP);
+		Map<String, Boolean> viewCache = (Map<String, Boolean>) getCache().get(
+				TOKEN_VIEWS_BY_IP);
 		if (null == viewCache) {
 			viewCache = new HashMap<String, Boolean>();
-			// we don't need to put it here because we will once we add the entry
+			// we don't need to put it here because we will once we add the
+			// entry
 		}
 		if (null == viewCache.get(prodToken)) {
 			viewCache.put(prodToken, Boolean.TRUE);
 			getCache().put(TOKEN_VIEWS_BY_IP, viewCache);
-			if (null == product.getNumMonthlyViews()) product.setNumMonthlyViews(0);
+			if (null == product.getNumMonthlyViews())
+				product.setNumMonthlyViews(0);
 			product.setNumDailyViews(product.getNumDailyViews().intValue() + 1);
 			product.setNumMonthlyViews(product.getNumMonthlyViews().intValue() + 1);
-			
+
 			try {
 				boolean reordered = updateTop10MostViewed(product);
 				if (reordered) {
@@ -169,25 +175,58 @@ public class ProductManager extends AbstractManager {
 				}
 				updateCache(product);
 				noTx().put(product);
-	
+
 				return new Pair<Product, Date>(product,
-						reordered ? product.getActivityDate() : toTopsDate(product));
+						reordered ? product.getActivityDate()
+								: toTopsDate(product));
 			} catch (Exception e) {
 				wrap(e);
 				return null;
 			}
+		} else {
+			return new Pair<Product, Date>(product, toTopsDate(product));
 		}
-		else {
-			return new Pair(product, toTopsDate(product));
+	}
+
+	public SearchResults<Product> search(
+			HashMap<String, String> namedParameters,
+			ArrayList<String> generalParameters, int startIndex, int limit,
+			String ordering, boolean ascending, Integer knownRowCount) {
+
+		Query<Product> query = noTx().query(Product.class);
+		addOrdering(query, ordering, ascending, "name", true);
+		if (null != namedParameters && namedParameters.size() > 0) {
+			for (Map.Entry<String, String> param : namedParameters.entrySet()) {
+				if (param.getKey().equals("category")) {
+					query.filter("categoryId", param.getValue());
+				}
+				else if (param.getKey().equals("status")) {
+					query.filter("status", param.getValue());
+				}
+				else if (param.getKey().equals("license")) {
+					query.filter("license", param.getValue());
+				}
+				else if (param.getKey().equals("name")) {
+					query.filter("name", param.getValue());
+				}
+				else if (param.getKey().equals("tag")) {
+					query.filter("tags", param.getValue());
+				}
+			}
 		}
+		if (null != generalParameters && generalParameters.size() > 0) {
+			query.filter("searchFields in", generalParameters);
+		}
+		return toSearchResults(query, knownRowCount);
 	}
 
 	public ArrayList<Product> getTop10MostViewed() {
 		String cacheKey = TOKEN_TOP10_MOST_VIEWED;
-		ArrayList<Product> products = (ArrayList<Product>) getCache().get(cacheKey);
+		ArrayList<Product> products = (ArrayList<Product>) getCache().get(
+				cacheKey);
 		if (null == products) {
-			products = toList(noTx().query(Product.class).order("-numDailyViews")
-					.limit(10));
+			products = toList(noTx().query(Product.class)
+					.order("-numDailyViews").limit(10));
 			getCache().put(cacheKey, products);
 		}
 		return products;
@@ -199,8 +238,8 @@ public class ProductManager extends AbstractManager {
 		if (getCache().containsKey(cacheKey)) {
 			products = (ArrayList<Product>) getCache().get(cacheKey);
 		} else {
-			products = toList(noTx().query(Product.class).filter("rating !=", null).order("-rating")
-					.limit(10));
+			products = toList(noTx().query(Product.class)
+					.filter("rating !=", null).order("-rating").limit(10));
 			getCache().put(cacheKey, products);
 		}
 		return products;
@@ -291,15 +330,20 @@ public class ProductManager extends AbstractManager {
 
 	public void update(Product product) throws InvalidAccessException {
 		try {
-			User user = UserServiceFactory.getUserService().getCurrentUser();			
-			Product orig = noTx().get(new Key<Product>(Product.class, product.getId()));
+			User user = UserServiceFactory.getUserService().getCurrentUser();
+			Product orig = noTx().get(
+					new Key<Product>(Product.class, product.getId()));
 			if (null == user || !user.getUserId().equals(orig.getUserId()))
 				throw new InvalidAccessException();
 			if (!orig.getCategoryId().equals(product.getCategoryId())) {
-				Category category1 = singleResult(noTx().query(Category.class).filter("id", orig.getCategoryId()));
-				category1.setNumProducts(category1.getNumProducts().intValue()-1);
-				Category category2 = singleResult(noTx().query(Category.class).filter("id", product.getCategoryId()));
-				category2.setNumProducts(category1.getNumProducts().intValue()+1);
+				Category category1 = singleResult(noTx().query(Category.class)
+						.filter("id", orig.getCategoryId()));
+				category1
+						.setNumProducts(category1.getNumProducts().intValue() - 1);
+				Category category2 = singleResult(noTx().query(Category.class)
+						.filter("id", product.getCategoryId()));
+				category2
+						.setNumProducts(category1.getNumProducts().intValue() + 1);
 				List<Category> toUpdate = new ArrayList<Category>();
 				toUpdate.add(category1);
 				toUpdate.add(category2);
@@ -307,21 +351,20 @@ public class ProductManager extends AbstractManager {
 				getCache().remove(TOKEN_CATEGORIES);
 				product.setCategoryName(category2.getName());
 			}
-		}
-		catch (EntityNotFoundException e) {
+		} catch (EntityNotFoundException e) {
 			// this is a problem - we should be saving here
 			throw new RuntimeException(e);
 		}
-		
+
 		product.setUpdatedDate(new Date());
-		// FIXME add indexing
+		updateProductSearchFields(product);
 		noTx().put(product);
 		updateCache(product);
 		getCache().remove(TOKEN_TOP10_RECENT_UPDATED);
 	}
 
-	public Product save(Product product)
-			throws ExistingEntityException, InvalidAccessException {
+	public Product save(Product product) throws ExistingEntityException,
+			InvalidAccessException {
 		User user = getCurrentUser();
 		if (null == user)
 			throw new InvalidAccessException();
@@ -342,16 +385,28 @@ public class ProductManager extends AbstractManager {
 		if (null != another) {
 			throw new ExistingEntityException("alias");
 		}
-		Category category = singleResult(noTx().query(Category.class).filter("id", product.getCategoryId()));
+		Category category = singleResult(noTx().query(Category.class).filter(
+				"id", product.getCategoryId()));
 		product.setCategoryName(category.getName());
-		// FIXME add indexing
+		updateProductSearchFields(product);
 		noTx().put(product);
 		updateCache(product);
-		category.setNumProducts(category.getNumProducts().intValue()+1);
+		category.setNumProducts(category.getNumProducts().intValue() + 1);
 		noTx().put(category);
 		getCache().remove(TOKEN_CATEGORIES);
 		getCache().remove(TOKEN_TOP10_RECENT_UPDATED);
 		return product;
+	}
+
+	private void updateProductSearchFields(Product product) {
+		List<String> searchFields = new ArrayList<String>();
+		for (String s : product.getName().split(" "))
+			searchFields.add(s);
+		if (null != product.getTags()) {
+			for (String s : product.getTags())
+				searchFields.add(s);
+		}
+		product.setSearchFields(searchFields.toArray(new String[searchFields.size()]));
 	}
 
 	private Date toTopsDate(Product product) {

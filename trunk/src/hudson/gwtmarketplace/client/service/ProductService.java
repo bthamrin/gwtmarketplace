@@ -12,6 +12,7 @@ import hudson.gwtmarketplace.client.model.search.SearchResults;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
@@ -43,4 +44,9 @@ public interface ProductService extends RemoteService {
 
 	public SearchResults<ProductComment> getComments(long productId,
 			int startIndex, int pageSize);
+
+	public SearchResults<Product> search(
+			HashMap<String, String> namedParameters,
+			ArrayList<String> generalParameters, int startIndex, int limit,
+			String ordering, boolean ascending, Integer knownRowCount);
 }

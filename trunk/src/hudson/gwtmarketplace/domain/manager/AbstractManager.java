@@ -89,12 +89,27 @@ public abstract class AbstractManager {
 	}
 
 	protected <T extends Serializable> SearchResults<T> toSearchResults(
-			Query<T> query, int knownCount) {
-		int count = (knownCount > 0) ? knownCount : query.countAll();
+			Query<T> query, Integer knownCount) {
+		int count = (knownCount != null) ? knownCount : query.countAll();
 		Iterator<T> i = query.iterator();
 		ArrayList<T> rtn = new ArrayList<T>();
 		while (i.hasNext())
 			rtn.add(i.next());
 		return new SearchResults<T>(rtn, count);
+	}
+
+	protected <T> Query<T> addOrdering(Query<T> query, String ordering, boolean ascending, String defaultOrdering, boolean defaultAscending) {
+		if (null == ordering) {
+			if (null == defaultOrdering) return query;
+			else {
+				if (defaultAscending) query.order(defaultOrdering);
+				else query.order("-"+defaultOrdering);
+			}
+		}
+		else {
+			if (ascending) query.order(ordering);
+			else query.order("-"+ordering);
+		}
+		return query;
 	}
 }

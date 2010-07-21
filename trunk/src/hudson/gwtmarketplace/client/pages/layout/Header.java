@@ -3,8 +3,6 @@ package hudson.gwtmarketplace.client.pages.layout;
 import hudson.gwtmarketplace.client.Session;
 import hudson.gwtmarketplace.client.commands.LoginCommand;
 import hudson.gwtmarketplace.client.model.UserInfo;
-import hudson.gwtmarketplace.client.service.UserInfoService;
-import hudson.gwtmarketplace.client.service.UserInfoServiceAsync;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;

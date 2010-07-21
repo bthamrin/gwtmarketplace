@@ -109,6 +109,7 @@ public class ProductDetailsPanel extends Composite implements FeedListener,
 	}
 
 	public void show(Product product) {
+		Product _previous = this.product;
 		this.product = product;
 		links.clear();
 		if (null == product) {
@@ -151,14 +152,16 @@ public class ProductDetailsPanel extends Composite implements FeedListener,
 					.getStatus()));
 			license.setInnerHTML(License.getDisplayValue(product.getLicense()));
 
-			newsfeed.clear();
-			if (null != product.getNewsUrl()
-					&& product.getNewsUrl().length() > 0) {
-				newsfeedContainer.setVisible(true);
-				Feed f = new Feed();
-				f.getFeed(product.getNewsUrl(), this);
-			} else {
-				newsfeedContainer.setVisible(false);
+			if (null == _previous || _previous.equals(product)) {
+				newsfeed.clear();
+				if (null != product.getNewsUrl()
+						&& product.getNewsUrl().length() > 0) {
+					newsfeedContainer.setVisible(true);
+					Feed f = new Feed();
+					f.getFeed(product.getNewsUrl(), this);
+				} else {
+					newsfeedContainer.setVisible(false);
+				}
 			}
 		}
 	}
