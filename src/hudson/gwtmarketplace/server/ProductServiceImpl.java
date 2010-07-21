@@ -14,6 +14,7 @@ import hudson.gwtmarketplace.domain.manager.ProductManager;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 
 import com.google.gwt.user.server.rpc.RemoteServiceServlet;
 
@@ -25,9 +26,10 @@ public class ProductServiceImpl extends RemoteServiceServlet implements
 		ProductService {
 
 	private ProductManager mgr = new ProductManager();
-	
+
 	@Override
-	public Triple<ProductComment, Product, Date> addComment(long productId, ProductComment comment) {
+	public Triple<ProductComment, Product, Date> addComment(long productId,
+			ProductComment comment) {
 		return mgr.addComment(productId, comment);
 	}
 
@@ -40,7 +42,7 @@ public class ProductServiceImpl extends RemoteServiceServlet implements
 	public ArrayList<Category> getCategories() {
 		return mgr.getCategories();
 	}
-	
+
 	@Override
 	public Product getByAlias(String alias) {
 		return mgr.getByAlias(alias);
@@ -53,7 +55,8 @@ public class ProductServiceImpl extends RemoteServiceServlet implements
 
 	@Override
 	public Pair<Product, Date> getForViewing(String alias) {
-		return mgr.getForViewing(alias, getThreadLocalRequest().getRemoteAddr());
+		return mgr
+				.getForViewing(alias, getThreadLocalRequest().getRemoteAddr());
 	}
 
 	@Override
@@ -62,8 +65,8 @@ public class ProductServiceImpl extends RemoteServiceServlet implements
 	}
 
 	@Override
-	public Product save(Product product)
-			throws ExistingEntityException, InvalidAccessException {
+	public Product save(Product product) throws ExistingEntityException,
+			InvalidAccessException {
 		return mgr.save(product);
 	}
 
@@ -76,5 +79,13 @@ public class ProductServiceImpl extends RemoteServiceServlet implements
 	public SearchResults<ProductComment> getComments(long productId,
 			int startIndex, int pageSize) {
 		return mgr.getComments(productId, startIndex, pageSize);
+	}
+
+	public SearchResults<Product> search(
+			HashMap<String, String> namedParameters,
+			ArrayList<String> generalParameters, int startIndex, int limit,
+			String ordering, boolean ascending, Integer knownRowCount) {
+		return mgr.search(namedParameters, generalParameters, startIndex,
+				limit, ordering, ascending, knownRowCount);
 	}
 }

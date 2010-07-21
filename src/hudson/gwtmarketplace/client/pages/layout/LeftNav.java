@@ -51,7 +51,7 @@ public class LeftNav extends Composite implements CategoriesUpdateHandler {
 			fp.getElement().getStyle().setPaddingTop(4, Unit.PX);
 			fp.add(new Hyperlink(c.getName() + " ("
 					+ c.getNumProducts() + ")", Pages.tokenize(
-					Pages.PAGE_SEARCH, c.getName())));
+					Pages.PAGE_SEARCH, "category:" +c.getId())));
 			LeftNav.this.categories.add(fp);
 		}
 	}
