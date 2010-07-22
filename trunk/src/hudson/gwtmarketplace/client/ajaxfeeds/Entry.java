@@ -1,6 +1,15 @@
 package hudson.gwtmarketplace.client.ajaxfeeds;
 
+import java.util.Date;
+
+import com.google.gwt.i18n.client.DateTimeFormat;
+
 public class Entry {
+	
+	// [Fri, 16 Jul 2010 12:45:00 -0700]
+	private static final DateTimeFormat inFormat = DateTimeFormat.getFormat("EEE, dd MMM yyyy HH:mm:ss Z");
+	private static final DateTimeFormat outFormat = DateTimeFormat.getShortDateTimeFormat();
+	
 	private String title;
 	private String link;
 	private String content;
@@ -45,5 +54,18 @@ public class Entry {
 
 	public void setTitle(String title) {
 		this.title = title;
+	}
+
+	public String getFormattedPublishedDate() {
+		if (null != publishedDate) {
+			try {
+				Date d = inFormat.parse(publishedDate);
+				return outFormat.format(d);
+			}
+			catch (Exception e) {
+				
+			}
+		}
+		return getPublishedDate();
 	}
 }

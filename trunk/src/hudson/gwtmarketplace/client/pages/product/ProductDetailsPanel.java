@@ -134,6 +134,9 @@ public class ProductDetailsPanel extends Composite implements FeedListener,
 			if (null != product.getForumUrl()) {
 				links.add(new Anchor("Forum", product.getForumUrl(), "_blank"));
 			}
+			if (null != product.getIssueTrackerUrl()) {
+				links.add(new Anchor("Issue Tracker", product.getIssueTrackerUrl(), "_blank"));
+			}
 			links.add(new Hyperlink("Edit settings", Pages.tokenize(
 					Pages.PAGE_EDIT_PRODUCT, product.getAlias())));
 			description.setInnerHTML(product.getDescription());
