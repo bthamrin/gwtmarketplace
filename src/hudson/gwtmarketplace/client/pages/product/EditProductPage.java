@@ -70,6 +70,8 @@ public class EditProductPage extends Composite implements PageStateAware, Change
 	@UiField
 	LabeledTextBox showcaseUrl;
 	@UiField
+	LabeledTextBox issueTrackerUrl;
+	@UiField
 	LabeledTextBox forumUrl;
 	@UiField
 	LabeledTextBox newsfeedUrl;
@@ -115,6 +117,7 @@ public class EditProductPage extends Composite implements PageStateAware, Change
 		webpageUrl.setValue(product.getWebsiteUrl());
 		showcaseUrl.setValue(product.getDemoUrl());
 		forumUrl.setValue(product.getForumUrl());
+		issueTrackerUrl.setValue(product.getIssueTrackerUrl());
 		newsfeedUrl.setValue(product.getNewsUrl());
 		WidgetUtil.selectValue(license.getComponent(), product.getLicense());
 		WidgetUtil.selectValue(status.getComponent(), product.getStatus());
@@ -190,6 +193,7 @@ public class EditProductPage extends Composite implements PageStateAware, Change
 		product.setCategoryId(category.getValue(category.getSelectedIndex()));
 		product.setWebsiteUrl(webpageUrl.getValue());
 		product.setDemoUrl(showcaseUrl.getValue());
+		product.setIssueTrackerUrl(issueTrackerUrl.getValue());
 		product.setForumUrl(forumUrl.getValue());
 		product.setNewsUrl(newsfeedUrl.getValue());
 		new SaveProductCommand(product) {

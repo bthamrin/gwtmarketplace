@@ -52,6 +52,9 @@ public class Product implements Serializable {
 	private String forumUrl;
 	@Column
 	@Unindexed
+	private String issueTrackerUrl;
+	@Column
+	@Unindexed
 	private String newsUrl;
 	@Column
 	@Unindexed
@@ -256,22 +259,6 @@ public class Product implements Serializable {
 		this.numMonthlyViews = numMonthlyViews;
 	}
 
-	public boolean equals(Object obj) {
-		if (null == getId()) return false;
-		if (obj instanceof Product) {
-			Product _p = (Product) obj;
-			if (null == _p.getId()) return false;
-			else return _p.getId().equals(getId());
-		}
-		else return false;
-	}
-
-	@Override
-	public int hashCode() {
-		if (null == getId()) return super.hashCode();
-		else return getId().toString().hashCode();
-	}
-
 	public String getCategoryId() {
 		return categoryId;
 	}
@@ -294,5 +281,29 @@ public class Product implements Serializable {
 
 	public void setSearchFields(String[] searchFields) {
 		this.searchFields = searchFields;
+	}
+
+	public String getIssueTrackerUrl() {
+		return issueTrackerUrl;
+	}
+
+	public void setIssueTrackerUrl(String issueTrackerUrl) {
+		this.issueTrackerUrl = issueTrackerUrl;
+	}
+
+	public boolean equals(Object obj) {
+		if (null == getId()) return false;
+		if (obj instanceof Product) {
+			Product _p = (Product) obj;
+			if (null == _p.getId()) return false;
+			else return _p.getId().equals(getId());
+		}
+		else return false;
+	}
+
+	@Override
+	public int hashCode() {
+		if (null == getId()) return super.hashCode();
+		else return getId().toString().hashCode();
 	}
 }
