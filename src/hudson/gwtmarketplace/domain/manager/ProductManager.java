@@ -11,6 +11,8 @@ import hudson.gwtmarketplace.client.model.Triple;
 import hudson.gwtmarketplace.client.model.search.SearchResults;
 
 import java.io.Serializable;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -19,6 +21,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.users.User;
 import com.google.appengine.api.users.UserServiceFactory;
@@ -188,6 +191,19 @@ public class ProductManager extends AbstractManager {
 		}
 	}
 
+	public Pair<Product, String> getForEditing(String alias)
+			throws InvalidAccessException {
+		Product product = getByAlias(alias);
+		if (null == product)
+			return null;
+		User user = UserServiceFactory.getUserService().getCurrentUser();
+		if (null == user || !user.getUserId().equals(product.getUserId()))
+			throw new InvalidAccessException();
+			String uploadKey = BlobstoreServiceFactory.getBlobstoreService().createUploadUrl(
+					"/gwt_marketplace/uploadImage");
+			return new Pair<Product, String>(product, uploadKey);
+	}
+
 	public SearchResults<Product> search(
 			HashMap<String, String> namedParameters,
 			ArrayList<String> generalParameters, int startIndex, int limit,
@@ -199,17 +215,13 @@ public class ProductManager extends AbstractManager {
 			for (Map.Entry<String, String> param : namedParameters.entrySet()) {
 				if (param.getKey().equals("category")) {
 					query.filter("categoryId", param.getValue());
-				}
-				else if (param.getKey().equals("status")) {
+				} else if (param.getKey().equals("status")) {
 					query.filter("status", param.getValue());
-				}
-				else if (param.getKey().equals("license")) {
+				} else if (param.getKey().equals("license")) {
 					query.filter("license", param.getValue());
-				}
-				else if (param.getKey().equals("name")) {
+				} else if (param.getKey().equals("name")) {
 					query.filter("name", param.getValue());
-				}
-				else if (param.getKey().equals("tag")) {
+				} else if (param.getKey().equals("tag")) {
 					query.filter("tags", param.getValue());
 				}
 			}
@@ -406,7 +418,8 @@ public class ProductManager extends AbstractManager {
 			for (String s : product.getTags())
 				searchFields.add(s);
 		}
-		product.setSearchFields(searchFields.toArray(new String[searchFields.size()]));
+		product.setSearchFields(searchFields.toArray(new String[searchFields
+				.size()]));
 	}
 
 	private Date toTopsDate(Product product) {

@@ -1,6 +1,7 @@
 package hudson.gwtmarketplace.client.pages.product;
 
 import hudson.gwtmarketplace.client.Pages;
+import hudson.gwtmarketplace.client.model.Pair;
 import hudson.gwtmarketplace.client.model.Product;
 import hudson.gwtmarketplace.client.pages.PageStateAware;
 
@@ -26,7 +27,7 @@ public class NewProductPage extends SimplePanel implements PageStateAware {
 
 	@Override
 	public void onShowPage(String[] parameters) {
-		wrapped.show(new Product());
+		wrapped.show(new Pair<Product, String>(new Product(), null));
 	}
 
 	@Override

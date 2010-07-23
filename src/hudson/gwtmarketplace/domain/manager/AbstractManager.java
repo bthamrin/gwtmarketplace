@@ -44,7 +44,7 @@ public abstract class AbstractManager {
 		return UserServiceFactory.getUserService().getCurrentUser();
 	}
 
-	protected Cache getCache() {
+	public static Cache getCache() {
 		return cache;
 	}
 

@@ -13,17 +13,24 @@
 			border-right: solid 1px #CCCCCC;
 			border-bottom: solid 1px #CCCCCC;
 		}
+		.uploaderLabel {
+			padding-right: 24px;
+		}
 	</ui:style>
 
 	<g:HorizontalPanel width="100%">
 		<g:HTMLPanel>
 			<img ui:field="icon" class="productIcon"/>
-			<div align="center">
-				<g:Anchor ui:field="rateIt">change image</g:Anchor>
-			</div>
 		</g:HTMLPanel>
 
 		<g:FlowPanel styleName="form-panel">
+			<g:FormPanel method="post" encoding="multipart/form-data" ui:field="imageUploadForm">
+				<g:HorizontalPanel>
+					<g:HTML styleName="{style.uploaderLabel}">Choose Product Icon</g:HTML>
+					<g:FileUpload name="icon"></g:FileUpload>
+					<g:Hidden name="key" ui:field="imageUploadKey"></g:Hidden>
+				</g:HorizontalPanel>
+			</g:FormPanel>
 			<g:HTMLPanel><h3>Description</h3></g:HTMLPanel>
 			<g:FlowPanel ui:field="descriptionToolbarContainer"></g:FlowPanel>
 			<g:RichTextArea ui:field="description" styleName="{style.richTextEditor}"></g:RichTextArea>

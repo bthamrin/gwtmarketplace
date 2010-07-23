@@ -31,6 +31,8 @@ public interface ProductService extends RemoteService {
 
 	public Pair<Product, Date> getForViewing(String alias);
 
+	public Pair<Product, String> getForEditing(String alias) throws InvalidAccessException;
+
 	public Top10Lists getTops(Date maxKnownDate);
 
 	public Pair<Product, Date> addRating(long productId, int rating, Long userId);

@@ -54,6 +54,12 @@ public class ProductServiceImpl extends RemoteServiceServlet implements
 	}
 
 	@Override
+	public Pair<Product, String> getForEditing(String alias) throws InvalidAccessException {
+		return mgr
+				.getForEditing(alias);
+	}
+
+	@Override
 	public Pair<Product, Date> getForViewing(String alias) {
 		return mgr
 				.getForViewing(alias, getThreadLocalRequest().getRemoteAddr());
