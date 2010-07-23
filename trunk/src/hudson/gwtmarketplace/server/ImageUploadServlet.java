@@ -3,6 +3,7 @@ package hudson.gwtmarketplace.server;
 import hudson.gwtmarketplace.client.exception.InvalidAccessException;
 import hudson.gwtmarketplace.client.model.Product;
 import hudson.gwtmarketplace.domain.manager.ProductManager;
+import hudson.gwtmarketplace.server.util.ImageUtil;
 
 import java.io.IOException;
 import java.util.Map;
@@ -27,6 +28,7 @@ public class ImageUploadServlet extends HttpServlet {
 	protected void service(HttpServletRequest req, HttpServletResponse resp)
 			throws ServletException, IOException {
 		BlobstoreService service = BlobstoreServiceFactory.getBlobstoreService();
+		String rtnKey = null;
 
 		Map<String, BlobKey> blobs = service.getUploadedBlobs(req);
 		String id = req.getParameter("key");
@@ -36,12 +38,16 @@ public class ImageUploadServlet extends HttpServlet {
 			if (null != product && product.getUserId().equals(user.getUserId())) {
 				if (blobs.size() == 1) {
 					BlobKey origKey = blobs.values().iterator().next();
-					product.setIconKey(origKey.getKeyString());
-					try {
-						productMgr.update(product);
-					}
-					catch (InvalidAccessException e) {
-						service.delete(origKey);
+					byte[] arr = ImageUtil.iconize(origKey.getKeyString());
+					if (null != arr) {
+						product.setIconKey(origKey.getKeyString());
+						try {
+							productMgr.update(product);
+							rtnKey = product.getIconKey();
+						}
+						catch (InvalidAccessException e) {
+							service.delete(origKey);
+						}
 					}
 				}
 				else {
@@ -58,6 +64,7 @@ public class ImageUploadServlet extends HttpServlet {
 				}
 			}
 		}
-		resp.sendRedirect("/GWT_Marketplace.html#/" + product.getAlias());
+		if (null != rtnKey)
+			resp.getOutputStream().write(rtnKey.getBytes());
 	}
 }

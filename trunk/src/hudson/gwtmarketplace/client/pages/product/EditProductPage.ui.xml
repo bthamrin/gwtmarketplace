@@ -27,7 +27,7 @@
 			<g:FormPanel method="post" encoding="multipart/form-data" ui:field="imageUploadForm">
 				<g:HorizontalPanel>
 					<g:HTML styleName="{style.uploaderLabel}">Choose Product Icon</g:HTML>
-					<g:FileUpload name="icon"></g:FileUpload>
+					<g:FileUpload name="icon" ui:field="fileUpload"></g:FileUpload>
 					<g:Hidden name="key" ui:field="imageUploadKey"></g:Hidden>
 				</g:HorizontalPanel>
 			</g:FormPanel>

@@ -22,6 +22,7 @@ import com.google.gwt.dom.client.TableRowElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.i18n.client.DateTimeFormat;
+import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Window;
@@ -43,6 +44,7 @@ public class ProductDetailsPanel extends Composite implements FeedListener,
 
 	private static DateTimeFormat dateFormat = DateTimeFormat
 			.getMediumDateFormat();
+	private static NumberFormat ratingFormat = NumberFormat.getFormat("0.00");
 
 	private Product product;
 
@@ -85,8 +87,7 @@ public class ProductDetailsPanel extends Composite implements FeedListener,
 	@UiField
 	HTMLPanel additionalDetailsContainer;
 	@UiField
-	FlowPanel ratingContainer;
-	ProductRating rating;
+	HTMLPanel ratingContainer;
 	@UiField
 	Anchor rateIt;
 
@@ -96,7 +97,6 @@ public class ProductDetailsPanel extends Composite implements FeedListener,
 		container.setCellWidth(container.getWidget(0), "132px");
 		container.getWidget(0).getElement().getStyle()
 				.setPaddingRight(12, Unit.PX);
-		ratingContainer.add(this.rating = new ProductRating(0, true));
 		rateIt.addClickHandler(this);
 		Session.get().bus().addHandler(ProductUpdatedEvent.TYPE, this);
 	}
@@ -122,7 +122,7 @@ public class ProductDetailsPanel extends Composite implements FeedListener,
 			createdDate.setInnerText("");
 			lastUpdatedDate.setInnerText("");
 			icon.setSrc("images/noicon.gif");
-			rating.setRatingValue(0);
+			ratingContainer.getElement().setInnerText("");
 		} else {
 			if (null != product.getWebsiteUrl()) {
 				links.add(new Anchor("Website", product.getWebsiteUrl(),
@@ -152,8 +152,12 @@ public class ProductDetailsPanel extends Composite implements FeedListener,
 				icon.setSrc("images/noicon.gif");
 			else
 				icon.setSrc("gwt_marketplace/productImage?key=" + product.getIconKey());
-			rating.setRatingValue((null != product.getRating()) ? product
-					.getRating() : 0);
+			if (null != product.getRating()) {
+				ratingContainer.getElement().setInnerText(ratingFormat.format(product.getRating()) + " of 5");
+			}
+			else {
+				ratingContainer.getElement().setInnerText("");
+			}
 			developmentStatus.setInnerText(Status.getDisplayValue(product
 					.getStatus()));
 			license.setInnerHTML(License.getDisplayValue(product.getLicense()));
@@ -184,7 +188,15 @@ public class ProductDetailsPanel extends Composite implements FeedListener,
 	}
 
 	public String createTagHtml(String[] tags) {
-		return "tags";
+		if (null == tags || tags.length == 0) return "(none)";
+		else {
+			StringBuilder sb = new StringBuilder();
+			for (String s : tags) {
+				if (sb.length() > 0) sb.append(", ");
+				sb.append("<a class=\"tag\" href=\"#").append(Pages.PAGE_SEARCH).append("/tag:").append(s).append("\">").append(s).append("</a>");
+			}
+			return sb.toString();
+		}
 	}
 
 	@Override
