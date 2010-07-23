@@ -7,5 +7,9 @@
         <property name="categoryId" direction="asc"/>
         <property name="name" direction="asc"/>
     </datastore-index>
+    <datastore-index kind="prdct" ancestor="false" source="manual">
+        <property name="tags" direction="asc"/>
+        <property name="name" direction="asc"/>
+    </datastore-index>
 
 </datastore-indexes>

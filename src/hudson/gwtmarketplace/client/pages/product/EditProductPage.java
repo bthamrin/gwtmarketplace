@@ -35,6 +35,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
@@ -92,6 +93,8 @@ public class EditProductPage extends Composite implements PageStateAware, Change
 	FormPanel imageUploadForm;
 	@UiField
 	Hidden imageUploadKey;
+	@UiField
+	FileUpload fileUpload;
 
 	public EditProductPage() {
 		this(false);
@@ -116,6 +119,7 @@ public class EditProductPage extends Composite implements PageStateAware, Change
 			}
 		}.execute();
 		imageUploadForm.addSubmitCompleteHandler(this);
+		fileUpload.addChangeHandler(this);
 	}
 
 	public void show(final Pair<Product, String> productPair) {
@@ -142,7 +146,7 @@ public class EditProductPage extends Composite implements PageStateAware, Change
 				WidgetUtil.selectValue(category.getComponent(), product.getCategoryId());
 			}
 		}.execute();
-		resetIcon(product);
+		resetIcon();
 		if (null == productPair.getEntity2()) {
 			imageUploadForm.setVisible(false);
 		}
@@ -194,6 +198,10 @@ public class EditProductPage extends Composite implements PageStateAware, Change
 
 	@Override
 	public void onChange(ChangeEvent event) {
+		if (event.getSource().equals(fileUpload)) {
+			imageUploadForm.submit();
+			imageUploadForm.clear();
+		}
 	}
 
 	private boolean isNull(String s) {
@@ -214,6 +222,13 @@ public class EditProductPage extends Composite implements PageStateAware, Change
 		product.setDescription(description.getHTML());
 		if (null == product.getId())
 			product.setName(name.getComponent().getValue());
+		List<String> _tags = tags.getValues();
+		if (null != _tags && _tags.size() > 0) {
+			product.setTags(_tags.toArray(new String[_tags.size()]));
+		}
+		else {
+			product.setTags(null);
+		}
 		product.setOrganizationName(organization.getValue());
 		product.setVersionNumber(versionNumber.getComponent().getValue());
 		product.setStatus(status.getValue(status.getSelectedIndex()));
@@ -246,7 +261,7 @@ public class EditProductPage extends Composite implements PageStateAware, Change
 		this.product = product;
 	}
 
-	private void resetIcon(Product product) {
+	private void resetIcon() {
 		if (null == product.getIconKey())
 			icon.setSrc("images/noicon.gif");
 		else
@@ -255,16 +270,10 @@ public class EditProductPage extends Composite implements PageStateAware, Change
 
 	@Override
 	public void onSubmitComplete(SubmitCompleteEvent event) {
-		if (null != product.getId()) {
-			productService.getById(product.getId(), new AsyncCallback<Product>() {
-				@Override
-				public void onSuccess(Product result) {
-					resetIcon(result);
-				}
-				@Override
-				public void onFailure(Throwable caught) {
-				}
-			});
+		String key = event.getResults();
+		if (null != key && key.length() > 0) {
+			product.setIconKey(key);
+			resetIcon();
 		}
 	}
 }

@@ -16,6 +16,13 @@
 			padding-right: 12px;
 			padding: 4px;
 		}
+		.rateIt {
+			margin-top: 8px;
+		}
+		.rating {
+			font-size: 22px;
+			margin-top: 8px;	
+		}
 	</ui:style>
 
 	<g:HorizontalPanel>
@@ -23,8 +30,10 @@
 			<g:HTMLPanel>
 				<img ui:field="icon" class="productIcon"/>
 				<div align="center">
-					<g:FlowPanel ui:field="ratingContainer"></g:FlowPanel>
-					<g:Anchor ui:field="rateIt">Rate It!</g:Anchor>
+					<g:HTMLPanel styleName="{style.rating}" ui:field="ratingContainer"></g:HTMLPanel>
+					<g:FlowPanel styleName="{style.rateIt}">
+						<g:Anchor ui:field="rateIt">Rate It!</g:Anchor>
+					</g:FlowPanel>
 				</div>
 				<div class="padding-top">
 					<h3>Links</h3>

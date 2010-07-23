@@ -22,7 +22,7 @@ public class ImageUtil {
 			BlobKey blobKey = new BlobKey(key);
 			ImagesService imagesService = ImagesServiceFactory.getImagesService();
 	        Image oldImage = ImagesServiceFactory.makeImageFromBlob(blobKey);
-	        Transform resize = ImagesServiceFactory.makeResize(120, 600);
+	        Transform resize = ImagesServiceFactory.makeResize(160, 600);
 	        Image newImage = imagesService.applyTransform(resize, oldImage);
 	        if (null != newImage) {
 	        	data = newImage.getImageData();
