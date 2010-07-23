@@ -22,6 +22,8 @@ public interface ProductServiceAsync {
 
 	public void getById(long id, AsyncCallback<Product> callback);
 
+	public void getForEditing(String alias, AsyncCallback<Pair<Product, String>> callback);
+
 	public void getForViewing(String alias, AsyncCallback<Pair<Product, Date>> callback);
 
 	public void getTops(Date maxKnownDate, AsyncCallback<Top10Lists> callback);

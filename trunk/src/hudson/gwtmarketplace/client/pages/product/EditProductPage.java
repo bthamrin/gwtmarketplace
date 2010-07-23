@@ -3,7 +3,6 @@ package hudson.gwtmarketplace.client.pages.product;
 import hudson.gwtmarketplace.client.Pages;
 import hudson.gwtmarketplace.client.Session;
 import hudson.gwtmarketplace.client.commands.GetProductCategoriesCommand;
-import hudson.gwtmarketplace.client.commands.GetProductDetailsCommand;
 import hudson.gwtmarketplace.client.commands.SaveProductCommand;
 import hudson.gwtmarketplace.client.components.LabeledContainer;
 import hudson.gwtmarketplace.client.components.LabeledListBox;
@@ -12,9 +11,12 @@ import hudson.gwtmarketplace.client.components.RichTextToolbar;
 import hudson.gwtmarketplace.client.components.ThreeByXTextBox;
 import hudson.gwtmarketplace.client.model.Category;
 import hudson.gwtmarketplace.client.model.License;
+import hudson.gwtmarketplace.client.model.Pair;
 import hudson.gwtmarketplace.client.model.Product;
 import hudson.gwtmarketplace.client.model.Status;
 import hudson.gwtmarketplace.client.pages.PageStateAware;
+import hudson.gwtmarketplace.client.service.ProductService;
+import hudson.gwtmarketplace.client.service.ProductServiceAsync;
 import hudson.gwtmarketplace.client.util.Message;
 import hudson.gwtmarketplace.client.util.WidgetUtil;
 
@@ -30,19 +32,26 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.FormPanel;
+import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
+import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
+import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.RichTextArea;
 
-public class EditProductPage extends Composite implements PageStateAware, ChangeHandler, ClickHandler {
+public class EditProductPage extends Composite implements PageStateAware, ChangeHandler, ClickHandler, SubmitCompleteHandler {
 
 	interface MyUiBinder extends UiBinder<HorizontalPanel, EditProductPage> {
 	}
 
 	private static MyUiBinder uiBinder = GWT.create(MyUiBinder.class);
 
+	private static ProductServiceAsync productService = GWT.create(ProductService.class);
+	
 	Product product;
 	
 	@UiField
@@ -79,6 +88,10 @@ public class EditProductPage extends Composite implements PageStateAware, Change
 	Button saveBtn;
 	@UiField
 	Button cancelBtn;
+	@UiField
+	FormPanel imageUploadForm;
+	@UiField
+	Hidden imageUploadKey;
 
 	public EditProductPage() {
 		this(false);
@@ -102,10 +115,11 @@ public class EditProductPage extends Composite implements PageStateAware, Change
 				WidgetUtil.load(category.getComponent(), result, "Select a category");
 			}
 		}.execute();
+		imageUploadForm.addSubmitCompleteHandler(this);
 	}
 
-	public void show(final Product product) {
-		this.product = product;
+	public void show(final Pair<Product, String> productPair) {
+		this.product = productPair.getEntity1();
 		if (null != product.getDescription())
 			description.setHTML(product.getDescription());
 		else
@@ -128,25 +142,39 @@ public class EditProductPage extends Composite implements PageStateAware, Change
 				WidgetUtil.selectValue(category.getComponent(), product.getCategoryId());
 			}
 		}.execute();
-		icon.setSrc("images/noicon.gif");
+		resetIcon(product);
+		if (null == productPair.getEntity2()) {
+			imageUploadForm.setVisible(false);
+		}
+		else {
+			imageUploadForm.setAction(productPair.getEntity2());
+			imageUploadKey.setValue(product.getId().toString());
+			imageUploadForm.setVisible(true);
+		}
 	}
 
 	@Override
 	public void onShowPage(String[] parameters) {
 		if (parameters.length > 0) {
-			new GetProductDetailsCommand(parameters[0], false) {
+			
+			productService.getForEditing(parameters[0], new AsyncCallback<Pair<Product,String>>() {
 				
 				@Override
-				public void onSuccess(Product product) {
-					show(product);
+				public void onSuccess(Pair<Product, String> result) {
+					show(result);
 				}
-			}.execute();
+				
+				@Override
+				public void onFailure(Throwable caught) {
+					Session.get().error(caught.getMessage(), null);
+				}
+			});
 		}
 	}
 
 	@Override
 	public void onExitPage() {
-		show(new Product());
+		show(new Pair<Product, String>(new Product(), null));
 	}
 
 	@Override
@@ -216,5 +244,27 @@ public class EditProductPage extends Composite implements PageStateAware, Change
 
 	public void setProduct(Product product) {
 		this.product = product;
+	}
+
+	private void resetIcon(Product product) {
+		if (null == product.getIconKey())
+			icon.setSrc("images/noicon.gif");
+		else
+			icon.setSrc("gwt_marketplace/productImage?key=" + product.getIconKey());
+	}
+
+	@Override
+	public void onSubmitComplete(SubmitCompleteEvent event) {
+		if (null != product.getId()) {
+			productService.getById(product.getId(), new AsyncCallback<Product>() {
+				@Override
+				public void onSuccess(Product result) {
+					resetIcon(result);
+				}
+				@Override
+				public void onFailure(Throwable caught) {
+				}
+			});
+		}
 	}
 }

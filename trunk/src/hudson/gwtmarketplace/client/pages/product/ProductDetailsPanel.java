@@ -148,7 +148,10 @@ public class ProductDetailsPanel extends Composite implements FeedListener,
 					.setInnerText(dateFormat.format(product.getCreatedDate()));
 			lastUpdatedDate.setInnerText(dateFormat.format(product
 					.getUpdatedDate()));
-			icon.setSrc("images/noicon.gif");
+			if (null == product.getIconKey())
+				icon.setSrc("images/noicon.gif");
+			else
+				icon.setSrc("gwt_marketplace/productImage?key=" + product.getIconKey());
 			rating.setRatingValue((null != product.getRating()) ? product
 					.getRating() : 0);
 			developmentStatus.setInnerText(Status.getDisplayValue(product

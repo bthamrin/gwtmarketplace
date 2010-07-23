@@ -22,6 +22,8 @@ public class Product implements Serializable {
 	@Column
 	String categoryId;
 	@Column
+	String iconKey;
+	@Column
 	String categoryName;
 	@Column
 	private String alias;	
@@ -305,5 +307,13 @@ public class Product implements Serializable {
 	public int hashCode() {
 		if (null == getId()) return super.hashCode();
 		else return getId().toString().hashCode();
+	}
+
+	public String getIconKey() {
+		return iconKey;
+	}
+
+	public void setIconKey(String iconKey) {
+		this.iconKey = iconKey;
 	}
 }
