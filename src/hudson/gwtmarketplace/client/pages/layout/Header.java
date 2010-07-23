@@ -1,3 +1,6 @@
+/*
+ * GNU GENERAL PUBLIC LICENSE, Version 3, 29 June 2007
+ */
 package hudson.gwtmarketplace.client.pages.layout;
 
 import hudson.gwtmarketplace.client.Session;
