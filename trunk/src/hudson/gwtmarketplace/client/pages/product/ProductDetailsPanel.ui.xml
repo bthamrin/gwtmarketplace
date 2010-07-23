@@ -17,11 +17,10 @@
 			padding: 4px;
 		}
 		.rateIt {
-			margin-top: 8px;
+			font-size: 16px;
 		}
 		.rating {
 			font-size: 22px;
-			margin-top: 8px;	
 		}
 	</ui:style>
 
