@@ -1,3 +1,6 @@
+/*
+ * GNU GENERAL PUBLIC LICENSE, Version 3, 29 June 2007
+ */
 package hudson.gwtmarketplace.client.pages.product;
 
 import hudson.gwtmarketplace.client.model.Product;
