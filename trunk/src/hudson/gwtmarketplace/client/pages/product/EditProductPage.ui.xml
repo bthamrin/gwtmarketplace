@@ -58,8 +58,8 @@
 			</g:VerticalPanel>
 
 			<g:FlowPanel styleName="button-group">
-				<g:Button ui:field="cancelBtn">Cancel</g:Button>
 				<g:Button ui:field="saveBtn">Save</g:Button>
+				<g:Button ui:field="cancelBtn">Cancel</g:Button>
 			</g:FlowPanel>
 			
 		</g:FlowPanel>

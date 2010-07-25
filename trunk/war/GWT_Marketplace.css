@@ -2,6 +2,38 @@
 
 body {
 	font: 13.34px helvetica, arial, freesans, clean, sans-serif;
+	background: url(images/bg.png);
+}
+
+#titlebar {
+	color: #425A70;
+	font-weight: bold;
+	font-size: 20px;	
+}
+
+#header {
+	position: relative;
+}
+#headerlinks {
+	background: url(images/line2.png);
+	color: #FFFFFF;
+	font-weight: bold;
+}
+#headerlinks a {
+	font-weight: bold;
+	color: #FFFFFF;
+	text-decoration: none;	
+}
+#headerlinks a:hover {
+	color: #FFFFFF;
+	text-decoration: underline;	
+}
+#subtitlebar {
+	position: absolute;
+	left: 220px;
+	top: 4px;
+	color: #425A70;
+	font-size: 14px;
 }
 
 .feed-odd {
@@ -24,7 +56,6 @@ body {
 .navContainer {
 	position: absolute;
 	width: 140px;
-	margin-top: 12px;
 }
 
 .bodyContainer {
