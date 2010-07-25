@@ -143,6 +143,7 @@ public class EditProductPage extends Composite implements PageStateAware, Change
 		newsfeedUrl.setValue(product.getNewsUrl());
 		WidgetUtil.selectValue(license.getComponent(), product.getLicense());
 		WidgetUtil.selectValue(status.getComponent(), product.getStatus());
+		WidgetUtil.selectValue(category.getComponent(), product.getCategoryId());
 		new GetProductCategoriesCommand() {
 			
 			@Override
