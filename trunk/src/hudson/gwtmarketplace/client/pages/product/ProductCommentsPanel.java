@@ -86,7 +86,9 @@ public class ProductCommentsPanel extends Composite implements ClickHandler {
 			public void onSuccess(Triple<ProductComment, Product,Date> result) {
 				rating.setValue(0);
 				ProductCommentsPanel.this.comment.setValue(null);
-				commentsContainer.insert(new CommentPanel(result.getEntity1()), 0);
+				if (null != result.getEntity1()) {
+					commentsContainer.insert(new CommentPanel(result.getEntity1()), 0);
+				}
 			};
 		}.execute();
 	}

@@ -32,7 +32,8 @@
 		<g:HTMLPanel>
 			<div class="commentbox">
 				<g:VerticalPanel>
-					<g:FlowPanel ui:field="ratingContainer"></g:FlowPanel>
+					<g:SimplePanel ui:field="ratingContainer"></g:SimplePanel>
+					<g:SimplePanel ui:field="dislosureContainer"></g:SimplePanel>
 					<g:Label ui:field="comment"></g:Label>
 				</g:VerticalPanel>
 			</div>

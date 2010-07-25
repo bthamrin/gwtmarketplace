@@ -9,13 +9,12 @@ import hudson.gwtmarketplace.client.model.Category;
 import hudson.gwtmarketplace.client.model.Pair;
 import hudson.gwtmarketplace.client.model.Product;
 import hudson.gwtmarketplace.client.model.ProductComment;
+import hudson.gwtmarketplace.client.model.ProductRating;
 import hudson.gwtmarketplace.client.model.Top10Lists;
 import hudson.gwtmarketplace.client.model.Triple;
 import hudson.gwtmarketplace.client.model.search.SearchResults;
 
 import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -39,6 +38,7 @@ public class ProductManager extends AbstractManager {
 	private static final String TOKEN_VIEWS_BY_IP = "viewsByIP";
 	private static final String TOKEN_TOP10_HIGHEST_RATED = "top10HighestRates";
 	private static final String TOKEN_TOP10_RECENT_UPDATED = "top10RecentUpdated";
+	private static final String TOKEN_RATINGS_BY_IP = "ratingsByPi";
 
 	private static final Comparator<Product> top10Comparator = new Comparator<Product>() {
 		public int compare(Product obj1, Product obj2) {
@@ -296,46 +296,92 @@ public class ProductManager extends AbstractManager {
 	}
 
 	public Triple<ProductComment, Product, Date> addComment(long productId,
-			ProductComment comment) {
+			ProductComment comment, String ipAddress) {
+		User user = UserServiceFactory.getUserService().getCurrentUser();
 		Objectify ofy = tx();
 		try {
 			Key<Product> productKey = new Key<Product>(Product.class, productId);
 			Product product = ofy.find(productKey);
-			comment.setCreatedDate(new Date());
-			comment.setProductId(productKey);
 			List<Serializable> thingsToSave = new ArrayList<Serializable>();
-			thingsToSave.add(comment);
+			boolean addComment = false;
+			if (null != comment.getCommentText() && comment.getCommentText().length() > 0) {
+				if (null != user) {
+					comment.setUserAlias(user.getNickname());
+					comment.setUserId(user.getUserId());
+				}
+				comment.setCreatedDate(new Date());
+				comment.setProductId(productKey);
+				thingsToSave.add(comment);
+				addComment = true;
+			}
 
 			// deal with the rating
 			if (null != comment.getRating()
 					&& comment.getRating().intValue() > 0) {
-				int rating = comment.getRating().intValue();
-				if (null == product.getTotalRatings())
-					product.setTotalRatings(1);
-				else
-					product.setTotalRatings(product.getTotalRatings() + 1);
-				if (null == product.getTotalRatingScore())
-					product.setTotalRatingScore(rating);
-				else
-					product.setTotalRatingScore(product.getTotalRatingScore()
-							+ rating);
-				product.setRating((float) ((float) product
-						.getTotalRatingScore() / (float) product
-						.getTotalRatings()));
-				product.setUpdatedDate(new Date());
-				getCache().remove(TOKEN_TOP10_HIGHEST_RATED);
+				String ratingCacheKey = TOKEN_RATINGS_BY_IP + ":" + productId;
+				Map<String, Integer> ratingsCache = (Map<String, Integer>) getCache().get(ratingCacheKey);
+				if (null == ratingsCache) {
+					ratingsCache = new HashMap<String, Integer>();
+					ArrayList<ProductRating> ratings = toList(noTx().query(ProductRating.class).ancestor(productKey));
+					for (ProductRating rating : ratings) {
+						ratingsCache.put(rating.getIpAddress(), rating.getRating());
+					}
+					getCache().put(ratingCacheKey, ratingsCache);
+				}
+				if (null == ratingsCache.get(ipAddress)) {
+					int rating = comment.getRating().intValue();
+					if (null == product.getTotalRatings())
+						product.setTotalRatings(1);
+					else
+						product.setTotalRatings(product.getTotalRatings() + 1);
+					if (null == product.getTotalRatingScore())
+						product.setTotalRatingScore(rating);
+					else
+						product.setTotalRatingScore(product.getTotalRatingScore()
+								+ rating);
+					product.setRating((float) ((float) product
+							.getTotalRatingScore() / (float) product
+							.getTotalRatings()));
+					product.setUpdatedDate(new Date());
+					getCache().remove(TOKEN_TOP10_HIGHEST_RATED);
+					
+					ProductRating productRating = new ProductRating();
+					productRating.setCreatedDate(new Date());
+					productRating.setIpAddress(ipAddress);
+					productRating.setProductId(productKey);
+					productRating.setRating(rating);
+					if (null != user) {
+						productRating.setUserAlias(user.getNickname());
+						productRating.setUserId(user.getUserId());
+					}
+					thingsToSave.add(productRating);
+					ratingsCache.put(ipAddress, rating);
+					getCache().put(ratingCacheKey, ratingsCache);
+				}
+				else {
+					// we can't add the rating
+					comment.setUnableToRate(Boolean.TRUE);
+				}
 			}
-			if (null == product.getNumComments())
-				product.setNumComments(1);
-			else
-				product.setNumComments(product.getNumComments() + 1);
-			product.setActivityDate(new Date());
-			thingsToSave.add(product);
-			ofy.put((Iterable) thingsToSave);
-			updateCache(product);
-			ofy.getTxn().commit();
-			return new Triple<ProductComment, Product, Date>(comment, product,
-					toTopsDate(product));
+			
+			if (thingsToSave.size() > 0) {
+				if (addComment) {
+					if (null == product.getNumComments())
+						product.setNumComments(1);
+					else
+						product.setNumComments(product.getNumComments() + 1);
+				}
+				product.setActivityDate(new Date());
+				thingsToSave.add(product);
+				ofy.put((Iterable) thingsToSave);
+				updateCache(product);
+				ofy.getTxn().commit();
+				return new Triple<ProductComment, Product, Date>(comment, product,
+						toTopsDate(product));
+			}
+			else {
+				return new Triple<ProductComment, Product, Date>(null, product, null);
+			}
 		} catch (Exception e) {
 			ofy.getTxn().rollback();
 			wrap(e);

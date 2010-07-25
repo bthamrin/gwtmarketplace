@@ -33,7 +33,7 @@ public class ProductServiceImpl extends RemoteServiceServlet implements
 	@Override
 	public Triple<ProductComment, Product, Date> addComment(long productId,
 			ProductComment comment) {
-		return mgr.addComment(productId, comment);
+		return mgr.addComment(productId, comment, getThreadLocalRequest().getRemoteAddr());
 	}
 
 	@Override
