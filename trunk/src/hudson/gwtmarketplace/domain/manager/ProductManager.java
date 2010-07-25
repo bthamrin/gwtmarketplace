@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
+//import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.users.User;
 import com.google.appengine.api.users.UserServiceFactory;
@@ -202,9 +202,10 @@ public class ProductManager extends AbstractManager {
 		User user = UserServiceFactory.getUserService().getCurrentUser();
 		if (null == user || !user.getUserId().equals(product.getUserId()))
 			throw new InvalidAccessException();
-			String uploadKey = BlobstoreServiceFactory.getBlobstoreService().createUploadUrl(
-					"/gwt_marketplace/uploadImage");
-			return new Pair<Product, String>(product, uploadKey);
+//			String uploadKey = BlobstoreServiceFactory.getBlobstoreService().createUploadUrl(
+//					"/gwt_marketplace/uploadImage");
+//			return new Pair<Product, String>(product, uploadKey);
+		return new Pair<Product, String>(product, null);
 	}
 
 	public SearchResults<Product> search(
