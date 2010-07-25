@@ -28,6 +28,7 @@ import java.util.List;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.ImageElement;
+import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.event.dom.client.ChangeEvent;
 import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -265,10 +266,14 @@ public class EditProductPage extends Composite implements PageStateAware, Change
 	}
 
 	private void resetIcon() {
-		if (null == product.getIconKey())
+		if (null == product.getIconKey()) {
 			icon.setSrc("images/noicon.gif");
-		else
+			icon.getStyle().setDisplay(Display.NONE);
+		}
+		else {
 			icon.setSrc("gwt_marketplace/productImage?key=" + product.getIconKey());
+			icon.getStyle().setDisplay(Display.BLOCK);
+		}
 	}
 
 	@Override
