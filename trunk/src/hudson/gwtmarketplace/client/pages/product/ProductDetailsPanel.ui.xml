@@ -64,7 +64,7 @@
 							</tr>
 							<tr ui:field="organizationRow" class="{style.even}">
 								<td>Organization:</td>
-								<td><a ui:field='organization'></a></td>
+								<td><span ui:field='organization'></span></td>
 							</tr>
 							<tr ui:field="createdDateRow" class="{style.odd}">
 								<td>Created:</td>

@@ -61,7 +61,7 @@ public class ProductDetailsPanel extends Composite implements FeedListener,
 	@UiField
 	SpanElement versionNumber;
 	@UiField
-	AnchorElement organization;
+	SpanElement organization;
 	@UiField
 	SpanElement createdDate;
 	@UiField
@@ -122,7 +122,6 @@ public class ProductDetailsPanel extends Composite implements FeedListener,
 			tags.setInnerHTML("");
 			versionNumber.setInnerText("");
 			organization.setInnerText("");
-			organization.setHref("#");
 			createdDate.setInnerText("");
 			lastUpdatedDate.setInnerText("");
 			icon.getStyle().setDisplay(Display.NONE);
@@ -147,7 +146,6 @@ public class ProductDetailsPanel extends Composite implements FeedListener,
 			tags.setInnerHTML(createTagHtml(product.getTags()));
 			versionNumber.setInnerText(product.getVersionNumber());
 			organization.setInnerText(product.getOrganizationName());
-			organization.setHref("#");
 			createdDate
 					.setInnerText(dateFormat.format(product.getCreatedDate()));
 			lastUpdatedDate.setInnerText(dateFormat.format(product
