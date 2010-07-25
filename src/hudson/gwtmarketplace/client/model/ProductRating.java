@@ -13,8 +13,8 @@ import javax.persistence.Id;
 import com.googlecode.objectify.Key;
 import com.googlecode.objectify.annotation.Parent;
 
-@Entity(name="prdt_cmt")
-public class ProductComment implements Serializable {
+@Entity(name="prdt_rtg")
+public class ProductRating implements Serializable {
 	private static final long serialVersionUID = -1L;
 
 	@Id
@@ -29,11 +29,9 @@ public class ProductComment implements Serializable {
 	@Column
 	private Integer rating;
 	@Column
-	private Boolean unableToRate;
-	@Column
-	private String commentText;
-	@Column
 	private String userAlias;
+	@Column
+	private String ipAddress;
 
 	public Long getId() {
 		return id;
@@ -65,12 +63,6 @@ public class ProductComment implements Serializable {
 	public void setRating(Integer rating) {
 		this.rating = rating;
 	}
-	public String getCommentText() {
-		return commentText;
-	}
-	public void setCommentText(String commentText) {
-		this.commentText = commentText;
-	}
 	public String getUserAlias() {
 		return userAlias;
 	}
@@ -80,8 +72,8 @@ public class ProductComment implements Serializable {
 
 	public boolean equals(Object obj) {
 		if (null == getId()) return false;
-		if (obj instanceof ProductComment) {
-			ProductComment _p = (ProductComment) obj;
+		if (obj instanceof ProductRating) {
+			ProductRating _p = (ProductRating) obj;
 			if (null == _p.getId()) return false;
 			else return _p.getId().equals(getId());
 		}
@@ -93,10 +85,10 @@ public class ProductComment implements Serializable {
 		if (null == getId()) return super.hashCode();
 		else return getId().toString().hashCode();
 	}
-	public Boolean getUnableToRate() {
-		return unableToRate;
+	public String getIpAddress() {
+		return ipAddress;
 	}
-	public void setUnableToRate(Boolean unableToRate) {
-		this.unableToRate = unableToRate;
+	public void setIpAddress(String ipAddress) {
+		this.ipAddress = ipAddress;
 	}
 }

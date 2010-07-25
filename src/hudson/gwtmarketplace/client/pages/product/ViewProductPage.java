@@ -42,7 +42,11 @@ public class ViewProductPage extends Composite implements
 
 	public ViewProductPage() {
 		initWidget(uiBinder.createAndBindUi(this));
-		tabs.add(this.productDetails = new ProductDetailsPanel(), "Details",
+		tabs.add(this.productDetails = new ProductDetailsPanel() {
+			protected void onRateIt() {
+				tabs.selectTab(1);
+			};
+		}, "Details",
 				false);
 		tabs.add(this.productComments = new ProductCommentsPanel(), "Comments",
 				false);

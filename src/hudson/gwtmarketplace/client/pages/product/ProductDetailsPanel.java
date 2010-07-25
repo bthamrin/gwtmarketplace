@@ -20,6 +20,7 @@ import com.google.gwt.dom.client.AnchorElement;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.dom.client.SpanElement;
+import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.dom.client.TableRowElement;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -124,7 +125,7 @@ public class ProductDetailsPanel extends Composite implements FeedListener,
 			organization.setHref("#");
 			createdDate.setInnerText("");
 			lastUpdatedDate.setInnerText("");
-			icon.setSrc("images/noicon.gif");
+			icon.getStyle().setDisplay(Display.NONE);
 			ratingContainer.getElement().setInnerText("");
 		} else {
 			if (null != product.getWebsiteUrl()) {
@@ -151,10 +152,14 @@ public class ProductDetailsPanel extends Composite implements FeedListener,
 					.setInnerText(dateFormat.format(product.getCreatedDate()));
 			lastUpdatedDate.setInnerText(dateFormat.format(product
 					.getUpdatedDate()));
-			if (null == product.getIconKey())
+			if (null == product.getIconKey()) {
 				icon.setSrc("images/noicon.gif");
-			else
+				icon.getStyle().setDisplay(Display.NONE);
+			}
+			else {
 				icon.setSrc("gwt_marketplace/productImage?key=" + product.getIconKey());
+				icon.getStyle().setDisplay(Display.BLOCK);
+			}
 			if (null != product.getRating()) {
 				ratingContainer.getElement().setInnerText(ratingFormat.format(product.getRating()) + " of 5");
 			}
@@ -186,7 +191,7 @@ public class ProductDetailsPanel extends Composite implements FeedListener,
 		}
 	}
 
-	private void onRateIt() {
+	protected void onRateIt() {
 		// FIXME add rate it code
 	}
 

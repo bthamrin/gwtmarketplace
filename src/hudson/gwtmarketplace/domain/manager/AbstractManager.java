@@ -6,6 +6,7 @@ package hudson.gwtmarketplace.domain.manager;
 import hudson.gwtmarketplace.client.model.Category;
 import hudson.gwtmarketplace.client.model.Product;
 import hudson.gwtmarketplace.client.model.ProductComment;
+import hudson.gwtmarketplace.client.model.ProductRating;
 import hudson.gwtmarketplace.client.model.search.SearchResults;
 
 import java.io.Serializable;
@@ -32,6 +33,7 @@ public abstract class AbstractManager {
 	static {
 		ObjectifyService.register(Product.class);
 		ObjectifyService.register(ProductComment.class);
+		ObjectifyService.register(ProductRating.class);
 		ObjectifyService.register(Category.class);
 
 		try {

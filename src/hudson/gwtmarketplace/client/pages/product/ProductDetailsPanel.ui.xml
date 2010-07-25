@@ -17,10 +17,11 @@
 			padding: 4px;
 		}
 		.rateIt {
-			font-size: 16px;
+			font-size: 14px;
 		}
 		.rating {
-			font-size: 22px;
+			color: #425A70;
+			font-size: 18px;
 		}
 	</ui:style>
 
