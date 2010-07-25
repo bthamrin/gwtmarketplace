@@ -127,17 +127,17 @@ public class ProductDetailsPanel extends Composite implements FeedListener,
 			icon.getStyle().setDisplay(Display.NONE);
 			ratingContainer.getElement().setInnerText("");
 		} else {
-			if (null != product.getWebsiteUrl()) {
+			if (!isNull(product.getWebsiteUrl())) {
 				links.add(new Anchor("Website", product.getWebsiteUrl(),
 						"_blank"));
 			}
-			if (null != product.getDemoUrl()) {
+			if (!isNull(product.getDemoUrl())) {
 				links.add(new Anchor("Showcase", product.getDemoUrl(), "_blank"));
 			}
-			if (null != product.getForumUrl()) {
+			if (!isNull(product.getForumUrl())) {
 				links.add(new Anchor("Forum", product.getForumUrl(), "_blank"));
 			}
-			if (null != product.getIssueTrackerUrl()) {
+			if (!isNull(product.getIssueTrackerUrl())) {
 				links.add(new Anchor("Issue Tracker", product.getIssueTrackerUrl(), "_blank"));
 			}
 			links.add(new Hyperlink("Edit settings", Pages.tokenize(
@@ -180,6 +180,10 @@ public class ProductDetailsPanel extends Composite implements FeedListener,
 				}
 			}
 		}
+	}
+
+	private boolean isNull (String s) {
+		return (null == s || s.length() == 0);
 	}
 
 	@Override
