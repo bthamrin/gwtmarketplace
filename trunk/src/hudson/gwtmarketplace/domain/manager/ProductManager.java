@@ -75,6 +75,14 @@ public class ProductManager extends AbstractManager {
 						.getTime()) ? 1 : -1;
 		};
 	};
+	public void resetDailyViews() {
+		List<Product> products = toList(noTx().query(Product.class));
+		for (Product p : products) {
+			p.setNumDailyViews(0);
+		}
+		noTx().put(products);
+		getCache().clear();
+	}
 	public byte[] getImageData(long productId) {
 		String cacheKey = "thumbs:" + Long.toString(productId);
 		byte[] data = (byte[]) getCache().get(cacheKey);
