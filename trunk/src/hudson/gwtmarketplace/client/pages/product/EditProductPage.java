@@ -29,8 +29,6 @@ import java.util.List;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.dom.client.Style.Display;
-import com.google.gwt.event.dom.client.ChangeEvent;
-import com.google.gwt.event.dom.client.ChangeHandler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -39,17 +37,14 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.FileUpload;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.FormPanel;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
-import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.RichTextArea;
+import com.google.gwt.user.client.ui.SimplePanel;
 
-public class EditProductPage extends Composite implements PageStateAware,
-		ChangeHandler, ClickHandler, SubmitCompleteHandler {
+public class EditProductPage extends Composite implements PageStateAware, ClickHandler, SubmitCompleteHandler {
 
 	interface MyUiBinder extends UiBinder<HorizontalPanel, EditProductPage> {
 	}
@@ -96,11 +91,8 @@ public class EditProductPage extends Composite implements PageStateAware,
 	@UiField
 	Button cancelBtn;
 	@UiField
-	FormPanel imageUploadForm;
-	@UiField
-	Hidden imageUploadKey;
-	@UiField
-	FileUpload fileUpload;
+	SimplePanel uploaderContainer;
+
 
 	public EditProductPage() {
 		this(false);
@@ -115,7 +107,6 @@ public class EditProductPage extends Composite implements PageStateAware,
 				.load(status.getComponent(), Status.VALUES, "Choose a status");
 		WidgetUtil.load(license.getComponent(), License.VALUES,
 				"Choose a license");
-		newsfeedUrl.getComponent().addChangeHandler(this);
 		saveBtn.addClickHandler(this);
 		cancelBtn.addClickHandler(this);
 		if (!isNew)
@@ -127,8 +118,6 @@ public class EditProductPage extends Composite implements PageStateAware,
 						"Select a category");
 			}
 		}.execute();
-		imageUploadForm.addSubmitCompleteHandler(this);
-		fileUpload.addChangeHandler(this);
 	}
 
 	public void show(final Pair<Product, String> productPair) {
@@ -159,11 +148,9 @@ public class EditProductPage extends Composite implements PageStateAware,
 			}
 		}.execute();
 		resetIcon();
+		uploaderContainer.clear();
 		if (null != product && null != product.getId()) {
-			imageUploadKey.setValue(product.getId().toString());
-			imageUploadForm.setVisible(true);
-		} else {
-			imageUploadForm.setVisible(false);
+			uploaderContainer.add(new ProductImageUploadPanel(product, this));
 		}
 	}
 
@@ -203,14 +190,6 @@ public class EditProductPage extends Composite implements PageStateAware,
 			onSave();
 		} else if (event.getSource().equals(cancelBtn)) {
 			onCancel();
-		}
-	}
-
-	@Override
-	public void onChange(ChangeEvent event) {
-		if (event.getSource().equals(fileUpload)) {
-			imageUploadForm.submit();
-			imageUploadForm.clear();
 		}
 	}
 
@@ -289,6 +268,7 @@ public class EditProductPage extends Composite implements PageStateAware,
 			product.setIconKey(key);
 			resetIcon();
 		}
-		imageUploadForm.setVisible(true);
+		uploaderContainer.clear();
+		uploaderContainer.add(new ProductImageUploadPanel(product, this));
 	}
 }
