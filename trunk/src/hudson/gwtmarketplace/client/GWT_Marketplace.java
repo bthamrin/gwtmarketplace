@@ -10,12 +10,16 @@ import hudson.gwtmarketplace.client.event.PageChangeEvent.PageChangeHandler;
 import hudson.gwtmarketplace.client.model.UserInfo;
 import hudson.gwtmarketplace.client.pages.LayoutPage;
 import hudson.gwtmarketplace.client.pages.PageStateAware;
+import hudson.gwtmarketplace.client.service.UserInfoService;
+import hudson.gwtmarketplace.client.service.UserInfoServiceAsync;
 
 import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
 import com.google.gwt.event.logical.shared.ValueChangeHandler;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -37,6 +41,22 @@ public class GWT_Marketplace implements EntryPoint, PageChangeHandler,
 		History.addValueChangeHandler(this);
 		String token = History.getToken();
 		if (null != token && token.length() > 0) {
+			if (token.equals("clearCache")) {
+				UserInfoServiceAsync svc = GWT.create(UserInfoService.class);
+				svc.clearCache(new AsyncCallback<Void>() {
+					
+					@Override
+					public void onSuccess(Void result) {
+						Session.get().success("the cache was cleared!");
+					}
+					
+					@Override
+					public void onFailure(Throwable caught) {
+						Session.get().error("the cache could not be cleared: " + caught.getMessage(), null);
+					}
+				});
+				token = null;
+			}
 			Pages.TokenAndParameters tap = Pages.parse(token);
 			if (null == tap) {
 				onPageChange(false, Pages.PAGE_DEFAULT, new String[0]);
