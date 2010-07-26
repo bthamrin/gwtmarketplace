@@ -65,6 +65,8 @@ public class ProductSearchPage extends Composite implements PageStateAware,
 	@UiField
 	SimplePanel searchResultsContainer;
 	@UiField
+	SimplePanel infoContainer;
+	@UiField
 	DisclosurePanel searchPanel;
 	@UiField
 	SubmitButton searchBtn;
@@ -170,26 +172,47 @@ public class ProductSearchPage extends Composite implements PageStateAware,
 	}
 
 	private void resetGrid() {
+		showInfo("Searching, please wait...");
 		productService.search(params, generalParams, 0, 100, sortColumn,
 				orderingAsc, knownRowCount,
 				new AsyncCallback<SearchResults<Product>>() {
 					@Override
 					public void onSuccess(SearchResults<Product> result) {
 						knownRowCount = result.getTotalRowCount();
-						DataRecord[] results = new DataRecord[result
-								.getEntries().size()];
-						for (int i = 0; i < result.getEntries().size(); i++) {
-							results[i] = new ProductDataRecord(result
-									.getEntries().get(i));
+						ArrayList<Product> entries = result.getEntries();
+						if (entries.size() == 0) {
+							showInfo("No products could be found matching the requested criteria.");
 						}
-						table.AssignResults(results, metaData);
+						else {
+							hideInfo();
+							DataRecord[] results = new DataRecord[entries.size()];
+							for (int i = 0; i < entries.size(); i++) {
+								results[i] = new ProductDataRecord(result
+										.getEntries().get(i));
+							}
+							table.AssignResults(results, metaData);
+						}
 					}
 
 					@Override
 					public void onFailure(Throwable caught) {
+						showInfo("Sorry, an error occured.  " + caught.getMessage());
 						caught.printStackTrace();
 					}
 				});
+	}
+
+	private void showInfo(String message) {
+		searchResultsContainer.setVisible(false);
+		infoContainer.clear();
+		infoContainer.setVisible(true);
+		infoContainer.add(new Label(message));
+	}
+
+	private void hideInfo() {
+		infoContainer.clear();
+		infoContainer.setVisible(false);
+		searchResultsContainer.setVisible(true);
 	}
 
 	@Override

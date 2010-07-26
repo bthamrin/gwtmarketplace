@@ -16,6 +16,7 @@
 				</g:FlowPanel>
 			</g:FlowPanel>
 		</g:DisclosurePanel>
+		<g:SimplePanel ui:field="infoContainer" styleName="margin-top"></g:SimplePanel>
 		<g:SimplePanel ui:field="searchResultsContainer" styleName="margin-top"></g:SimplePanel>
 	</g:FlowPanel>
 </ui:UiBinder>

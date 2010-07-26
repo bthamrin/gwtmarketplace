@@ -18,6 +18,7 @@ import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.Focusable;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 
@@ -68,6 +69,7 @@ public class LayoutPage extends Composite {
 			for (Message m : messages) {
 				this.messages.add(new MessageEntry(m));
 			}
+			this.messages.getElement().scrollIntoView();
 		}
 	}
 
@@ -75,12 +77,21 @@ public class LayoutPage extends Composite {
 		private Focusable component;
 		
 		public MessageEntry (Message message) {
-			Anchor anchor = new Anchor(message.getMessage());
 			if (null != message.getComponent()) {
+				Anchor anchor = new Anchor(message.getMessage());
 				this.component = message.getComponent();
 				anchor.addClickHandler(this);
+				add(anchor);
 			}
-			add(anchor);
+			else {
+				add(new Label(message.getMessage()));
+			}
+			if (message.getType() == Message.TYPE_ERROR) {
+				addStyleName("error");
+			}
+			else if (message.getType() == Message.TYPE_SUCCESS) {
+				addStyleName("success");
+			}
 		}
 		
 		@Override

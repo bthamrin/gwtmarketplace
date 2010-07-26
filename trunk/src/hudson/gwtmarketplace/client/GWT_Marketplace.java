@@ -55,6 +55,7 @@ public class GWT_Marketplace implements EntryPoint, PageChangeHandler,
 		if (null == page) {
 			Window.alert("Unknown page");
 		} else {
+			Session.get().clearMessages();
 			if (page instanceof PageStateAware
 					&& ((PageStateAware) page).getPageType().isSecuire()
 					&& null == Session.get().getLoggedInUser()) {
