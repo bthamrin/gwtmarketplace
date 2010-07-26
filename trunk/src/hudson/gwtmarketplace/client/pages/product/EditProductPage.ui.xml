@@ -42,6 +42,8 @@
 			<g:HTMLPanel><h3>URLs</h3></g:HTMLPanel>
 			<g:VerticalPanel styleName="label-long">
 				<c:LabeledTextBox ui:field="webpageUrl" label="Webpage URL" styleName="field-xlong"></c:LabeledTextBox>
+				<c:LabeledTextBox ui:field="wikiUrl" label="Wiki URL" styleName="field-xlong"></c:LabeledTextBox>
+				<c:LabeledTextBox ui:field="downloadUrl" label="Download URL" styleName="field-xlong"></c:LabeledTextBox>
 				<c:LabeledTextBox ui:field="showcaseUrl" label="Showcase URL" styleName="field-xlong"></c:LabeledTextBox>
 				<c:LabeledTextBox ui:field="issueTrackerUrl" label="Issue Tracker URL" styleName="field-xlong"></c:LabeledTextBox>
 				<c:LabeledTextBox ui:field="forumUrl" label="Forum URL" styleName="field-xlong"></c:LabeledTextBox>

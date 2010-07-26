@@ -80,6 +80,10 @@ public class EditProductPage extends Composite implements PageStateAware, ClickH
 	@UiField
 	LabeledTextBox webpageUrl;
 	@UiField
+	LabeledTextBox wikiUrl;
+	@UiField
+	LabeledTextBox downloadUrl;
+	@UiField
 	LabeledTextBox showcaseUrl;
 	@UiField
 	LabeledTextBox issueTrackerUrl;
@@ -131,6 +135,8 @@ public class EditProductPage extends Composite implements PageStateAware, ClickH
 		versionNumber.setValue(product.getVersionNumber());
 		organization.setValue(product.getOrganizationName());
 		webpageUrl.setValue(product.getWebsiteUrl());
+		wikiUrl.setValue(product.getWikiUrl());
+		downloadUrl.setValue(product.getDownloadUrl());
 		showcaseUrl.setValue(product.getDemoUrl());
 		forumUrl.setValue(product.getForumUrl());
 		issueTrackerUrl.setValue(product.getIssueTrackerUrl());
@@ -224,6 +230,8 @@ public class EditProductPage extends Composite implements PageStateAware, ClickH
 		product.setLicense(license.getValue(license.getSelectedIndex()));
 		product.setCategoryId(category.getValue(category.getSelectedIndex()));
 		product.setWebsiteUrl(webpageUrl.getValue());
+		product.setDownloadUrl(downloadUrl.getValue());
+		product.setWikiUrl(wikiUrl.getValue());
 		product.setDemoUrl(showcaseUrl.getValue());
 		product.setIssueTrackerUrl(issueTrackerUrl.getValue());
 		product.setForumUrl(forumUrl.getValue());

@@ -54,6 +54,12 @@ public class Product implements Serializable {
 	private String websiteUrl;
 	@Column
 	@Unindexed
+	private String wikiUrl;
+	@Column
+	@Unindexed
+	private String downloadUrl;
+	@Column
+	@Unindexed
 	private String forumUrl;
 	@Column
 	@Unindexed
@@ -318,5 +324,21 @@ public class Product implements Serializable {
 
 	public void setIconKey(String iconKey) {
 		this.iconKey = iconKey;
+	}
+
+	public String getWikiUrl() {
+		return wikiUrl;
+	}
+
+	public void setWikiUrl(String wikiUrl) {
+		this.wikiUrl = wikiUrl;
+	}
+
+	public String getDownloadUrl() {
+		return downloadUrl;
+	}
+
+	public void setDownloadUrl(String downloadUrl) {
+		this.downloadUrl = downloadUrl;
 	}
 }
