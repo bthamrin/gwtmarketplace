@@ -3,8 +3,10 @@
  */
 package hudson.gwtmarketplace.server;
 
+import net.sf.jsr107cache.Cache;
 import hudson.gwtmarketplace.client.model.UserInfo;
 import hudson.gwtmarketplace.client.service.UserInfoService;
+import hudson.gwtmarketplace.domain.manager.AbstractManager;
 
 import com.google.appengine.api.users.User;
 import com.google.appengine.api.users.UserService;
@@ -34,5 +36,10 @@ public class UserInfoServiceImpl extends RemoteServiceServlet implements
 			loginInfo.setLoginUrl(userService.createLoginURL(loginCallbackUri));
 		}
 		return loginInfo;
+	}
+
+	public void clearCache() {
+		Cache cache = AbstractManager.getCache();
+		cache.clear();
 	}
 }

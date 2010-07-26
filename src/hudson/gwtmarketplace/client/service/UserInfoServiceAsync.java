@@ -10,4 +10,6 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 public interface UserInfoServiceAsync {
 
 	public void login(String loginCallbackUri, String logoutCallbackUri, AsyncCallback<UserInfo> callback);
+
+	public void clearCache(AsyncCallback<Void> callback);
 }
