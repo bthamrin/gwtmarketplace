@@ -26,6 +26,10 @@
 		<servlet-name>dailyCron</servlet-name>
 		<servlet-class>hudson.gwtmarketplace.server.DailyCronServlet</servlet-class>
 	</servlet>
+	<servlet>
+		<servlet-name>clearCache</servlet-name>
+		<servlet-class>hudson.gwtmarketplace.server.ClearCacheServlet</servlet-class>
+	</servlet>
 
 	<servlet-mapping>
 		<servlet-name>productServlet</servlet-name>
@@ -47,15 +51,10 @@
 		<servlet-name>dailyCron</servlet-name>
 		<url-pattern>/cron/dailyCron</url-pattern>
 	</servlet-mapping>
-
-	<security-constraint>
-		<web-resource-collection>
-			<url-pattern>/cron/*</url-pattern>
-		</web-resource-collection>
-		<auth-constraint>
-			<role-name>admin</role-name>
-		</auth-constraint>
-	</security-constraint>
+	<servlet-mapping>
+		<servlet-name>clearCache</servlet-name>
+		<url-pattern>/cron/clearCache</url-pattern>
+	</servlet-mapping>
 
 	<!-- Default page to serve -->
 	<welcome-file-list>
