@@ -8,6 +8,7 @@ import hudson.gwtmarketplace.client.model.Product;
 import hudson.gwtmarketplace.client.model.ProductComment;
 import hudson.gwtmarketplace.client.model.ProductRating;
 import hudson.gwtmarketplace.client.model.search.SearchResults;
+import hudson.gwtmarketplace.server.model.ProductImage;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -27,13 +28,13 @@ import com.googlecode.objectify.Query;
 
 public abstract class AbstractManager {
 
-	ThreadLocal<Objectify> current = new ThreadLocal<Objectify>();
 	private static Cache cache;
 
 	static {
 		ObjectifyService.register(Product.class);
 		ObjectifyService.register(ProductComment.class);
 		ObjectifyService.register(ProductRating.class);
+		ObjectifyService.register(ProductImage.class);
 		ObjectifyService.register(Category.class);
 
 		try {
@@ -60,16 +61,13 @@ public abstract class AbstractManager {
 			throw new RuntimeException(e);
 	}
 
-	protected Objectify noTx() {
+	public static Objectify noTx() {
 		Objectify ofy = ObjectifyService.begin();
-		if (null == current.get())
-			current.set(ofy);
 		return ofy;
 	}
 
 	protected Objectify tx() {
 		Objectify ofy = ObjectifyService.beginTransaction();
-		current.set(ofy);
 		return ofy;
 	}
 

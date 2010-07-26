@@ -13,6 +13,7 @@ import hudson.gwtmarketplace.client.model.ProductRating;
 import hudson.gwtmarketplace.client.model.Top10Lists;
 import hudson.gwtmarketplace.client.model.Triple;
 import hudson.gwtmarketplace.client.model.search.SearchResults;
+import hudson.gwtmarketplace.server.model.ProductImage;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -20,10 +21,12 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 //import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
+import com.google.appengine.api.datastore.Blob;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.users.User;
 import com.google.appengine.api.users.UserServiceFactory;
@@ -72,6 +75,40 @@ public class ProductManager extends AbstractManager {
 						.getTime()) ? 1 : -1;
 		};
 	};
+	public byte[] getImageData(long productId) {
+		String cacheKey = "thumbs:" + Long.toString(productId);
+		byte[] data = (byte[]) getCache().get(cacheKey);
+		if (null == data) {
+			ProductImage image = singleResult(noTx().query(ProductImage.class).ancestor(new Key<Product>(Product.class, productId)));
+			if (null != image) {
+				data = image.getData().getBytes();
+				getCache().put(cacheKey, data);
+			}
+		}
+		return data;
+	}
+	public String setImageData (long productId, byte[] data) throws InvalidAccessException {
+		Key<Product> productKey = new Key<Product>(Product.class, productId);
+		Product product = getById(productId);
+		if (null == product || null == data) return null;
+		
+		String iconKey = Long.toString(System.currentTimeMillis());
+		product.setIconKey(iconKey);
+		update(product);
+		
+		Iterator<ProductImage> images =  AbstractManager.noTx().query(ProductImage.class).ancestor(productKey).fetch().iterator();
+		while (images.hasNext()) {
+			AbstractManager.noTx().delete(images.next());
+		}
+		ProductImage img = new ProductImage();
+		img.setProductId(productKey);
+		img.setData(new Blob(data));
+		AbstractManager.noTx().put(img);
+		
+		String cacheKey = "thumbs:" + productId;
+		AbstractManager.getCache().put(cacheKey, data);
+		return iconKey;
+	}
 
 	public ArrayList<Category> getCategories() {
 		ArrayList<Category> categories = (ArrayList<Category>) getCache().get(

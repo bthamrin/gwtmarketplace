@@ -14,6 +14,7 @@ import hudson.gwtmarketplace.client.event.ProductUpdatedEvent.ProductUpdateHandl
 import hudson.gwtmarketplace.client.model.License;
 import hudson.gwtmarketplace.client.model.Product;
 import hudson.gwtmarketplace.client.model.Status;
+import hudson.gwtmarketplace.client.model.UserInfo;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.AnchorElement;
@@ -33,6 +34,7 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Hyperlink;
@@ -140,8 +142,12 @@ public class ProductDetailsPanel extends Composite implements FeedListener,
 			if (!isNull(product.getIssueTrackerUrl())) {
 				links.add(new Anchor("Issue Tracker", product.getIssueTrackerUrl(), "_blank"));
 			}
-			links.add(new Hyperlink("Edit settings", Pages.tokenize(
-					Pages.PAGE_EDIT_PRODUCT, product.getAlias())));
+			UserInfo userInfo = Session.get().getLoggedInUser();
+			if (null != userInfo && userInfo.getId().equals(product.getUserId())) {
+				links.add(new HTML("<br/>"));
+				links.add(new Hyperlink("Edit settings", Pages.tokenize(
+						Pages.PAGE_EDIT_PRODUCT, product.getAlias())));
+			}
 			description.setInnerHTML(product.getDescription());
 			tags.setInnerHTML(createTagHtml(product.getTags()));
 			versionNumber.setInnerText(product.getVersionNumber());
@@ -155,7 +161,7 @@ public class ProductDetailsPanel extends Composite implements FeedListener,
 				icon.getStyle().setDisplay(Display.NONE);
 			}
 			else {
-				icon.setSrc("gwt_marketplace/productImage?key=" + product.getIconKey());
+				icon.setSrc("gwt_marketplace/productImage?key=" + product.getId() + "&ik=" + product.getIconKey());
 				icon.getStyle().setDisplay(Display.BLOCK);
 			}
 			if (null != product.getRating()) {

@@ -48,17 +48,19 @@ import com.google.gwt.user.client.ui.Hidden;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.RichTextArea;
 
-public class EditProductPage extends Composite implements PageStateAware, ChangeHandler, ClickHandler, SubmitCompleteHandler {
+public class EditProductPage extends Composite implements PageStateAware,
+		ChangeHandler, ClickHandler, SubmitCompleteHandler {
 
 	interface MyUiBinder extends UiBinder<HorizontalPanel, EditProductPage> {
 	}
 
 	private static MyUiBinder uiBinder = GWT.create(MyUiBinder.class);
 
-	private static ProductServiceAsync productService = GWT.create(ProductService.class);
-	
+	private static ProductServiceAsync productService = GWT
+			.create(ProductService.class);
+
 	Product product;
-	
+
 	@UiField
 	ImageElement icon;
 	@UiField
@@ -109,8 +111,10 @@ public class EditProductPage extends Composite implements PageStateAware, Change
 		initWidget(panel);
 		descriptionToolbarContainer.add(new RichTextToolbar(description));
 		panel.setCellWidth(panel.getWidget(0), "132px");
-		WidgetUtil.load(status.getComponent(), Status.VALUES, "Choose a status");
-		WidgetUtil.load(license.getComponent(), License.VALUES, "Choose a license");
+		WidgetUtil
+				.load(status.getComponent(), Status.VALUES, "Choose a status");
+		WidgetUtil.load(license.getComponent(), License.VALUES,
+				"Choose a license");
 		newsfeedUrl.getComponent().addChangeHandler(this);
 		saveBtn.addClickHandler(this);
 		cancelBtn.addClickHandler(this);
@@ -119,7 +123,8 @@ public class EditProductPage extends Composite implements PageStateAware, Change
 		new GetProductCategoriesCommand() {
 			@Override
 			public void onSuccess(ArrayList<Category> result) {
-				WidgetUtil.load(category.getComponent(), result, "Select a category");
+				WidgetUtil.load(category.getComponent(), result,
+						"Select a category");
 			}
 		}.execute();
 		imageUploadForm.addSubmitCompleteHandler(this);
@@ -131,7 +136,7 @@ public class EditProductPage extends Composite implements PageStateAware, Change
 		if (null != product.getDescription())
 			description.setHTML(product.getDescription());
 		else
-			description.setText("");	
+			description.setText("");
 		tags.setValues(product.getTags());
 		name.setValue(product.getName());
 		versionNumber.setValue(product.getVersionNumber());
@@ -143,41 +148,42 @@ public class EditProductPage extends Composite implements PageStateAware, Change
 		newsfeedUrl.setValue(product.getNewsUrl());
 		WidgetUtil.selectValue(license.getComponent(), product.getLicense());
 		WidgetUtil.selectValue(status.getComponent(), product.getStatus());
-		WidgetUtil.selectValue(category.getComponent(), product.getCategoryId());
+		WidgetUtil
+				.selectValue(category.getComponent(), product.getCategoryId());
 		new GetProductCategoriesCommand() {
-			
+
 			@Override
 			public void onSuccess(ArrayList<Category> result) {
-				WidgetUtil.selectValue(category.getComponent(), product.getCategoryId());
+				WidgetUtil.selectValue(category.getComponent(),
+						product.getCategoryId());
 			}
 		}.execute();
 		resetIcon();
-		if (null == productPair.getEntity2()) {
-			imageUploadForm.setVisible(false);
-		}
-		else {
-			imageUploadForm.setAction(productPair.getEntity2());
+		if (null != product && null != product.getId()) {
 			imageUploadKey.setValue(product.getId().toString());
 			imageUploadForm.setVisible(true);
+		} else {
+			imageUploadForm.setVisible(false);
 		}
 	}
 
 	@Override
 	public void onShowPage(String[] parameters) {
 		if (parameters.length > 0) {
-			
-			productService.getForEditing(parameters[0], new AsyncCallback<Pair<Product,String>>() {
-				
-				@Override
-				public void onSuccess(Pair<Product, String> result) {
-					show(result);
-				}
-				
-				@Override
-				public void onFailure(Throwable caught) {
-					Session.get().error(caught.getMessage(), null);
-				}
-			});
+
+			productService.getForEditing(parameters[0],
+					new AsyncCallback<Pair<Product, String>>() {
+
+						@Override
+						public void onSuccess(Pair<Product, String> result) {
+							show(result);
+						}
+
+						@Override
+						public void onFailure(Throwable caught) {
+							Session.get().error(caught.getMessage(), null);
+						}
+					});
 		}
 	}
 
@@ -195,8 +201,7 @@ public class EditProductPage extends Composite implements PageStateAware, Change
 	public void onClick(ClickEvent event) {
 		if (event.getSource().equals(saveBtn)) {
 			onSave();
-		}
-		else if (event.getSource().equals(cancelBtn)) {
+		} else if (event.getSource().equals(cancelBtn)) {
 			onCancel();
 		}
 	}
@@ -212,10 +217,11 @@ public class EditProductPage extends Composite implements PageStateAware, Change
 	private boolean isNull(String s) {
 		return (null == s || s.trim().length() == 0);
 	}
-	
+
 	public void onSave() {
 		List<Message> messages = new ArrayList<Message>();
-		WidgetUtil.checkNull(new LabeledContainer[]{name, category, versionNumber, status, license, webpageUrl}, messages);
+		WidgetUtil.checkNull(new LabeledContainer[] { name, category,
+				versionNumber, status, license, webpageUrl }, messages);
 		if (isNull(description.getText())) {
 			messages.add(Message.error("Please enter the description"));
 		}
@@ -223,15 +229,14 @@ public class EditProductPage extends Composite implements PageStateAware, Change
 			Session.get().addMessages(messages);
 			return;
 		}
-		
+
 		product.setDescription(description.getHTML());
 		if (null == product.getId())
 			product.setName(name.getComponent().getValue());
 		List<String> _tags = tags.getValues();
 		if (null != _tags && _tags.size() > 0) {
 			product.setTags(_tags.toArray(new String[_tags.size()]));
-		}
-		else {
+		} else {
 			product.setTags(null);
 		}
 		product.setOrganizationName(organization.getValue());
@@ -270,9 +275,9 @@ public class EditProductPage extends Composite implements PageStateAware, Change
 		if (null == product.getIconKey()) {
 			icon.setSrc("images/noicon.gif");
 			icon.getStyle().setDisplay(Display.NONE);
-		}
-		else {
-			icon.setSrc("gwt_marketplace/productImage?key=" + product.getIconKey());
+		} else {
+			icon.setSrc("gwt_marketplace/productImage?key=" + product.getId()
+					+ "&ik=" + product.getIconKey());
 			icon.getStyle().setDisplay(Display.BLOCK);
 		}
 	}
@@ -284,5 +289,6 @@ public class EditProductPage extends Composite implements PageStateAware, Change
 			product.setIconKey(key);
 			resetIcon();
 		}
+		imageUploadForm.setVisible(true);
 	}
 }

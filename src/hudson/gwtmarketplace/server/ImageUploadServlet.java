@@ -5,10 +5,15 @@ package hudson.gwtmarketplace.server;
 
 import hudson.gwtmarketplace.client.exception.InvalidAccessException;
 import hudson.gwtmarketplace.client.model.Product;
+import hudson.gwtmarketplace.domain.manager.AbstractManager;
 import hudson.gwtmarketplace.domain.manager.ProductManager;
-import hudson.gwtmarketplace.server.util.ImageUtil;
+import hudson.gwtmarketplace.server.model.ProductImage;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.Map;
 
 import javax.servlet.ServletException;
@@ -16,11 +21,16 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.google.appengine.api.blobstore.BlobKey;
-import com.google.appengine.api.blobstore.BlobstoreService;
-import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
-import com.google.appengine.api.users.User;
-import com.google.appengine.api.users.UserServiceFactory;
+import org.apache.commons.fileupload.FileItemIterator;
+import org.apache.commons.fileupload.FileItemStream;
+import org.apache.commons.fileupload.servlet.ServletFileUpload;
+
+import com.google.appengine.api.datastore.Blob;
+import com.google.appengine.api.images.Image;
+import com.google.appengine.api.images.ImagesService;
+import com.google.appengine.api.images.ImagesServiceFactory;
+import com.google.appengine.api.images.Transform;
+import com.googlecode.objectify.Key;
 
 public class ImageUploadServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -28,46 +38,69 @@ public class ImageUploadServlet extends HttpServlet {
 	private static transient ProductManager  productMgr = new ProductManager();
 
 	@Override
-	protected void service(HttpServletRequest req, HttpServletResponse resp)
+	protected void service(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		BlobstoreService service = BlobstoreServiceFactory.getBlobstoreService();
-		String rtnKey = null;
+		boolean isMultipart = ServletFileUpload.isMultipartContent(request);
+		
+		ServletFileUpload upload = new ServletFileUpload();
 
-		Map<String, BlobKey> blobs = service.getUploadedBlobs(req);
-		String id = req.getParameter("key");
-		User user = UserServiceFactory.getUserService().getCurrentUser();
-		Product product = productMgr.getById(Long.parseLong(id));
-		if (null != user) {
-			if (null != product && product.getUserId().equals(user.getUserId())) {
-				if (blobs.size() == 1) {
-					BlobKey origKey = blobs.values().iterator().next();
-					byte[] arr = ImageUtil.iconize(origKey.getKeyString());
-					if (null != arr) {
-						product.setIconKey(origKey.getKeyString());
-						try {
-							productMgr.update(product);
-							rtnKey = product.getIconKey();
-						}
-						catch (InvalidAccessException e) {
-							service.delete(origKey);
-						}
-					}
-				}
-				else {
-					// bad transmission
-					for (BlobKey blobKey : blobs.values()) {
-						service.delete(blobKey);
-					}
-				}
-			}
-			else {
-				// bad transmission
-				for (BlobKey blobKey : blobs.values()) {
-					service.delete(blobKey);
-				}
+		Map<String, String> parameters = new HashMap<String, String>();
+		Image resizedImage = null;
+		
+		try {
+			// Parse the request
+			FileItemIterator iter = upload.getItemIterator(request);
+			while (iter.hasNext()) {
+			    FileItemStream item = iter.next();
+			    String name = item.getFieldName();
+			    InputStream stream = item.openStream();
+			    if (item.isFormField()) {
+			    	parameters.put(name, toString(stream));
+			    } else {
+			    	resizedImage = resize(stream);
+			    }
 			}
 		}
-		if (null != rtnKey)
-			resp.getOutputStream().write(rtnKey.getBytes());
+		catch (Exception e) {
+			response.sendError(500);
+		}
+		String productId = parameters.get("key");
+		if (null != productId && null != resizedImage) {
+			try {
+				String iconKey = productMgr.setImageData(Long.parseLong(productId), resizedImage.getImageData());
+				if (null != iconKey) {
+					response.getOutputStream().write(iconKey.getBytes());
+				}
+			}
+			catch (InvalidAccessException e) {
+				e.printStackTrace();
+			}
+		}
+
+	}
+
+	private Image resize(InputStream is) throws IOException {
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		byte[] buffer = new byte[1024];
+		int bytesRead = -1;
+		while ((bytesRead = is.read(buffer))  > 0) {
+			out.write(buffer, 0, bytesRead);
+		}
+		is.close();
+		ImagesService imageService = ImagesServiceFactory.getImagesService();
+        Image oldImage = ImagesServiceFactory.makeImage(out.toByteArray());
+        Transform resize = ImagesServiceFactory.makeResize(160, 600);
+        Image newImage = imageService.applyTransform(resize, oldImage);
+        return newImage;
+	}
+
+	private String toString(InputStream is) throws IOException {
+		ByteArrayOutputStream out = new ByteArrayOutputStream();
+		byte[] buffer = new byte[1024];
+		int bytesRead = -1;
+		while ((bytesRead = is.read(buffer))  > 0) {
+			out.write(buffer, 0, bytesRead);
+		}
+		return new String(out.toByteArray());
 	}
 }
