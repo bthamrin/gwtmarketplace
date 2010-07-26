@@ -1,3 +1,21 @@
+.messages {
+	border: solid 1px #425A70;
+	-moz-border-radius: 3px;
+	padding: 3px 6px 6px 6px;	
+}
+
+.messages div {
+	margin-top: 3px;	
+}
+
+.messages div.error, .messages div.error a {
+	color: red;
+}
+
+.messages div.success, .messages div.success a {
+	color: #000000;
+}
+
 .tag {
 	font-size: larger;	
 }

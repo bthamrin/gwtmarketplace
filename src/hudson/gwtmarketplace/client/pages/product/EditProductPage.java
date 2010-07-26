@@ -56,6 +56,7 @@ public class EditProductPage extends Composite implements PageStateAware, ClickH
 
 	Product product;
 
+	HorizontalPanel containerPanel;
 	@UiField
 	ImageElement icon;
 	@UiField
@@ -99,10 +100,9 @@ public class EditProductPage extends Composite implements PageStateAware, ClickH
 	}
 
 	public EditProductPage(boolean isNew) {
-		HorizontalPanel panel = uiBinder.createAndBindUi(this);
-		initWidget(panel);
+		containerPanel = uiBinder.createAndBindUi(this);
+		initWidget(containerPanel);
 		descriptionToolbarContainer.add(new RichTextToolbar(description));
-		panel.setCellWidth(panel.getWidget(0), "132px");
 		WidgetUtil
 				.load(status.getComponent(), Status.VALUES, "Choose a status");
 		WidgetUtil.load(license.getComponent(), License.VALUES,
@@ -253,8 +253,9 @@ public class EditProductPage extends Composite implements PageStateAware, ClickH
 	private void resetIcon() {
 		if (null == product.getIconKey()) {
 			icon.setSrc("images/noicon.gif");
-			icon.getStyle().setDisplay(Display.NONE);
+			containerPanel.getWidget(0).setVisible(false);
 		} else {
+			containerPanel.getWidget(0).setVisible(true);
 			icon.setSrc("gwt_marketplace/productImage?key=" + product.getId()
 					+ "&ik=" + product.getIconKey());
 			icon.getStyle().setDisplay(Display.BLOCK);
