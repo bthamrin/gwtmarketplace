@@ -24,7 +24,7 @@
 		</g:HTMLPanel>
 
 		<g:FlowPanel styleName="form-panel">
-			<g:FormPanel method="post" encoding="multipart/form-data" ui:field="imageUploadForm">
+			<g:FormPanel method="post" encoding="multipart/form-data" ui:field="imageUploadForm" action="/gwt_marketplace/uploadImage">
 				<g:HorizontalPanel>
 					<g:HTML styleName="{style.uploaderLabel}">Choose Product Icon</g:HTML>
 					<g:FileUpload name="icon" ui:field="fileUpload"></g:FileUpload>

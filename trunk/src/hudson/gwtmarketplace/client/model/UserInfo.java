@@ -13,6 +13,7 @@ public class UserInfo implements Serializable {
 	private String logoutUrl;
 	private String emailAddress;
 	private String nickname;
+	private String id;
 
 	public boolean isLoggedIn() {
 		return loggedIn;
@@ -52,5 +53,13 @@ public class UserInfo implements Serializable {
 
 	public void setNickname(String nickname) {
 		this.nickname = nickname;
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
 	}
 }
