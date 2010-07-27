@@ -23,7 +23,7 @@ public class CommentPanel extends Composite {
 
 	private static MyUiBinder uiBinder = GWT.create(MyUiBinder.class);
 
-	private static DateTimeFormat dateFormat = DateTimeFormat.getMediumDateFormat();
+	private static DateTimeFormat dateFormat = DateTimeFormat.getMediumDateTimeFormat();
 
 	@UiField
 	Label comment;

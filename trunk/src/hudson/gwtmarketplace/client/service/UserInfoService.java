@@ -15,6 +15,8 @@ import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 public interface UserInfoService extends RemoteService {
 
 	public UserInfo login(String loginCallbackUri, String logoutCallbackUri);
+	
+	public String getLoginUrl(String loginCallbackUri);
 
 	public void clearCache();
 }

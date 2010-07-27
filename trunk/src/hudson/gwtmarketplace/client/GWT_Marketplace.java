@@ -13,6 +13,9 @@ import hudson.gwtmarketplace.client.pages.PageStateAware;
 import hudson.gwtmarketplace.client.service.UserInfoService;
 import hudson.gwtmarketplace.client.service.UserInfoServiceAsync;
 
+import java.util.List;
+import java.util.Map;
+
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.logical.shared.ValueChangeEvent;
@@ -29,6 +32,7 @@ import com.google.gwt.user.client.ui.Widget;
 public class GWT_Marketplace implements EntryPoint, PageChangeHandler,
 		ValueChangeHandler<String> {
 
+	private static UserInfoServiceAsync svc = GWT.create(UserInfoService.class);
 	private static LayoutPage frontPage;
 
 	/**
@@ -42,17 +46,17 @@ public class GWT_Marketplace implements EntryPoint, PageChangeHandler,
 		String token = History.getToken();
 		if (null != token && token.length() > 0) {
 			if (token.equals("clearCache")) {
-				UserInfoServiceAsync svc = GWT.create(UserInfoService.class);
 				svc.clearCache(new AsyncCallback<Void>() {
-					
 					@Override
 					public void onSuccess(Void result) {
 						Session.get().success("the cache was cleared!");
 					}
-					
+
 					@Override
 					public void onFailure(Throwable caught) {
-						Session.get().error("the cache could not be cleared: " + caught.getMessage(), null);
+						Session.get().error(
+								"the cache could not be cleared: "
+										+ caught.getMessage(), null);
 					}
 				});
 				token = null;
@@ -69,8 +73,8 @@ public class GWT_Marketplace implements EntryPoint, PageChangeHandler,
 	}
 
 	@Override
-	public void onPageChange(final boolean addHistoryToken, final String pageToken,
-			final String... params) {
+	public void onPageChange(final boolean addHistoryToken,
+			final String pageToken, final String... params) {
 		final Widget page = Pages.getPage(pageToken);
 		if (null == page) {
 			Window.alert("Unknown page");
@@ -80,29 +84,59 @@ public class GWT_Marketplace implements EntryPoint, PageChangeHandler,
 					&& ((PageStateAware) page).getPageType().isSecuire()
 					&& null == Session.get().getLoggedInUser()) {
 				if (null != Session.get().getLoginUrl()) {
-					Window.Location.assign(Session.get().getLoginUrl());
-				}
-				else {
+					// this means that we are not on the first page but we still want to create a custom
+					// url that will go back to the desired page
+					StringBuilder callbackUri = new StringBuilder();
+					callbackUri.append(Window.Location.getProtocol()).append("//").append(Window.Location.getHost()).append(Window.Location.getPath());
+					Map<String, List<String>> parameterMap = Window.Location.getParameterMap();
+					if (parameterMap.size() > 0) {
+						boolean started = false;
+						callbackUri.append("?");
+						for (Map.Entry<String, List<String>> entry : parameterMap.entrySet()) {
+							for (String s : entry.getValue()) {
+								if (started) callbackUri.append("&");
+								else started = true;
+								callbackUri.append(entry.getKey()).append("=").append(s);
+							}
+						}
+					}
+					callbackUri.append("#").append(Pages.tokenize(pageToken, params));
+					svc.getLoginUrl(callbackUri.toString(),
+							new AsyncCallback<String>() {
+
+								@Override
+								public void onSuccess(String result) {
+									Window.Location.assign(result);
+								}
+
+								@Override
+								public void onFailure(Throwable caught) {
+									Window.Location.assign(Session.get()
+											.getLoginUrl());
+								}
+							});
+				} else {
 					// this must have been the first page hit
 					new LoginCommand() {
 						@Override
 						public void onSuccess(UserInfo result) {
 							if (result.isLoggedIn()) {
 								if (addHistoryToken)
-									History.newItem(Pages.tokenize(pageToken, params), false);
-								Widget previousPage = frontPage.setCurrentPage(page);
+									History.newItem(
+											Pages.tokenize(pageToken, params),
+											false);
+								Widget previousPage = frontPage
+										.setCurrentPage(page);
 								if (null != previousPage)
 									Pages.onUnload(page);
 								Pages.onLoad(page, params);
-							}
-							else {
+							} else {
 								Window.Location.assign(result.getLoginUrl());
 							}
 						}
 					}.execute();
 				}
-			}
-			else {
+			} else {
 				if (addHistoryToken)
 					History.newItem(Pages.tokenize(pageToken, params), false);
 				Widget previousPage = frontPage.setCurrentPage(page);

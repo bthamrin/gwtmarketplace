@@ -38,6 +38,11 @@ public class UserInfoServiceImpl extends RemoteServiceServlet implements
 		return loginInfo;
 	}
 
+	public String getLoginUrl(String loginCallbackUri) {
+		UserService userService = UserServiceFactory.getUserService();
+		return userService.createLoginURL(loginCallbackUri);
+	}
+
 	public void clearCache() {
 		Cache cache = AbstractManager.getCache();
 		cache.clear();

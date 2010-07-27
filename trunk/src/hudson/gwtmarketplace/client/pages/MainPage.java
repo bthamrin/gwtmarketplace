@@ -3,6 +3,7 @@
  */
 package hudson.gwtmarketplace.client.pages;
 
+import hudson.gwtmarketplace.client.Pages;
 import hudson.gwtmarketplace.client.ajaxfeeds.EntryDiv;
 import hudson.gwtmarketplace.client.ajaxfeeds.Feed;
 import hudson.gwtmarketplace.client.ajaxfeeds.FeedListener;
@@ -20,6 +21,8 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
+import com.google.gwt.user.client.ui.Hyperlink;
+import com.google.gwt.user.client.ui.Label;
 
 public class MainPage extends Composite implements PageStateAware, FeedListener {
 
@@ -40,6 +43,8 @@ public class MainPage extends Composite implements PageStateAware, FeedListener 
 	@UiField
 	HorizontalPanel horizPanel;
 	@UiField
+	Section overview;
+	@UiField
 	Section blogFeed;
 
 	public MainPage() {
@@ -47,7 +52,8 @@ public class MainPage extends Composite implements PageStateAware, FeedListener 
 		horizPanel.setCellWidth(horizPanel.getWidget(0), "33%");
 		horizPanel.setCellWidth(horizPanel.getWidget(1), "34%");
 		horizPanel.setCellWidth(horizPanel.getWidget(2), "33%");
-		blogFeed.addStyleName("gwtblogContainer");
+		blogFeed.addStyleName("mainSectionContainer");
+		overview.addStyleName("mainSectionContainer");
 	}
 
 	@Override

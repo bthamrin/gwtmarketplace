@@ -16,9 +16,21 @@
 			<div id="headerlinks">
 				<table width="100%">
 					<td>
-						<a href="#">Home</a> |
-						<a href="#_search">Search</a> |
-						<a href="#_new">Add New Product</a>
+						<table cellpadding="0" cellspacing="0">
+							<tr>
+								<td valign="middle">
+									<a href="#">Home</a> |
+									<a href="#_search">Search</a>
+									&nbsp;
+								</td>
+								<td valign="middle">
+									<g:TextBox ui:field="searchBox" styleName="field-medium"></g:TextBox>
+								</td>
+								<td valign="middle" style="padding-left: 2px">
+									<g:Image ui:field="searchImg"></g:Image>
+								</td>
+							</tr>
+						</table>
 					</td>
 					<td align="right">
 						<g:Anchor ui:field="loginLogout">Login</g:Anchor>
