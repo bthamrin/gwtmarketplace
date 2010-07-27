@@ -148,6 +148,7 @@ h3 {
 	margin-right: 10px;
 	padding: 0 8px;
 	text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.7);
+	cursor: pointer;
 }
 
 .gwt-TabBar .gwt-TabBarItem-selected {
