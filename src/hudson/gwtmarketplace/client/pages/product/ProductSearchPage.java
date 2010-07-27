@@ -89,7 +89,7 @@ public class ProductSearchPage extends Composite implements PageStateAware,
 		table = new DataTable();
 		table.setSortListener(this);
 		searchResultsContainer.add(table);
-		searchPanel.setHeader(new Label("Search Options"));
+		searchPanel.setHeader(new Label("View advanced search options"));
 		searchBtn.addClickHandler(this);
 
 		new GetProductCategoriesCommand() {

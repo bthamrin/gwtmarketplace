@@ -3,6 +3,7 @@
  */
 package hudson.gwtmarketplace.client.pages.layout;
 
+import hudson.gwtmarketplace.client.Pages;
 import hudson.gwtmarketplace.client.Session;
 import hudson.gwtmarketplace.client.commands.LoginCommand;
 import hudson.gwtmarketplace.client.model.UserInfo;
@@ -10,14 +11,19 @@ import hudson.gwtmarketplace.client.model.UserInfo;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.KeyCodes;
+import com.google.gwt.event.dom.client.KeyUpEvent;
+import com.google.gwt.event.dom.client.KeyUpHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Anchor;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
+import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.TextBox;
 
-public class Header extends Composite implements ClickHandler {
+public class Header extends Composite implements ClickHandler, KeyUpHandler {
 
 	interface MyUiBinder extends UiBinder<FlowPanel, Header> {
 	}
@@ -26,12 +32,19 @@ public class Header extends Composite implements ClickHandler {
 
 	@UiField
 	Anchor loginLogout;
+	@UiField
+	TextBox searchBox;
+	@UiField
+	Image searchImg;
 	Boolean isLoggedIn;
 	
 	public Header() {
 		initWidget(uiBinder.createAndBindUi(this));
 		loginLogout.setVisible(false);
 		loginLogout.addClickHandler(this);
+		searchImg.addClickHandler(this);
+		searchImg.setUrl("images/search.png");
+		searchBox.addKeyUpHandler(this);
 		new LoginCommand() {
 			
 			@Override
@@ -57,10 +70,27 @@ public class Header extends Composite implements ClickHandler {
 		}
 	}
 
+	private void onSearch() {
+		Pages.gotoPage(Pages.PAGE_SEARCH, searchBox.getValue());
+		searchBox.setValue(null);
+	}
+
 	@Override
 	public void onClick(ClickEvent event) {
 		if (event.getSource().equals(loginLogout)) {
 			onLoginLogout();
+		}
+		else if (event.getSource().equals(searchImg)) {
+			onSearch();
+		}
+	}
+
+	@Override
+	public void onKeyUp(KeyUpEvent event) {
+		if (event.getSource().equals(searchBox)) {
+			if (KeyCodes.KEY_ENTER == event.getNativeKeyCode()) {
+				onSearch();
+			}
 		}
 	}
 }
