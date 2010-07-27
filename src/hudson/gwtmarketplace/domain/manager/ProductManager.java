@@ -128,9 +128,9 @@ public class ProductManager extends AbstractManager {
 		return categories;
 	}
 
-	private Category addCategory(String id, String name) {
+	private Category addCategory(String alias, String name) {
 		Category c = new Category();
-		c.setId(id);
+		c.setAlias(alias);
 		c.setName(name);
 		c.setNumProducts(0);
 		noTx().put(c);
@@ -143,12 +143,12 @@ public class ProductManager extends AbstractManager {
 		int count = noTx().query(Category.class).countAll();
 		getCache().remove(TOKEN_CATEGORIES);
 		if (count == 0) {
-			addCategory("components", "Components");
+			addCategory("widgets", "UI Widgets");
+			addCategory("rpc", "RPC");
+			addCategory("security", "Security");
 			addCategory("designers", "Designers");
 			addCategory("tools", "Tools");
 			addCategory("frameworks", "Frameworks");
-			addCategory("libraries", "Libraries");
-			addCategory("codegen", "Code Generators");
 			addCategory("other", "Other");
 		}
 
@@ -493,7 +493,7 @@ public class ProductManager extends AbstractManager {
 			throw new ExistingEntityException("alias");
 		}
 		Category category = singleResult(noTx().query(Category.class).filter(
-				"id", product.getCategoryId()));
+				"alias", product.getCategoryId()));
 		product.setCategoryName(category.getName());
 		updateProductSearchFields(product);
 		noTx().put(product);

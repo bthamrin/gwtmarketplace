@@ -206,7 +206,7 @@ public class EditProductPage extends Composite implements PageStateAware, ClickH
 	public void onSave() {
 		List<Message> messages = new ArrayList<Message>();
 		WidgetUtil.checkNull(new LabeledContainer[] { name, category,
-				versionNumber, status, license, webpageUrl }, messages);
+				status, license, webpageUrl }, messages);
 		if (isNull(description.getText())) {
 			messages.add(Message.error("Please enter the description"));
 		}
@@ -228,7 +228,7 @@ public class EditProductPage extends Composite implements PageStateAware, ClickH
 		product.setVersionNumber(versionNumber.getComponent().getValue());
 		product.setStatus(status.getValue(status.getSelectedIndex()));
 		product.setLicense(license.getValue(license.getSelectedIndex()));
-		product.setCategoryId(category.getValue(category.getSelectedIndex()));
+		product.setCategoryId(WidgetUtil.getSelectedValue(category.getComponent()));
 		product.setWebsiteUrl(webpageUrl.getValue());
 		product.setDownloadUrl(downloadUrl.getValue());
 		product.setWikiUrl(wikiUrl.getValue());

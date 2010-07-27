@@ -64,25 +64,53 @@ public class WidgetUtil {
 		return null;
 	}
 
-	public static <T extends DisplayEntity> void selectValue(ListBox widget, String value) {
+	public static <T extends DisplayEntity> Long getSelectedValueAsLong(
+			ListBox widget) {
+		String s = widget.getValue(widget.getSelectedIndex());
+		if (null != s && s.length() > 0)
+			return new Long(s);
+		else
+			return null;
+	}
+
+	public static <T extends DisplayEntity> String getSelectedValue(
+			ListBox widget) {
+		String s = widget.getValue(widget.getSelectedIndex());
+		if (null != s && s.length() > 0)
+			return s;
+		else
+			return null;
+	}
+
+	public static <T extends DisplayEntity> void selectValue(ListBox widget,
+			String value) {
 		if (null == value) {
-			widget.setSelectedIndex(-1);
+			if (widget.getItemCount() > 0 && widget.getValue(0).equals(""))
+				widget.setSelectedIndex(0);
+			else
+				widget.setSelectedIndex(-1);
 			return;
 		}
-		for (int i=0; i<widget.getItemCount(); i++) {
+		for (int i = 0; i < widget.getItemCount(); i++) {
 			String s = widget.getValue(i);
 			if (null != s && s.equals(value)) {
 				widget.setSelectedIndex(i);
 				return;
 			}
 		}
-		widget.setSelectedIndex(-1);
+		if (widget.getItemCount() > 0 && widget.getValue(0).equals(""))
+			widget.setSelectedIndex(0);
+		else
+			widget.setSelectedIndex(-1);
 	}
 
 	public static <T extends DisplayEntity> void selectValue(ListBox widget,
 			T value) {
 		if (null == value) {
-			widget.setSelectedIndex(-1);
+			if (widget.getItemCount() > 0 && widget.getValue(0).equals(""))
+				widget.setSelectedIndex(0);
+			else
+				widget.setSelectedIndex(-1);
 		} else {
 			String idValue = value.getIdValue();
 			int count = widget.getItemCount();
@@ -92,7 +120,10 @@ public class WidgetUtil {
 					return;
 				}
 			}
-			widget.setSelectedIndex(-1);
+			if (widget.getItemCount() > 0 && widget.getValue(0).equals(""))
+				widget.setSelectedIndex(0);
+			else
+				widget.setSelectedIndex(-1);
 		}
 	}
 
