@@ -43,7 +43,7 @@ public class ProductManager extends AbstractManager {
 	private static final String TOKEN_TOP10_RECENT_UPDATED = "top10RecentUpdated";
 	private static final String TOKEN_RATINGS_BY_IP = "ratingsByPi";
 
-	private static final Comparator<Product> top10Comparator = new Comparator<Product>() {
+	private static final Comparator<Product> top10MostViewedComparator = new Comparator<Product>() {
 		public int compare(Product obj1, Product obj2) {
 			if (null == obj1)
 				return -1;
@@ -61,8 +61,14 @@ public class ProductManager extends AbstractManager {
 				return -1;
 			else if (null == obj2 || null == obj2.getRating())
 				return 1;
-			else
-				return -1 * obj1.getRating().compareTo(obj2.getRating());
+			else {
+				if (obj1.getRating().equals(obj2.getRating())) {
+					return obj1.getTotalRatings().compareTo(
+							obj2.getTotalRatings());
+				} else {
+					return -1 * obj1.getRating().compareTo(obj2.getRating());
+				}
+			}
 		};
 	};
 	private static final Comparator<Product> top10RecentUpdatesComparator = new Comparator<Product>() {
@@ -287,6 +293,7 @@ public class ProductManager extends AbstractManager {
 		} else {
 			products = toList(noTx().query(Product.class)
 					.filter("rating !=", null).order("-rating").limit(10));
+			Collections.sort(products, top10BestRatedComparator);
 			getCache().put(cacheKey, products);
 		}
 		return products;
@@ -582,7 +589,7 @@ public class ProductManager extends AbstractManager {
 				if (!entityFound) {
 					top10.add(product);
 				}
-				Collections.sort(top10, top10Comparator);
+				Collections.sort(top10, top10MostViewedComparator);
 				String cacheKey = TOKEN_TOP10_MOST_VIEWED;
 				getCache().put(cacheKey, top10);
 				return true;
