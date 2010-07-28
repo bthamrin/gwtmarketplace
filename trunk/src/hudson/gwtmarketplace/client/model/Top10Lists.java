@@ -17,22 +17,27 @@ public class Top10Lists implements Serializable {
 	private HashMap<Long, Product> productMap;
 	private Date maxDate;
 
-	public Top10Lists() {}
-	
+	public Top10Lists() {
+	}
+
 	public Top10Lists(ArrayList<Product> highestRated,
 			ArrayList<Product> recentlyUpdated, ArrayList<Product> mostViewed) {
 		productMap = new HashMap<Long, Product>();
 		highestRatedIds = cache(highestRated);
 		recentlyUpdatedIds = cache(recentlyUpdated);
 		mostViewedIds = cache(mostViewed);
-		if (null == maxDate) maxDate = new Date();
+		if (null == maxDate)
+			maxDate = new Date();
 	}
 
 	private ArrayList<Long> cache(ArrayList<Product> l) {
 		ArrayList<Long> ids = new ArrayList<Long>();
 		for (Product p : l) {
 			Product _p = productMap.get(p.getId());
-			if (null == _p || p.getActivityDate().getTime() > _p.getActivityDate().getTime()) {
+			if (null == _p
+					|| p.getActivityDate().getTime() > _p.getActivityDate()
+							.getTime()
+					|| p.getNumDailyViews() > _p.getNumDailyViews()) {
 				productMap.put(p.getId(), p);
 			}
 
@@ -40,7 +45,8 @@ public class Top10Lists implements Serializable {
 			if (null == maxDate
 					|| maxDate.getTime() < p.getActivityDate().getTime()
 					|| maxDate.getTime() < p.getUpdatedDate().getTime())
-				if (p.getUpdatedDate().getTime() > p.getActivityDate().getTime())
+				if (p.getUpdatedDate().getTime() > p.getActivityDate()
+						.getTime())
 					maxDate = p.getUpdatedDate();
 				else
 					maxDate = p.getActivityDate();
