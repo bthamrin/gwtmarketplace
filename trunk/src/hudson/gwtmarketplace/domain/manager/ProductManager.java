@@ -38,7 +38,7 @@ public class ProductManager extends AbstractManager {
 
 	private static final String TOKEN_CATEGORIES = "categories";
 	private static final String TOKEN_TOP10_MOST_VIEWED = "top10MostViewed";
-	private static final String TOKEN_VIEWS_BY_IP = "viewsByIP";
+	public static final String TOKEN_VIEWS_BY_IP = "viewsByIP";
 	private static final String TOKEN_TOP10_HIGHEST_RATED = "top10HighestRates";
 	private static final String TOKEN_TOP10_RECENT_UPDATED = "top10RecentUpdated";
 	private static final String TOKEN_RATINGS_BY_IP = "ratingsByPi";

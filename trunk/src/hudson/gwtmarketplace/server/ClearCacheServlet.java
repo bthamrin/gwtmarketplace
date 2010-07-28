@@ -1,6 +1,7 @@
 package hudson.gwtmarketplace.server;
 
 import hudson.gwtmarketplace.domain.manager.AbstractManager;
+import hudson.gwtmarketplace.domain.manager.ProductManager;
 
 import java.io.IOException;
 
@@ -15,6 +16,9 @@ public class ClearCacheServlet extends HttpServlet {
 	@Override
 	protected void service(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
+		Object obj = AbstractManager.getCache().get(ProductManager.TOKEN_VIEWS_BY_IP);
 		AbstractManager.getCache().clear();
+		if (null != obj)
+			AbstractManager.getCache().put(ProductManager.TOKEN_VIEWS_BY_IP, obj);
 	}
 }
