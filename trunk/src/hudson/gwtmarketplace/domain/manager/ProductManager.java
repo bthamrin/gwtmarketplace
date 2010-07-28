@@ -208,9 +208,7 @@ public class ProductManager extends AbstractManager {
 
 			try {
 				boolean reordered = updateTop10MostViewed(product);
-				if (reordered) {
-					product.setActivityDate(new Date());
-				}
+				product.setActivityDate(new Date());
 				updateCache(product);
 				noTx().put(product);
 

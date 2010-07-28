@@ -8,7 +8,6 @@ import hudson.gwtmarketplace.client.Session;
 import hudson.gwtmarketplace.client.ajaxfeeds.EntryDiv;
 import hudson.gwtmarketplace.client.ajaxfeeds.Feed;
 import hudson.gwtmarketplace.client.ajaxfeeds.FeedListener;
-import hudson.gwtmarketplace.client.components.ProductRating;
 import hudson.gwtmarketplace.client.event.ProductUpdatedEvent;
 import hudson.gwtmarketplace.client.event.ProductUpdatedEvent.ProductUpdateHandler;
 import hudson.gwtmarketplace.client.model.License;
@@ -17,7 +16,6 @@ import hudson.gwtmarketplace.client.model.Status;
 import hudson.gwtmarketplace.client.model.UserInfo;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.dom.client.AnchorElement;
 import com.google.gwt.dom.client.DivElement;
 import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.dom.client.SpanElement;
@@ -63,6 +61,8 @@ public class ProductDetailsPanel extends Composite implements FeedListener,
 	@UiField
 	SpanElement versionNumber;
 	@UiField
+	SpanElement category;
+	@UiField
 	SpanElement organization;
 	@UiField
 	SpanElement createdDate;
@@ -73,11 +73,15 @@ public class ProductDetailsPanel extends Composite implements FeedListener,
 	@UiField
 	SpanElement license;
 	@UiField
+	SpanElement views;
+	@UiField
 	ImageElement icon;
 	@UiField
 	FlowPanel newsfeedContainer;
 	@UiField
 	FlowPanel newsfeed;
+	@UiField
+	TableRowElement categoryRow;
 	@UiField
 	TableRowElement versionNumberRow;
 	@UiField
@@ -122,7 +126,9 @@ public class ProductDetailsPanel extends Composite implements FeedListener,
 			newsfeedContainer.setVisible(false);
 			description.setInnerText("");
 			tags.setInnerHTML("");
+			category.setInnerText("");
 			versionNumber.setInnerText("");
+			views.setInnerText("");
 			organization.setInnerText("");
 			createdDate.setInnerText("");
 			lastUpdatedDate.setInnerText("");
@@ -156,6 +162,7 @@ public class ProductDetailsPanel extends Composite implements FeedListener,
 			}
 			description.setInnerHTML(product.getDescription());
 			tags.setInnerHTML(createTagHtml(product.getTags()));
+			category.setInnerText(product.getCategoryName());
 			versionNumber.setInnerText(product.getVersionNumber());
 			organization.setInnerText(product.getOrganizationName());
 			createdDate
@@ -179,6 +186,7 @@ public class ProductDetailsPanel extends Composite implements FeedListener,
 			developmentStatus.setInnerText(Status.getDisplayValue(product
 					.getStatus()));
 			license.setInnerHTML(License.getDisplayValue(product.getLicense()));
+			views.setInnerText(product.getNumDailyViews() + " / " + product.getNumMonthlyViews());
 
 			if (null == _previous || _previous.equals(product)) {
 				newsfeed.clear();
