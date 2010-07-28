@@ -16,8 +16,6 @@ public abstract class GetTopsCommand extends AbstractAsyncCommand<Top10Lists> {
 
 	private static Top10Lists top10Lists;
 
-	private boolean doCheck = false;
-
 	static {
 		Session.get()
 				.bus()
@@ -30,38 +28,14 @@ public abstract class GetTopsCommand extends AbstractAsyncCommand<Top10Lists> {
 										&& (null == top10Lists || date
 												.getTime() > top10Lists
 												.getMaxDate().getTime())) {
-									refresh();
+									top10Lists = null;
 								}
 							}
 						});
 	}
 
-	private static void refresh() {
-		productService().getTops(
-				(null != top10Lists) ? top10Lists.getMaxDate() : null,
-				new AsyncCallback<Top10Lists>() {
-
-					@Override
-					public void onSuccess(Top10Lists result) {
-						if (null != result) {
-							System.out.println(result);
-							System.out.println("Success: "
-									+ result.getMostViewed().size());
-							GetTopsCommand.top10Lists = result;
-							Session.get().bus()
-									.fireEvent(new TopsUpdatedEvent(result));
-						}
-					}
-
-					@Override
-					public void onFailure(Throwable caught) {
-						caught.printStackTrace();
-					}
-				});
-	}
-
 	public void execute() {
-		if (doCheck || null == top10Lists || null == top10Lists.getMaxDate()) {
+		if (null == top10Lists) {
 			productService().getTops(
 					(null != top10Lists) ? top10Lists.getMaxDate() : null,
 					new AsyncCallback<Top10Lists>() {
@@ -70,6 +44,8 @@ public abstract class GetTopsCommand extends AbstractAsyncCommand<Top10Lists> {
 						public void onSuccess(Top10Lists result) {
 							GetTopsCommand.top10Lists = result;
 							GetTopsCommand.this.onSuccess(result);
+							Session.get().bus()
+									.fireEvent(new TopsUpdatedEvent(result));
 						}
 
 						@Override
