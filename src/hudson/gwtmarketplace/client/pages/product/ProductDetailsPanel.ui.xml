@@ -58,29 +58,37 @@
 					
 					<div class="detailsList">
 						<table class="{style.infoTable}">
-							<tr ui:field="versionNumberRow" class="{style.odd}">
+							<tr ui:field="categoryRow" class="{style.odd}">
+								<td>Category:</td>
+								<td><span ui:field='category'></span></td>
+							</tr>
+							<tr ui:field="versionNumberRow" class="{style.even}">
 								<td>Version Number:</td>
 								<td><span ui:field='versionNumber'></span></td>
 							</tr>
-							<tr ui:field="organizationRow" class="{style.even}">
+							<tr ui:field="organizationRow" class="{style.odd}">
 								<td>Organization:</td>
 								<td><span ui:field='organization'></span></td>
 							</tr>
-							<tr ui:field="createdDateRow" class="{style.odd}">
+							<tr ui:field="createdDateRow" class="{style.even}">
 								<td>Created:</td>
 								<td><span ui:field='createdDate'></span></td>
 							</tr>
-							<tr ui:field="lastUpdatedDateRow" class="{style.even}">
+							<tr ui:field="lastUpdatedDateRow" class="{style.odd}">
 								<td>Last Updated:</td>
 								<td><span ui:field='lastUpdatedDate'></span></td>
 							</tr>
-							<tr ui:field="developmentStatusRow" class="{style.odd}">
+							<tr ui:field="developmentStatusRow" class="{style.even}">
 								<td>Development Status:</td>
 								<td><span ui:field='developmentStatus'></span></td>
 							</tr>
-							<tr ui:field="licenseRow" class="{style.even}">
+							<tr ui:field="licenseRow" class="{style.odd}">
 								<td>License:</td>
 								<td><span ui:field='license'></span></td>
+							</tr>
+							<tr class="{style.even}">
+								<td>Views (daily / monthly):</td>
+								<td><span ui:field='views'></span></td>
 							</tr>
 						</table>
 					</div>
