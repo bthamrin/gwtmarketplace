@@ -50,8 +50,9 @@ public class ProductManager extends AbstractManager {
 			else if (null == obj2)
 				return 1;
 			else
-				return (obj1.getNumDailyViews() > obj2.getNumDailyViews()) ? 1
-						: -1;
+				return -1
+						* obj1.getNumDailyViews().compareTo(
+								obj2.getNumDailyViews());
 		};
 	};
 	private static final Comparator<Product> top10BestRatedComparator = new Comparator<Product>() {
@@ -61,7 +62,7 @@ public class ProductManager extends AbstractManager {
 			else if (null == obj2 || null == obj2.getRating())
 				return 1;
 			else
-				return (obj1.getRating() > obj2.getRating()) ? 1 : -1;
+				return -1 * obj1.getRating().compareTo(obj2.getRating());
 		};
 	};
 	private static final Comparator<Product> top10RecentUpdatesComparator = new Comparator<Product>() {
@@ -71,10 +72,12 @@ public class ProductManager extends AbstractManager {
 			else if (null == obj2)
 				return 1;
 			else
-				return (obj1.getUpdatedDate().getTime() > obj2.getUpdatedDate()
-						.getTime()) ? 1 : -1;
+				return -1
+						* (obj1.getUpdatedDate().compareTo(obj2
+								.getUpdatedDate()));
 		};
 	};
+
 	public void resetDailyViews() {
 		List<Product> products = toList(noTx().query(Product.class));
 		for (Product p : products) {
@@ -83,11 +86,13 @@ public class ProductManager extends AbstractManager {
 		noTx().put(products);
 		getCache().clear();
 	}
+
 	public byte[] getImageData(long productId) {
 		String cacheKey = "thumbs:" + Long.toString(productId);
 		byte[] data = (byte[]) getCache().get(cacheKey);
 		if (null == data) {
-			ProductImage image = singleResult(noTx().query(ProductImage.class).ancestor(new Key<Product>(Product.class, productId)));
+			ProductImage image = singleResult(noTx().query(ProductImage.class)
+					.ancestor(new Key<Product>(Product.class, productId)));
 			if (null != image) {
 				data = image.getData().getBytes();
 				getCache().put(cacheKey, data);
@@ -95,16 +100,21 @@ public class ProductManager extends AbstractManager {
 		}
 		return data;
 	}
-	public String setImageData (long productId, byte[] data) throws InvalidAccessException {
+
+	public String setImageData(long productId, byte[] data)
+			throws InvalidAccessException {
 		Key<Product> productKey = new Key<Product>(Product.class, productId);
 		Product product = getById(productId);
-		if (null == product || null == data) return null;
-		
+		if (null == product || null == data)
+			return null;
+
 		String iconKey = Long.toString(System.currentTimeMillis());
 		product.setIconKey(iconKey);
 		update(product);
-		
-		Iterator<ProductImage> images =  AbstractManager.noTx().query(ProductImage.class).ancestor(productKey).fetch().iterator();
+
+		Iterator<ProductImage> images = AbstractManager.noTx()
+				.query(ProductImage.class).ancestor(productKey).fetch()
+				.iterator();
 		while (images.hasNext()) {
 			AbstractManager.noTx().delete(images.next());
 		}
@@ -112,7 +122,7 @@ public class ProductManager extends AbstractManager {
 		img.setProductId(productKey);
 		img.setData(new Blob(data));
 		AbstractManager.noTx().put(img);
-		
+
 		String cacheKey = "thumbs:" + productId;
 		AbstractManager.getCache().put(cacheKey, data);
 		return iconKey;
@@ -128,30 +138,7 @@ public class ProductManager extends AbstractManager {
 		return categories;
 	}
 
-	private Category addCategory(String alias, String name) {
-		Category c = new Category();
-		c.setAlias(alias);
-		c.setName(name);
-		c.setNumProducts(0);
-		noTx().put(c);
-		return c;
-	}
-
 	public Top10Lists getTops(Date highestKnownDate) {
-
-		// FIXME initialize the categories in a better place
-		int count = noTx().query(Category.class).countAll();
-		getCache().remove(TOKEN_CATEGORIES);
-		if (count == 0) {
-			addCategory("widgets", "UI Widgets");
-			addCategory("rpc", "RPC");
-			addCategory("security", "Security");
-			addCategory("designers", "Designers");
-			addCategory("tools", "Tools");
-			addCategory("frameworks", "Frameworks");
-			addCategory("other", "Other");
-		}
-
 		Top10Lists rtn = new Top10Lists(getTop10BestRated(),
 				getTop10RecentUpdates(), getTop10MostViewed());
 		if (null == rtn.getMaxDate() || null == highestKnownDate
@@ -247,9 +234,10 @@ public class ProductManager extends AbstractManager {
 		User user = UserServiceFactory.getUserService().getCurrentUser();
 		if (null == user || !user.getUserId().equals(product.getUserId()))
 			throw new InvalidAccessException();
-//			String uploadKey = BlobstoreServiceFactory.getBlobstoreService().createUploadUrl(
-//					"/gwt_marketplace/uploadImage");
-//			return new Pair<Product, String>(product, uploadKey);
+		// String uploadKey =
+		// BlobstoreServiceFactory.getBlobstoreService().createUploadUrl(
+		// "/gwt_marketplace/uploadImage");
+		// return new Pair<Product, String>(product, uploadKey);
 		return new Pair<Product, String>(product, null);
 	}
 
@@ -350,7 +338,8 @@ public class ProductManager extends AbstractManager {
 			Product product = ofy.find(productKey);
 			List<Serializable> thingsToSave = new ArrayList<Serializable>();
 			boolean addComment = false;
-			if (null != comment.getCommentText() && comment.getCommentText().length() > 0) {
+			if (null != comment.getCommentText()
+					&& comment.getCommentText().length() > 0) {
 				if (null != user) {
 					comment.setUserAlias(user.getNickname());
 					comment.setUserId(user.getUserId());
@@ -365,12 +354,15 @@ public class ProductManager extends AbstractManager {
 			if (null != comment.getRating()
 					&& comment.getRating().intValue() > 0) {
 				String ratingCacheKey = TOKEN_RATINGS_BY_IP + ":" + productId;
-				Map<String, Integer> ratingsCache = (Map<String, Integer>) getCache().get(ratingCacheKey);
+				Map<String, Integer> ratingsCache = (Map<String, Integer>) getCache()
+						.get(ratingCacheKey);
 				if (null == ratingsCache) {
 					ratingsCache = new HashMap<String, Integer>();
-					ArrayList<ProductRating> ratings = toList(noTx().query(ProductRating.class).ancestor(productKey));
+					ArrayList<ProductRating> ratings = toList(noTx().query(
+							ProductRating.class).ancestor(productKey));
 					for (ProductRating rating : ratings) {
-						ratingsCache.put(rating.getIpAddress(), rating.getRating());
+						ratingsCache.put(rating.getIpAddress(),
+								rating.getRating());
 					}
 					getCache().put(ratingCacheKey, ratingsCache);
 				}
@@ -383,14 +375,14 @@ public class ProductManager extends AbstractManager {
 					if (null == product.getTotalRatingScore())
 						product.setTotalRatingScore(rating);
 					else
-						product.setTotalRatingScore(product.getTotalRatingScore()
-								+ rating);
+						product.setTotalRatingScore(product
+								.getTotalRatingScore() + rating);
 					product.setRating((float) ((float) product
 							.getTotalRatingScore() / (float) product
 							.getTotalRatings()));
 					product.setUpdatedDate(new Date());
 					getCache().remove(TOKEN_TOP10_HIGHEST_RATED);
-					
+
 					ProductRating productRating = new ProductRating();
 					productRating.setCreatedDate(new Date());
 					productRating.setIpAddress(ipAddress);
@@ -403,13 +395,12 @@ public class ProductManager extends AbstractManager {
 					thingsToSave.add(productRating);
 					ratingsCache.put(ipAddress, rating);
 					getCache().put(ratingCacheKey, ratingsCache);
-				}
-				else {
+				} else {
 					// we can't add the rating
 					comment.setUnableToRate(Boolean.TRUE);
 				}
 			}
-			
+
 			if (thingsToSave.size() > 0) {
 				if (addComment) {
 					if (null == product.getNumComments())
@@ -422,11 +413,11 @@ public class ProductManager extends AbstractManager {
 				ofy.put((Iterable) thingsToSave);
 				updateCache(product);
 				ofy.getTxn().commit();
-				return new Triple<ProductComment, Product, Date>(comment, product,
-						toTopsDate(product));
-			}
-			else {
-				return new Triple<ProductComment, Product, Date>(null, product, null);
+				return new Triple<ProductComment, Product, Date>(comment,
+						product, toTopsDate(product));
+			} else {
+				return new Triple<ProductComment, Product, Date>(null, product,
+						null);
 			}
 		} catch (Exception e) {
 			ofy.getTxn().rollback();
