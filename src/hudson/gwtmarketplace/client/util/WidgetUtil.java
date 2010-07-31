@@ -3,6 +3,8 @@
  */
 package hudson.gwtmarketplace.client.util;
 
+import gwtpages.client.message.Notification;
+import gwtpages.client.message.SimpleNotification;
 import hudson.gwtmarketplace.client.components.LabeledContainer;
 import hudson.gwtmarketplace.client.model.DisplayEntity;
 
@@ -128,20 +130,20 @@ public class WidgetUtil {
 	}
 
 	public static void checkNull(LabeledContainer[] components,
-			List<Message> messages) {
+			List<Notification> messages) {
 		for (LabeledContainer lc : components) {
 			Widget component = lc.getComponent();
 			if (component instanceof TextBox) {
 				if (isNull(((TextBox) component).getValue()))
-					messages.add(Message.error("'" + lc.getLabel()
-							+ "' is a required field", (Focusable) component));
+					messages.add(SimpleNotification.error("'" + lc.getLabel()
+							+ "' is a required field", (component instanceof Focusable)?(Focusable)component:null));
 			} else if (component instanceof ListBox) {
 				if (((ListBox) component).getSelectedIndex() < 0
 						|| isNull(((ListBox) component)
 								.getValue(((ListBox) component)
 										.getSelectedIndex()))) {
-					messages.add(Message.error("'" + lc.getLabel()
-							+ "' is a required field", (Focusable) component));
+					messages.add(SimpleNotification.error("'" + lc.getLabel()
+							+ "' is a required field", (component instanceof Focusable)?(Focusable)component:null));
 				}
 			}
 		}

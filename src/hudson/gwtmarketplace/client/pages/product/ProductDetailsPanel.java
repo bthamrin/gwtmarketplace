@@ -3,7 +3,8 @@
  */
 package hudson.gwtmarketplace.client.pages.product;
 
-import hudson.gwtmarketplace.client.Pages;
+import gwtpages.client.Settings;
+import hudson.gwtmarketplace.client.PageLoader;
 import hudson.gwtmarketplace.client.Session;
 import hudson.gwtmarketplace.client.ajaxfeeds.EntryDiv;
 import hudson.gwtmarketplace.client.ajaxfeeds.Feed;
@@ -108,7 +109,7 @@ public class ProductDetailsPanel extends Composite implements FeedListener,
 		container.getWidget(0).getElement().getStyle()
 				.setPaddingRight(12, Unit.PX);
 		rateIt.addClickHandler(this);
-		Session.get().bus().addHandler(ProductUpdatedEvent.TYPE, this);
+		Settings.get().getBus().addHandler(ProductUpdatedEvent.TYPE, this);
 	}
 
 	@Override
@@ -143,7 +144,8 @@ public class ProductDetailsPanel extends Composite implements FeedListener,
 				links.add(new Anchor("Showcase", product.getDemoUrl(), "_blank"));
 			}
 			if (!isNull(product.getDownloadUrl())) {
-				links.add(new Anchor("Download", product.getDownloadUrl(), "_blank"));
+				links.add(new Anchor("Download", product.getDownloadUrl(),
+						"_blank"));
 			}
 			if (!isNull(product.getWikiUrl())) {
 				links.add(new Anchor("Wiki", product.getWikiUrl(), "_blank"));
@@ -152,13 +154,18 @@ public class ProductDetailsPanel extends Composite implements FeedListener,
 				links.add(new Anchor("Forum", product.getForumUrl(), "_blank"));
 			}
 			if (!isNull(product.getIssueTrackerUrl())) {
-				links.add(new Anchor("Issue Tracker", product.getIssueTrackerUrl(), "_blank"));
+				links.add(new Anchor("Issue Tracker", product
+						.getIssueTrackerUrl(), "_blank"));
 			}
 			UserInfo userInfo = Session.get().getLoggedInUser();
-			if (null != userInfo && userInfo.getId().equals(product.getUserId())) {
+			if (null != userInfo
+					&& userInfo.getId().equals(product.getUserId())) {
 				links.add(new HTML("<br/>"));
-				links.add(new Hyperlink("Edit settings", Pages.tokenize(
-						Pages.PAGE_EDIT_PRODUCT, product.getAlias())));
+				links.add(new Hyperlink("Edit settings", Settings
+						.get()
+						.getPageTokenizer()
+						.createToken(PageLoader.PAGE_EDIT_PRODUCT,
+								product.getAlias())));
 			}
 			description.setInnerHTML(product.getDescription());
 			tags.setInnerHTML(createTagHtml(product.getTags()));
@@ -172,21 +179,22 @@ public class ProductDetailsPanel extends Composite implements FeedListener,
 			if (null == product.getIconKey()) {
 				icon.setSrc("images/noicon.gif");
 				icon.getStyle().setDisplay(Display.NONE);
-			}
-			else {
-				icon.setSrc("gwt_marketplace/productImage?key=" + product.getId() + "&ik=" + product.getIconKey());
+			} else {
+				icon.setSrc("gwt_marketplace/productImage?key="
+						+ product.getId() + "&ik=" + product.getIconKey());
 				icon.getStyle().setDisplay(Display.BLOCK);
 			}
 			if (null != product.getRating()) {
-				ratingContainer.getElement().setInnerText(ratingFormat.format(product.getRating()) + " of 5");
-			}
-			else {
+				ratingContainer.getElement().setInnerText(
+						ratingFormat.format(product.getRating()) + " of 5");
+			} else {
 				ratingContainer.getElement().setInnerText("");
 			}
 			developmentStatus.setInnerText(Status.getDisplayValue(product
 					.getStatus()));
 			license.setInnerHTML(License.getDisplayValue(product.getLicense()));
-			views.setInnerText(product.getNumDailyViews() + " / " + product.getNumMonthlyViews());
+			views.setInnerText(product.getNumDailyViews() + " / "
+					+ product.getNumMonthlyViews());
 
 			if (null == _previous || _previous.equals(product)) {
 				newsfeed.clear();
@@ -202,7 +210,7 @@ public class ProductDetailsPanel extends Composite implements FeedListener,
 		}
 	}
 
-	private boolean isNull (String s) {
+	private boolean isNull(String s) {
 		return (null == s || s.length() == 0);
 	}
 
@@ -218,12 +226,16 @@ public class ProductDetailsPanel extends Composite implements FeedListener,
 	}
 
 	public String createTagHtml(String[] tags) {
-		if (null == tags || tags.length == 0) return "(none)";
+		if (null == tags || tags.length == 0)
+			return "(none)";
 		else {
 			StringBuilder sb = new StringBuilder();
 			for (String s : tags) {
-				if (sb.length() > 0) sb.append(", ");
-				sb.append("<a class=\"tag\" href=\"#").append(Pages.PAGE_SEARCH).append("/tag:").append(s).append("\">").append(s).append("</a>");
+				if (sb.length() > 0)
+					sb.append(", ");
+				sb.append("<a class=\"tag\" href=\"#")
+						.append(PageLoader.PAGE_SEARCH).append("/tag:").append(s)
+						.append("\">").append(s).append("</a>");
 			}
 			return sb.toString();
 		}
@@ -231,7 +243,7 @@ public class ProductDetailsPanel extends Composite implements FeedListener,
 
 	@Override
 	public void onSuccess(Feed feed) {
-		for (int i=0; i<feed.getEntries().size(); i++) {
+		for (int i = 0; i < feed.getEntries().size(); i++) {
 			newsfeed.add(new EntryDiv(feed.getEntries().get(i), i));
 		}
 	}

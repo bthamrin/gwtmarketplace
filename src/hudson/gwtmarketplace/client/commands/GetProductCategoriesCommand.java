@@ -3,7 +3,7 @@
  */
 package hudson.gwtmarketplace.client.commands;
 
-import hudson.gwtmarketplace.client.Session;
+import gwtpages.client.Settings;
 import hudson.gwtmarketplace.client.event.CategoriesUpdatedEvent;
 import hudson.gwtmarketplace.client.model.Category;
 import hudson.gwtmarketplace.client.service.ProductService;
@@ -29,7 +29,7 @@ public abstract class GetProductCategoriesCommand extends
 			@Override
 			public void onSuccess(ArrayList<Category> result) {
 				GetProductCategoriesCommand.categories = result;
-				Session.get().bus().fireEvent(new CategoriesUpdatedEvent(result));
+				Settings.get().getBus().fireEvent(new CategoriesUpdatedEvent(result));
 			}
 
 			@Override

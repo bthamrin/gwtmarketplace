@@ -3,7 +3,8 @@
  */
 package hudson.gwtmarketplace.client.pages.product;
 
-import hudson.gwtmarketplace.client.Pages;
+import gwtpages.client.Settings;
+import hudson.gwtmarketplace.client.PageLoader;
 import hudson.gwtmarketplace.client.model.Product;
 
 import com.google.gwt.core.client.GWT;
@@ -40,17 +41,24 @@ public class ProductSectionEntry extends Composite {
 
 	public ProductSectionEntry(Product product, int type, int index) {
 		HorizontalPanel panel = uiBinder.createAndBindUi(this);
-		if (index%2==0) panel.addStyleName("feed feed-even");
-		else panel.addStyleName("feed feed-odd");
+		if (index % 2 == 0)
+			panel.addStyleName("feed feed-even");
+		else
+			panel.addStyleName("feed feed-odd");
 		initWidget(panel);
-		panel.setCellHorizontalAlignment(panel.getWidget(1), HorizontalPanel.ALIGN_RIGHT);
+		panel.setCellHorizontalAlignment(panel.getWidget(1),
+				HorizontalPanel.ALIGN_RIGHT);
 		productLink.setText(product.getName());
-		productLink.setTargetHistoryToken(Pages.tokenize(
-				Pages.PAGE_VIEW_PRODUCT, product.getAlias()));
+		productLink
+				.setTargetHistoryToken(Settings
+						.get()
+						.getPageTokenizer()
+						.createToken(product.getAlias()));
 		if (type == TYPE_UPDATE_AGE)
 			custom.add(new Label(dateFormat.format(product.getUpdatedDate())));
 		else if (type == TYPE_RATING)
-			custom.add(new Label(numberFormat.format(product.getRating()) + " (" + product.getTotalRatings() + ")"));
+			custom.add(new Label(numberFormat.format(product.getRating())
+					+ " (" + product.getTotalRatings() + ")"));
 		else if (type == TYPE_ACTIVE_VIEWS)
 			custom.add(new Label(Integer.toString(product.getNumDailyViews())));
 	}

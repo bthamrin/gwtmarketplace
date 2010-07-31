@@ -3,8 +3,13 @@
  */
 package hudson.gwtmarketplace.client.pages.product;
 
-import hudson.gwtmarketplace.client.Pages;
-import hudson.gwtmarketplace.client.Session;
+import gwtpages.client.message.Messages;
+import gwtpages.client.message.Notification;
+import gwtpages.client.message.SimpleNotification;
+import gwtpages.client.page.CompositePage;
+import gwtpages.client.page.Pages;
+import gwtpages.client.page.parameters.PageParameters;
+import hudson.gwtmarketplace.client.PageLoader;
 import hudson.gwtmarketplace.client.commands.GetProductCategoriesCommand;
 import hudson.gwtmarketplace.client.commands.SaveProductCommand;
 import hudson.gwtmarketplace.client.components.LabeledContainer;
@@ -17,10 +22,8 @@ import hudson.gwtmarketplace.client.model.License;
 import hudson.gwtmarketplace.client.model.Pair;
 import hudson.gwtmarketplace.client.model.Product;
 import hudson.gwtmarketplace.client.model.Status;
-import hudson.gwtmarketplace.client.pages.PageStateAware;
 import hudson.gwtmarketplace.client.service.ProductService;
 import hudson.gwtmarketplace.client.service.ProductServiceAsync;
-import hudson.gwtmarketplace.client.util.Message;
 import hudson.gwtmarketplace.client.util.WidgetUtil;
 
 import java.util.ArrayList;
@@ -36,7 +39,6 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
-import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteEvent;
 import com.google.gwt.user.client.ui.FormPanel.SubmitCompleteHandler;
@@ -44,7 +46,7 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.RichTextArea;
 import com.google.gwt.user.client.ui.SimplePanel;
 
-public class EditProductPage extends Composite implements PageStateAware, ClickHandler, SubmitCompleteHandler {
+public class EditProductPage extends CompositePage implements ClickHandler, SubmitCompleteHandler {
 
 	interface MyUiBinder extends UiBinder<HorizontalPanel, EditProductPage> {
 	}
@@ -124,6 +126,31 @@ public class EditProductPage extends Composite implements PageStateAware, ClickH
 		}.execute();
 	}
 
+	@Override
+	public void onShowPage(PageParameters parameters) {
+		if (parameters.getParameters().length > 0) {
+			productService.getForEditing(parameters.asString(0),
+					new AsyncCallback<Pair<Product, String>>() {
+
+						@Override
+						public void onSuccess(Pair<Product, String> result) {
+							show(result);
+						}
+
+						@Override
+						public void onFailure(Throwable caught) {
+							Messages.get().error(caught.getMessage(), null);
+						}
+					});
+		}
+	}
+
+	@Override
+	public void onHidePage() {
+		show(new Pair<Product, String>(new Product(), null));
+	}
+	
+	
 	public void show(final Pair<Product, String> productPair) {
 		this.product = productPair.getEntity1();
 		if (null != product.getDescription())
@@ -161,36 +188,6 @@ public class EditProductPage extends Composite implements PageStateAware, ClickH
 	}
 
 	@Override
-	public void onShowPage(String[] parameters) {
-		if (parameters.length > 0) {
-
-			productService.getForEditing(parameters[0],
-					new AsyncCallback<Pair<Product, String>>() {
-
-						@Override
-						public void onSuccess(Pair<Product, String> result) {
-							show(result);
-						}
-
-						@Override
-						public void onFailure(Throwable caught) {
-							Session.get().error(caught.getMessage(), null);
-						}
-					});
-		}
-	}
-
-	@Override
-	public void onExitPage() {
-		show(new Pair<Product, String>(new Product(), null));
-	}
-
-	@Override
-	public Type getPageType() {
-		return Type.STANDARD_SECURE;
-	}
-
-	@Override
 	public void onClick(ClickEvent event) {
 		if (event.getSource().equals(saveBtn)) {
 			onSave();
@@ -204,14 +201,14 @@ public class EditProductPage extends Composite implements PageStateAware, ClickH
 	}
 
 	public void onSave() {
-		List<Message> messages = new ArrayList<Message>();
+		List<Notification> messages = new ArrayList<Notification>();
 		WidgetUtil.checkNull(new LabeledContainer[] { name, category,
 				status, license, webpageUrl }, messages);
 		if (isNull(description.getText())) {
-			messages.add(Message.error("Please enter the description"));
+			messages.add(SimpleNotification.error("Please enter the description", description));
 		}
 		if (messages.size() > 0) {
-			Session.get().addMessages(messages);
+			Messages.get().setMessages(messages);
 			return;
 		}
 
@@ -239,14 +236,14 @@ public class EditProductPage extends Composite implements PageStateAware, ClickH
 		new SaveProductCommand(product) {
 			@Override
 			public void onSuccess(Product result) {
-				Pages.gotoPage(Pages.PAGE_VIEW_PRODUCT, result.getAlias());
+				Pages.get().gotoPage(PageLoader.PAGE_VIEW_PRODUCT, product.getAlias());
 			}
 		}.execute();
 	}
 
 	public void onCancel() {
 		if (Window.confirm("Are you sure you want to cancel?")) {
-			Pages.gotoPage(Pages.PAGE_VIEW_PRODUCT, product.getAlias());
+			Pages.get().gotoPage(PageLoader.PAGE_VIEW_PRODUCT, product.getAlias());
 		}
 	}
 

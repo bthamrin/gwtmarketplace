@@ -3,7 +3,7 @@
  */
 package hudson.gwtmarketplace.client.commands;
 
-import hudson.gwtmarketplace.client.Session;
+import gwtpages.client.Settings;
 import hudson.gwtmarketplace.client.event.ProductUpdatedEvent;
 import hudson.gwtmarketplace.client.event.TopsDateCheckEvent;
 import hudson.gwtmarketplace.client.model.Pair;
@@ -22,8 +22,7 @@ public abstract class GetProductDetailsCommand extends
 	public static Map<Long, Product> productIdMap = new HashMap<Long, Product>();
 
 	static {
-		Session.get()
-				.bus()
+		Settings.get().getBus()
 				.addHandler(ProductUpdatedEvent.TYPE,
 						new ProductUpdatedEvent.ProductUpdateHandler() {
 							@Override
@@ -73,7 +72,7 @@ public abstract class GetProductDetailsCommand extends
 				@Override
 				public void onSuccess(Pair<Product, Date> result) {
 					if (null != result && null != result.getEntity2())
-						Session.get().bus().fireEvent(new TopsDateCheckEvent(result.getEntity2()));
+						Settings.get().getBus().fireEvent(new TopsDateCheckEvent(result.getEntity2()));
 					callback.onSuccess(result.getEntity1());
 				}
 				
