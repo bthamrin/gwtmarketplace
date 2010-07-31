@@ -3,7 +3,8 @@
  */
 package hudson.gwtmarketplace.client.pages.layout;
 
-import hudson.gwtmarketplace.client.Pages;
+import gwtpages.client.page.Pages;
+import hudson.gwtmarketplace.client.PageLoader;
 import hudson.gwtmarketplace.client.Session;
 import hudson.gwtmarketplace.client.commands.LoginCommand;
 import hudson.gwtmarketplace.client.model.UserInfo;
@@ -71,7 +72,7 @@ public class Header extends Composite implements ClickHandler, KeyUpHandler {
 	}
 
 	private void onSearch() {
-		Pages.gotoPage(Pages.PAGE_SEARCH, searchBox.getValue());
+		Pages.get().gotoPage(PageLoader.PAGE_SEARCH, searchBox.getValue());
 		searchBox.setValue(null);
 	}
 

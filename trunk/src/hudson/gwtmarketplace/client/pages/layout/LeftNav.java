@@ -3,8 +3,8 @@
  */
 package hudson.gwtmarketplace.client.pages.layout;
 
-import hudson.gwtmarketplace.client.Pages;
-import hudson.gwtmarketplace.client.Session;
+import gwtpages.client.Settings;
+import hudson.gwtmarketplace.client.PageLoader;
 import hudson.gwtmarketplace.client.commands.GetProductCategoriesCommand;
 import hudson.gwtmarketplace.client.components.Section;
 import hudson.gwtmarketplace.client.event.CategoriesUpdatedEvent;
@@ -34,7 +34,7 @@ public class LeftNav extends Composite implements CategoriesUpdateHandler {
 	public LeftNav() {
 		initWidget(uiBinder.createAndBindUi(this));
 		reloadCategories();
-		Session.get().bus().addHandler(CategoriesUpdatedEvent.TYPE, this);
+		Settings.get().getBus().addHandler(CategoriesUpdatedEvent.TYPE, this);
 	}
 
 	private void reloadCategories() {
@@ -43,8 +43,9 @@ public class LeftNav extends Composite implements CategoriesUpdateHandler {
 			@Override
 			public void onSuccess(ArrayList<Category> result) {
 				reloadCategories(result);
-			
-		}}.execute();
+
+			}
+		}.execute();
 	}
 
 	private void reloadCategories(ArrayList<Category> categories) {
@@ -52,9 +53,13 @@ public class LeftNav extends Composite implements CategoriesUpdateHandler {
 		for (Category c : categories) {
 			FlowPanel fp = new FlowPanel();
 			fp.getElement().getStyle().setPaddingTop(4, Unit.PX);
-			fp.add(new Hyperlink(c.getName() + " ("
-					+ c.getNumProducts() + ")", Pages.tokenize(
-					Pages.PAGE_SEARCH, "category:" +c.getAlias())));
+			String link = Settings
+					.get()
+					.getPageTokenizer()
+					.createToken(PageLoader.PAGE_SEARCH,
+							"category:" + c.getAlias());
+			fp.add(new Hyperlink(c.getName() + " (" + c.getNumProducts() + ")",
+					link));
 			LeftNav.this.categories.add(fp);
 		}
 	}

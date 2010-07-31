@@ -3,15 +3,17 @@
  */
 package hudson.gwtmarketplace.client.pages.product;
 
-import hudson.gwtmarketplace.client.Pages;
+import gwtpages.client.page.Page;
+import gwtpages.client.page.Pages;
+import gwtpages.client.page.parameters.PageParameters;
 import hudson.gwtmarketplace.client.model.Pair;
 import hudson.gwtmarketplace.client.model.Product;
-import hudson.gwtmarketplace.client.pages.PageStateAware;
 
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.SimplePanel;
+import com.google.gwt.user.client.ui.Widget;
 
-public class NewProductPage extends SimplePanel implements PageStateAware {
+public class NewProductPage extends SimplePanel implements Page {
 
 	EditProductPage wrapped;
 
@@ -22,24 +24,24 @@ public class NewProductPage extends SimplePanel implements PageStateAware {
 			};
 			public void onCancel() {
 				if (Window.confirm("Are you sure you want to cancel?")) {
-					Pages.gotoPage(Pages.PAGE_DEFAULT);
+					Pages.get().showStartPage(false);
 				}
 			};
 		});
 	}
 
 	@Override
-	public void onShowPage(String[] parameters) {
+	public void onShowPage(PageParameters parameters) {
 		wrapped.show(new Pair<Product, String>(new Product(), null));
 	}
 
 	@Override
-	public void onExitPage() {
-		wrapped.onExitPage();
+	public void onHidePage() {
+		wrapped.onHidePage();
 	}
 
 	@Override
-	public Type getPageType() {
-		return Type.STANDARD_SECURE;
+	public Widget asWidget() {
+		return this;
 	}
 }

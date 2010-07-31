@@ -9,7 +9,7 @@
 			<div class="main-container" style="position: relative">
 				<g:SimplePanel ui:field="navContainer" styleName="navContainer"></g:SimplePanel>
 				<g:FlowPanel styleName="bodyContainer">
-					<g:FlowPanel ui:field="messages" styleName="messages"></g:FlowPanel>
+					<g:SimplePanel ui:field="messagesContainer"></g:SimplePanel>
 					<g:SimplePanel ui:field="bodyContainer"></g:SimplePanel>
 				</g:FlowPanel>
 			</div>

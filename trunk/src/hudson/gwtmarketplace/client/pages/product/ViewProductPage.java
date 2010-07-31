@@ -3,13 +3,14 @@
  */
 package hudson.gwtmarketplace.client.pages.product;
 
-import hudson.gwtmarketplace.client.Session;
+import gwtpages.client.Settings;
+import gwtpages.client.page.CompositePage;
+import gwtpages.client.page.parameters.PageParameters;
 import hudson.gwtmarketplace.client.commands.GetProductDetailsCommand;
 import hudson.gwtmarketplace.client.event.ProductCommentEvent;
 import hudson.gwtmarketplace.client.event.ProductCommentEvent.ProductCommentHandler;
 import hudson.gwtmarketplace.client.model.Product;
 import hudson.gwtmarketplace.client.model.ProductComment;
-import hudson.gwtmarketplace.client.pages.PageStateAware;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.HeadingElement;
@@ -17,12 +18,11 @@ import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.TabPanel;
 
-public class ViewProductPage extends Composite implements
-		SelectionHandler<Integer>, ProductCommentHandler, PageStateAware {
+public class ViewProductPage extends CompositePage implements
+		SelectionHandler<Integer>, ProductCommentHandler {
 
 	interface MyUiBinder extends UiBinder<FlowPanel, ViewProductPage> {
 	}
@@ -52,7 +52,7 @@ public class ViewProductPage extends Composite implements
 				false);
 		tabs.addSelectionHandler(this);
 		tabs.selectTab(0);
-		Session.get().bus().addHandler(ProductCommentEvent.TYPE, this);
+		Settings.get().getBus().addHandler(ProductCommentEvent.TYPE, this);
 	}
 
 	public void show(String alias) {
@@ -103,18 +103,15 @@ public class ViewProductPage extends Composite implements
 	}
 
 	@Override
-	public void onShowPage(String[] parameters) {
-		if (parameters.length > 0)
-			show(parameters[0]);
+	public void onShowPage(PageParameters parameters) {
+		if (parameters.size() > 0)
+			show(parameters.asString(0));
+		else if (!parameters.getHistoryToken().startsWith("_"))
+			show(parameters.getHistoryToken());
 	}
 
 	@Override
-	public void onExitPage() {
+	public void onHidePage() {
 		show((Product) null);
-	}
-
-	@Override
-	public Type getPageType() {
-		return Type.STANDARD;
 	}
 }

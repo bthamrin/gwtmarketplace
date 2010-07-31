@@ -3,7 +3,8 @@
  */
 package hudson.gwtmarketplace.client.pages;
 
-import hudson.gwtmarketplace.client.Pages;
+import gwtpages.client.page.CompositePage;
+import gwtpages.client.page.parameters.PageParameters;
 import hudson.gwtmarketplace.client.ajaxfeeds.EntryDiv;
 import hudson.gwtmarketplace.client.ajaxfeeds.Feed;
 import hudson.gwtmarketplace.client.ajaxfeeds.FeedListener;
@@ -18,13 +19,10 @@ import java.util.List;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
-import com.google.gwt.user.client.ui.Hyperlink;
-import com.google.gwt.user.client.ui.Label;
 
-public class MainPage extends Composite implements PageStateAware, FeedListener {
+public class MainPage extends CompositePage implements FeedListener {
 
 	interface Binder extends UiBinder<FlowPanel, MainPage> {
 	}
@@ -57,7 +55,7 @@ public class MainPage extends Composite implements PageStateAware, FeedListener 
 	}
 
 	@Override
-	public void onShowPage(String[] parameters) {
+	public void onShowPage(PageParameters parameters) {
 		new GetTopsCommand() {
 
 			@Override
@@ -70,6 +68,10 @@ public class MainPage extends Composite implements PageStateAware, FeedListener 
 			Feed f = new Feed();
 			f.getFeed("http://feeds.feedburner.com/blogspot/NWLT?format=xml", this);
 		}
+	}
+
+	@Override
+	public void onHidePage() {
 	}
 
 	public void refresh(Top10Lists top10Lists) {
@@ -87,17 +89,6 @@ public class MainPage extends Composite implements PageStateAware, FeedListener 
 		products = top10Lists.getMostViewed();
 		for (int i=0; i<products.size(); i++)
 			mostActive.add(new ProductSectionEntry(products.get(i), ProductSectionEntry.TYPE_ACTIVE_VIEWS, i));
-	}
-
-	@Override
-	public void onExitPage() {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public Type getPageType() {
-		return Type.STANDARD;
 	}
 
 	@Override

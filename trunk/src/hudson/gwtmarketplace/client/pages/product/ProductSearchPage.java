@@ -3,14 +3,14 @@
  */
 package hudson.gwtmarketplace.client.pages.product;
 
+import gwtpages.client.page.CompositePage;
+import gwtpages.client.page.parameters.PageParameters;
 import hudson.gwtmarketplace.client.commands.GetProductCategoriesCommand;
 import hudson.gwtmarketplace.client.components.LabeledListBox;
 import hudson.gwtmarketplace.client.components.LabeledTextBox;
 import hudson.gwtmarketplace.client.model.Category;
 import hudson.gwtmarketplace.client.model.Product;
 import hudson.gwtmarketplace.client.model.search.SearchResults;
-import hudson.gwtmarketplace.client.pages.PageStateAware;
-import hudson.gwtmarketplace.client.pages.product.EditProductPage.MyUiBinder;
 import hudson.gwtmarketplace.client.service.ProductService;
 import hudson.gwtmarketplace.client.service.ProductServiceAsync;
 import hudson.gwtmarketplace.client.util.WidgetUtil;
@@ -32,16 +32,13 @@ import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.rpc.AsyncCallback;
-import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.DisclosurePanel;
 import com.google.gwt.user.client.ui.FlowPanel;
-import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.SubmitButton;
 
-public class ProductSearchPage extends Composite implements PageStateAware,
-		ChangeSortListener, ClickHandler {
+public class ProductSearchPage extends CompositePage implements ChangeSortListener, ClickHandler {
 
 	interface MyUiBinder extends UiBinder<FlowPanel, ProductSearchPage> {
 	}
@@ -124,15 +121,13 @@ public class ProductSearchPage extends Composite implements PageStateAware,
 	}
 
 	@Override
-	public void onShowPage(String[] parameters) {
+	public void onShowPage(PageParameters parameters) {
 		generalParams.clear();
-		boolean valueSet = false;
-		if (parameters.length > 0) {
-			String[] arr = parameters[0].split(" ");
+		if (parameters.size() > 0) {
+			String[] arr = parameters.asString(0).split(" ");
 			params.clear();
 			for (String s : arr) {
 				if (s.length() > 0) {
-					valueSet = true;
 					int index = s.indexOf(':');
 					if (index > 0 && s.length() > index) {
 						String key = s.substring(0, index);
@@ -160,7 +155,7 @@ public class ProductSearchPage extends Composite implements PageStateAware,
 	}
 
 	@Override
-	public void onExitPage() {
+	public void onHidePage() {
 		generalParams.clear();
 		params.clear();
 		sortColumn = "name";
@@ -219,11 +214,6 @@ public class ProductSearchPage extends Composite implements PageStateAware,
 	public void onChangeSort(int newColumn, boolean newDesc) {
 		// TODO Auto-generated method stub
 
-	}
-
-	@Override
-	public Type getPageType() {
-		return Type.STACK_START;
 	}
 
 	private class SimpleColumn implements ColumnMetaData {

@@ -3,7 +3,7 @@
  */
 package hudson.gwtmarketplace.client.commands;
 
-import hudson.gwtmarketplace.client.Session;
+import gwtpages.client.Settings;
 import hudson.gwtmarketplace.client.event.ProductCommentEvent;
 import hudson.gwtmarketplace.client.event.ProductUpdatedEvent;
 import hudson.gwtmarketplace.client.event.TopsDateCheckEvent;
@@ -33,16 +33,14 @@ public abstract class AddProductCommentCommand extends
 						public void onSuccess(
 								Triple<ProductComment, Product, Date> result) {
 							if (null != result.getEntity3())
-								Session.get().bus().fireEvent(new TopsDateCheckEvent(result.getEntity3()));
+								Settings.get().getBus().fireEvent(new TopsDateCheckEvent(result.getEntity3()));
 							if (null != result.getEntity2()) {
-								Session.get()
-										.bus()
+								Settings.get().getBus()
 										.fireEvent(
 												new ProductUpdatedEvent(result
 														.getEntity2()));
 							}
-							Session.get()
-									.bus()
+							Settings.get().getBus()
 									.fireEvent(
 											new ProductCommentEvent(result
 													.getEntity2(), result

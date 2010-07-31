@@ -3,7 +3,7 @@
  */
 package hudson.gwtmarketplace.client.commands;
 
-import hudson.gwtmarketplace.client.Session;
+import gwtpages.client.Settings;
 import hudson.gwtmarketplace.client.event.TopsDateCheckEvent;
 import hudson.gwtmarketplace.client.event.TopsUpdatedEvent;
 import hudson.gwtmarketplace.client.model.Top10Lists;
@@ -17,8 +17,7 @@ public abstract class GetTopsCommand extends AbstractAsyncCommand<Top10Lists> {
 	private static Top10Lists top10Lists;
 
 	static {
-		Session.get()
-				.bus()
+		Settings.get().getBus()
 				.addHandler(TopsDateCheckEvent.TYPE,
 						new TopsDateCheckEvent.TopsDateCheckHandler() {
 
@@ -44,7 +43,7 @@ public abstract class GetTopsCommand extends AbstractAsyncCommand<Top10Lists> {
 						public void onSuccess(Top10Lists result) {
 							GetTopsCommand.top10Lists = result;
 							GetTopsCommand.this.onSuccess(result);
-							Session.get().bus()
+							Settings.get().getBus()
 									.fireEvent(new TopsUpdatedEvent(result));
 						}
 

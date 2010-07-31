@@ -3,7 +3,7 @@
  */
 package hudson.gwtmarketplace.client.commands;
 
-import hudson.gwtmarketplace.client.Session;
+import gwtpages.client.Settings;
 import hudson.gwtmarketplace.client.event.ProductUpdatedEvent;
 import hudson.gwtmarketplace.client.model.Product;
 
@@ -23,7 +23,7 @@ public abstract class SaveProductCommand extends AbstractAsyncCommand<Product> {
 			productService().save(product, new AsyncCommandCallback() {
 				@Override
 				public void onSuccess(Product result) {
-					Session.get().bus().fireEvent(new ProductUpdatedEvent(result));
+					Settings.get().getBus().fireEvent(new ProductUpdatedEvent(result));
 					super.onSuccess(result);
 				}
 			});
@@ -32,7 +32,7 @@ public abstract class SaveProductCommand extends AbstractAsyncCommand<Product> {
 			productService().update(product, new AsyncCallback<Void>() {
 				@Override
 				public void onSuccess(Void result) {
-					Session.get().bus().fireEvent(new ProductUpdatedEvent(product));
+					Settings.get().getBus().fireEvent(new ProductUpdatedEvent(product));
 					SaveProductCommand.this.onSuccess(product);
 					GetProductCategoriesCommand.refresh();
 				}
