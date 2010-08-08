@@ -31,7 +31,7 @@
 			
 			<g:HTMLPanel><h3>Additional Details</h3></g:HTMLPanel>
 			<g:VerticalPanel>
-				<c:LabeledTextBox ui:field="name" label="Name" styleName="field-long"></c:LabeledTextBox>
+				<c:LabeledTextBox ui:field="name" label="Product Name" styleName="field-long"></c:LabeledTextBox>
 				<c:LabeledListBox ui:field="status" label="Status" styleName="field-medium"></c:LabeledListBox>
 				<c:LabeledListBox ui:field="category" label="Category" styleName="field-long"></c:LabeledListBox>
 				<c:LabeledListBox ui:field="license" label="License" styleName="field-long"></c:LabeledListBox>

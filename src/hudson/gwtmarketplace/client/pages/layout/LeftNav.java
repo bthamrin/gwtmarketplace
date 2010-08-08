@@ -3,7 +3,6 @@
  */
 package hudson.gwtmarketplace.client.pages.layout;
 
-import gwtpages.client.Settings;
 import hudson.gwtmarketplace.client.PageLoader;
 import hudson.gwtmarketplace.client.commands.GetProductCategoriesCommand;
 import hudson.gwtmarketplace.client.components.Section;
@@ -15,6 +14,8 @@ import java.util.ArrayList;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Unit;
+import com.google.gwt.gwtpages.client.GWTPagesSettings;
+import com.google.gwt.gwtpages.client.page.GWTPages;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
@@ -34,7 +35,8 @@ public class LeftNav extends Composite implements CategoriesUpdateHandler {
 	public LeftNav() {
 		initWidget(uiBinder.createAndBindUi(this));
 		reloadCategories();
-		Settings.get().getBus().addHandler(CategoriesUpdatedEvent.TYPE, this);
+		GWTPagesSettings.get().getEventBus()
+				.addHandler(CategoriesUpdatedEvent.TYPE, this);
 	}
 
 	private void reloadCategories() {
@@ -53,11 +55,8 @@ public class LeftNav extends Composite implements CategoriesUpdateHandler {
 		for (Category c : categories) {
 			FlowPanel fp = new FlowPanel();
 			fp.getElement().getStyle().setPaddingTop(4, Unit.PX);
-			String link = Settings
-					.get()
-					.getPageTokenizer()
-					.createToken(PageLoader.PAGE_SEARCH,
-							"category:" + c.getAlias());
+			String link = GWTPages.get().createHistoryToken(
+					PageLoader.PAGE_SEARCH, "category:" + c.getAlias());
 			fp.add(new Hyperlink(c.getName() + " (" + c.getNumProducts() + ")",
 					link));
 			LeftNav.this.categories.add(fp);

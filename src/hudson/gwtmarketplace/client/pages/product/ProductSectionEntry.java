@@ -3,11 +3,10 @@
  */
 package hudson.gwtmarketplace.client.pages.product;
 
-import gwtpages.client.Settings;
-import hudson.gwtmarketplace.client.PageLoader;
 import hudson.gwtmarketplace.client.model.Product;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.gwtpages.client.page.GWTPages;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -49,11 +48,8 @@ public class ProductSectionEntry extends Composite {
 		panel.setCellHorizontalAlignment(panel.getWidget(1),
 				HorizontalPanel.ALIGN_RIGHT);
 		productLink.setText(product.getName());
-		productLink
-				.setTargetHistoryToken(Settings
-						.get()
-						.getPageTokenizer()
-						.createToken(product.getAlias()));
+		productLink.setTargetHistoryToken(GWTPages.get().createHistoryToken(
+				product.getAlias()));
 		if (type == TYPE_UPDATE_AGE)
 			custom.add(new Label(dateFormat.format(product.getUpdatedDate())));
 		else if (type == TYPE_RATING)

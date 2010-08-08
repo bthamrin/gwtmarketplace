@@ -11,7 +11,8 @@
 	<!-- <inherits name='com.google.gwt.user.theme.dark.Dark'/> -->
 
 	<!-- Other module inherits -->
-	<inherits name="gwtpages.GWT_Pages" />
+	<inherits name="com.google.gwt.gwtpages.GWT_Pages" />
+	<inherits name="com.google.gwt.inject.Inject"/>
 	<inherits name="com.googlecode.objectify.Objectify" />
 	<inherits name='org.cobogw.gwt.user.User' />
 	<inherits name='org.look.widgets.SimpleDataTable'/>

@@ -3,17 +3,17 @@
  */
 package hudson.gwtmarketplace.client.commands;
 
-import gwtpages.client.Settings;
 import hudson.gwtmarketplace.client.event.ProductUpdatedEvent;
 import hudson.gwtmarketplace.client.model.Product;
 
+import com.google.gwt.gwtpages.client.GWTPagesSettings;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public abstract class SaveProductCommand extends AbstractAsyncCommand<Product> {
 
 	private Product product;
 
-	public SaveProductCommand (Product product) {
+	public SaveProductCommand(Product product) {
 		this.product = product;
 	}
 
@@ -23,26 +23,27 @@ public abstract class SaveProductCommand extends AbstractAsyncCommand<Product> {
 			productService().save(product, new AsyncCommandCallback() {
 				@Override
 				public void onSuccess(Product result) {
-					Settings.get().getBus().fireEvent(new ProductUpdatedEvent(result));
+					GWTPagesSettings.get().getEventBus()
+							.fireEvent(new ProductUpdatedEvent(result));
 					super.onSuccess(result);
 				}
 			});
-		}
-		else {
+		} else {
 			productService().update(product, new AsyncCallback<Void>() {
 				@Override
 				public void onSuccess(Void result) {
-					Settings.get().getBus().fireEvent(new ProductUpdatedEvent(product));
+					GWTPagesSettings.get().getEventBus()
+							.fireEvent(new ProductUpdatedEvent(product));
 					SaveProductCommand.this.onSuccess(product);
 					GetProductCategoriesCommand.refresh();
 				}
-				
+
 				@Override
 				public void onFailure(Throwable caught) {
 					SaveProductCommand.this.onFailure(caught);
 				}
 			});
 		}
-		
+
 	}
 }

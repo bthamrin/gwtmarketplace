@@ -3,7 +3,6 @@
  */
 package hudson.gwtmarketplace.client.pages.product;
 
-import gwtpages.client.Settings;
 import hudson.gwtmarketplace.client.PageLoader;
 import hudson.gwtmarketplace.client.Session;
 import hudson.gwtmarketplace.client.ajaxfeeds.EntryDiv;
@@ -25,6 +24,8 @@ import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.dom.client.TableRowElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.gwtpages.client.GWTPagesSettings;
+import com.google.gwt.gwtpages.client.page.GWTPages;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -109,7 +110,7 @@ public class ProductDetailsPanel extends Composite implements FeedListener,
 		container.getWidget(0).getElement().getStyle()
 				.setPaddingRight(12, Unit.PX);
 		rateIt.addClickHandler(this);
-		Settings.get().getBus().addHandler(ProductUpdatedEvent.TYPE, this);
+		GWTPagesSettings.get().getEventBus().addHandler(ProductUpdatedEvent.TYPE, this);
 	}
 
 	@Override
@@ -161,10 +162,8 @@ public class ProductDetailsPanel extends Composite implements FeedListener,
 			if (null != userInfo
 					&& userInfo.getId().equals(product.getUserId())) {
 				links.add(new HTML("<br/>"));
-				links.add(new Hyperlink("Edit settings", Settings
-						.get()
-						.getPageTokenizer()
-						.createToken(PageLoader.PAGE_EDIT_PRODUCT,
+				links.add(new Hyperlink("Edit settings", GWTPages.get().createHistoryToken(
+						PageLoader.PAGE_EDIT_PRODUCT,
 								product.getAlias())));
 			}
 			description.setInnerHTML(product.getDescription());

@@ -3,17 +3,19 @@
  */
 package hudson.gwtmarketplace.client.pages.product;
 
-import gwtpages.client.page.Page;
-import gwtpages.client.page.Pages;
-import gwtpages.client.page.parameters.PageParameters;
 import hudson.gwtmarketplace.client.model.Pair;
 import hudson.gwtmarketplace.client.model.Product;
 
+import com.google.gwt.gwtpages.client.page.AsyncPageCallback;
+import com.google.gwt.gwtpages.client.page.GWTPages;
+import com.google.gwt.gwtpages.client.page.GWTPagesPresenter;
+import com.google.gwt.gwtpages.client.page.PageRequestSession;
+import com.google.gwt.gwtpages.client.page.parameters.PageParameters;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class NewProductPage extends SimplePanel implements Page {
+public class NewProductPage extends SimplePanel implements GWTPagesPresenter {
 
 	EditProductPage wrapped;
 
@@ -24,14 +26,15 @@ public class NewProductPage extends SimplePanel implements Page {
 			};
 			public void onCancel() {
 				if (Window.confirm("Are you sure you want to cancel?")) {
-					Pages.get().showStartPage(false);
+					GWTPages.get().showStartPage(false);
 				}
 			};
 		});
 	}
 
 	@Override
-	public void onShowPage(PageParameters parameters) {
+	public void onShowPage(PageParameters parameters,
+			PageRequestSession session, AsyncPageCallback callback) {
 		wrapped.show(new Pair<Product, String>(new Product(), null));
 	}
 

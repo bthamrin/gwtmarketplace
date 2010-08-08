@@ -3,8 +3,6 @@
  */
 package hudson.gwtmarketplace.client.pages.product;
 
-import gwtpages.client.page.CompositePage;
-import gwtpages.client.page.parameters.PageParameters;
 import hudson.gwtmarketplace.client.commands.GetProductCategoriesCommand;
 import hudson.gwtmarketplace.client.components.LabeledListBox;
 import hudson.gwtmarketplace.client.components.LabeledTextBox;
@@ -27,6 +25,10 @@ import org.look.widgets.client.datatable.MetaData;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.gwtpages.client.page.AsyncPageCallback;
+import com.google.gwt.gwtpages.client.page.CompositePage;
+import com.google.gwt.gwtpages.client.page.PageRequestSession;
+import com.google.gwt.gwtpages.client.page.parameters.PageParameters;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -121,9 +123,10 @@ public class ProductSearchPage extends CompositePage implements ChangeSortListen
 	}
 
 	@Override
-	public void onShowPage(PageParameters parameters) {
+	public void onShowPage(PageParameters parameters,
+			PageRequestSession pageRequestData, AsyncPageCallback callback) {
 		generalParams.clear();
-		if (parameters.size() > 0) {
+		if (parameters.listSize() > 0) {
 			String[] arr = parameters.asString(0).split(" ");
 			params.clear();
 			for (String s : arr) {
@@ -152,6 +155,7 @@ public class ProductSearchPage extends CompositePage implements ChangeSortListen
 			searchFor.getComponent().setValue(sb.toString());
 		}
 		resetGrid();
+		callback.onSuccess();
 	}
 
 	@Override

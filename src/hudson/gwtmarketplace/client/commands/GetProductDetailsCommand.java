@@ -3,7 +3,6 @@
  */
 package hudson.gwtmarketplace.client.commands;
 
-import gwtpages.client.Settings;
 import hudson.gwtmarketplace.client.event.ProductUpdatedEvent;
 import hudson.gwtmarketplace.client.event.TopsDateCheckEvent;
 import hudson.gwtmarketplace.client.model.Pair;
@@ -13,6 +12,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.google.gwt.gwtpages.client.GWTPagesSettings;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public abstract class GetProductDetailsCommand extends
@@ -22,7 +22,9 @@ public abstract class GetProductDetailsCommand extends
 	public static Map<Long, Product> productIdMap = new HashMap<Long, Product>();
 
 	static {
-		Settings.get().getBus()
+		GWTPagesSettings
+				.get()
+				.getEventBus()
 				.addHandler(ProductUpdatedEvent.TYPE,
 						new ProductUpdatedEvent.ProductUpdateHandler() {
 							@Override
@@ -67,20 +69,26 @@ public abstract class GetProductDetailsCommand extends
 		};
 
 		if (forViewing) {
-			productService().getForViewing(alias, new AsyncCallback<Pair<Product,Date>>() {
-				
-				@Override
-				public void onSuccess(Pair<Product, Date> result) {
-					if (null != result && null != result.getEntity2())
-						Settings.get().getBus().fireEvent(new TopsDateCheckEvent(result.getEntity2()));
-					callback.onSuccess(result.getEntity1());
-				}
-				
-				@Override
-				public void onFailure(Throwable caught) {
-					callback.onFailure(caught);
-				}
-			});
+			productService().getForViewing(alias,
+					new AsyncCallback<Pair<Product, Date>>() {
+
+						@Override
+						public void onSuccess(Pair<Product, Date> result) {
+							if (null != result && null != result.getEntity2())
+								GWTPagesSettings
+										.get()
+										.getEventBus()
+										.fireEvent(
+												new TopsDateCheckEvent(result
+														.getEntity2()));
+							callback.onSuccess(result.getEntity1());
+						}
+
+						@Override
+						public void onFailure(Throwable caught) {
+							callback.onFailure(caught);
+						}
+					});
 		}
 		if (null != productId)
 			productService().getById(productId, callback);
