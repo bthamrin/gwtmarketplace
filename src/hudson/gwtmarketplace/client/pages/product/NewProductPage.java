@@ -36,6 +36,7 @@ public class NewProductPage extends SimplePanel implements GWTPagesPresenter {
 	public void onShowPage(PageParameters parameters,
 			PageRequestSession session, AsyncPageCallback callback) {
 		wrapped.show(new Pair<Product, String>(new Product(), null));
+		callback.onSuccess();
 	}
 
 	@Override
