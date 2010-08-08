@@ -57,17 +57,16 @@ public class ViewProductPage extends CompositePage implements
 		GWTPagesSettings.get().getEventBus().addHandler(ProductCommentEvent.TYPE, this);
 	}
 
-	public void show(String alias) {
-		show((Product) null);
+	public void show(String alias, final AsyncPageCallback callback) {
 		new GetProductDetailsCommand(alias) {
 			@Override
 			public void onSuccess(Product product) {
-				show(product);
+				show(product, callback);
 			}
 		}.execute();
 	}
 
-	public void show(Product product) {
+	public void show(Product product, AsyncPageCallback callback) {
 		this.product = product;
 		tabs.selectTab(0);
 		if (null != product)
@@ -76,6 +75,7 @@ public class ViewProductPage extends CompositePage implements
 			siteTitle.setInnerText("Loading Details...");
 		productDetails.show(product);
 		resetCommentTabTitle();
+		callback.onSuccess();
 	}
 
 	private void resetCommentTabTitle() {
@@ -108,14 +108,13 @@ public class ViewProductPage extends CompositePage implements
 	public void onShowPage(PageParameters parameters,
 			PageRequestSession pageRequestData, AsyncPageCallback callback) {
 		if (parameters.listSize() > 0)
-			show(parameters.asString(0));
+			show(parameters.asString(0), callback);
 		else if (!parameters.getHistoryToken().startsWith("_"))
-			show(parameters.getHistoryToken());
+			show(parameters.getHistoryToken(), callback);
 		callback.onSuccess();
 	}
 
 	@Override
 	public void onHidePage() {
-		show((Product) null);
 	}
 }
