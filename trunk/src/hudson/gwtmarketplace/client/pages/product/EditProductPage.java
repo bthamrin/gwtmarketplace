@@ -239,7 +239,7 @@ public class EditProductPage extends CompositePage implements ClickHandler, Subm
 		new SaveProductCommand(product) {
 			@Override
 			public void onSuccess(Product result) {
-				GWTPages.get().gotoPage(product.getAlias()).execute();
+				GWTPages.get().gotoPage(result.getAlias()).execute();
 			}
 		}.execute();
 	}
