@@ -34,10 +34,11 @@ public class ProductCommentsPanel extends Composite implements ClickHandler {
 
 	private static MyUiBinder uiBinder = GWT.create(MyUiBinder.class);
 
-	private static DateTimeFormat dateFormat = DateTimeFormat.getMediumDateFormat();
-	
+	private static DateTimeFormat dateFormat = DateTimeFormat
+			.getMediumDateFormat();
+
 	private Product product;
-	
+
 	@UiField
 	FlowPanel ratingContainer;
 	@UiField
@@ -55,19 +56,20 @@ public class ProductCommentsPanel extends Composite implements ClickHandler {
 		ratingContainer.add(this.rating = new ProductRating());
 		saveBtn.addClickHandler(this);
 	}
-	
+
 	public void show(Product product) {
-		if (null == this.product || null == product || !this.product.equals(product)) {
+		if (null == this.product || null == product
+				|| !this.product.equals(product)) {
 			this.product = product;
 			refreshComments();
 		}
 	}
-	
+
 	private void refreshComments() {
 		commentsContainer.clear();
 		commentsContainer.add(new Label("Loading comments..."));
 		new GetProductCommentsCommand(product.getId(), 0, 20) {
-			
+
 			@Override
 			public void onSuccess(SearchResults<ProductComment> result) {
 				commentsContainer.clear();
@@ -77,22 +79,23 @@ public class ProductCommentsPanel extends Composite implements ClickHandler {
 			}
 		}.execute();
 	}
-	
+
 	private void onAddComment() {
 		ProductComment comment = new ProductComment();
 		comment.setCommentText(this.comment.getValue());
 		comment.setRating(rating.getRatingValue());
 		new AddProductCommentCommand(product, comment) {
-			public void onSuccess(Triple<ProductComment, Product,Date> result) {
+			public void onSuccess(Triple<ProductComment, Product, Date> result) {
 				rating.setValue(0);
 				ProductCommentsPanel.this.comment.setValue(null);
 				if (null != result.getEntity1()) {
-					commentsContainer.insert(new CommentPanel(result.getEntity1()), 0);
+					commentsContainer.insert(
+							new CommentPanel(result.getEntity1()), 0);
 				}
 			};
 		}.execute();
 	}
-	
+
 	@Override
 	public void onClick(ClickEvent event) {
 		if (event.getSource().equals(saveBtn)) {

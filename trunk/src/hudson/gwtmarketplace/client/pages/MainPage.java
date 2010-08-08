@@ -3,8 +3,6 @@
  */
 package hudson.gwtmarketplace.client.pages;
 
-import gwtpages.client.page.CompositePage;
-import gwtpages.client.page.parameters.PageParameters;
 import hudson.gwtmarketplace.client.ajaxfeeds.EntryDiv;
 import hudson.gwtmarketplace.client.ajaxfeeds.Feed;
 import hudson.gwtmarketplace.client.ajaxfeeds.FeedListener;
@@ -17,6 +15,10 @@ import hudson.gwtmarketplace.client.pages.product.ProductSectionEntry;
 import java.util.List;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.gwtpages.client.page.AsyncPageCallback;
+import com.google.gwt.gwtpages.client.page.CompositePage;
+import com.google.gwt.gwtpages.client.page.PageRequestSession;
+import com.google.gwt.gwtpages.client.page.parameters.PageParameters;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.FlowPanel;
@@ -55,13 +57,20 @@ public class MainPage extends CompositePage implements FeedListener {
 	}
 
 	@Override
-	public void onShowPage(PageParameters parameters) {
+	public void onShowPage(PageParameters parameters,
+			PageRequestSession pageRequestData, final AsyncPageCallback callback) {
 		new GetTopsCommand() {
 
 			@Override
 			public void onSuccess(Top10Lists result) {
+				callback.onSuccess();
 				refresh(result);
 			}
+			
+			public void onFailure(Throwable e) {
+				super.onFailure(e);
+				callback.onFailure(e);
+			};
 		}.execute();
 		
 		if (!blogfeedLoaded) {
