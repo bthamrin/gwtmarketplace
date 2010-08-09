@@ -14,8 +14,7 @@ import java.util.ArrayList;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Style.Unit;
-import com.google.gwt.gwtpages.client.GWTPagesSettings;
-import com.google.gwt.gwtpages.client.page.GWTPages;
+import com.google.gwt.gwtpages.client.Pages;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.Composite;
@@ -35,7 +34,7 @@ public class LeftNav extends Composite implements CategoriesUpdateHandler {
 	public LeftNav() {
 		initWidget(uiBinder.createAndBindUi(this));
 		reloadCategories();
-		GWTPagesSettings.get().getEventBus()
+		Pages.get().getEventBus()
 				.addHandler(CategoriesUpdatedEvent.TYPE, this);
 	}
 
@@ -55,7 +54,7 @@ public class LeftNav extends Composite implements CategoriesUpdateHandler {
 		for (Category c : categories) {
 			FlowPanel fp = new FlowPanel();
 			fp.getElement().getStyle().setPaddingTop(4, Unit.PX);
-			String link = GWTPages.get().createHistoryToken(
+			String link = Pages.get().createHistoryToken(
 					PageLoader.PAGE_SEARCH, "category:" + c.getAlias());
 			fp.add(new Hyperlink(c.getName() + " (" + c.getNumProducts() + ")",
 					link));

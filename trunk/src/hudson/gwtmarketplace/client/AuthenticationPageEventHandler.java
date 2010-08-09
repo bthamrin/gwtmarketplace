@@ -7,11 +7,11 @@ import java.util.List;
 import java.util.Map;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.gwtpages.client.page.GWTPage;
-import com.google.gwt.gwtpages.client.page.GWTPageAttributes;
-import com.google.gwt.gwtpages.client.page.GWTPages;
+import com.google.gwt.gwtpages.client.GotoPageCommand;
+import com.google.gwt.gwtpages.client.Pages;
+import com.google.gwt.gwtpages.client.page.LoadedPageContainer;
+import com.google.gwt.gwtpages.client.page.PageAttributes;
 import com.google.gwt.gwtpages.client.page.PageEventHandler;
-import com.google.gwt.gwtpages.client.page.PageRequestSession;
 import com.google.gwt.gwtpages.client.page.parameters.PageParameters;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Window;
@@ -19,14 +19,31 @@ import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public class AuthenticationPageEventHandler implements PageEventHandler {
 
-	private static final UserInfoServiceAsync svc = GWT
-			.create(UserInfoService.class);
+	@Override
+	public void onAfterPageEnter(LoadedPageContainer pageLoadResult,
+			PageParameters parameters, GotoPageCommand command) {
+	}
 
 	@Override
-	public void beforePageShow(GWTPage page, PageParameters parameters,
-			PageRequestSession session) {
-		if (null != page.getAttributes()
-				&& null != page.getAttributes().get(AuthenticationData.class)) {
+	public void onPageEnterSuccess(LoadedPageContainer pageLoadResult,
+			PageParameters parameters, GotoPageCommand command) {
+	}
+
+	@Override
+	public void onPageEnterFailure(LoadedPageContainer pageLoadResult,
+			PageParameters parameters, GotoPageCommand command) {
+	}
+
+	@Override
+	public void onPageRequest(String pageToken, String historyToken,
+			com.google.gwt.gwtpages.client.PageRequestSession session) {
+	}
+
+	@Override
+	public void onBeforePageEnter(LoadedPageContainer pageLoadResult,
+			PageParameters parameters, GotoPageCommand command) {
+		if (null != pageLoadResult.getAttributes()
+				&& null != pageLoadResult.getAttributes().get(AuthenticationData.class)) {
 			// this is a secure page
 			if (null == Session.get().getLoggedInUser()) {
 				StringBuilder callbackUri = new StringBuilder();
@@ -65,33 +82,13 @@ public class AuthenticationPageEventHandler implements PageEventHandler {
 										.getLoginUrl());
 							}
 						});
-				GWTPages.get().stopRequest();
+				Pages.get().stopRequest();
 			}
 		}
 	}
 
 	@Override
-	public void afterPageShow(GWTPage pageLoadResult,
-			PageParameters parameters, PageRequestSession session) {
-	}
-
-	@Override
-	public void onPageShowSuccess(GWTPage pageLoadResult,
-			PageParameters parameters, PageRequestSession session) {
-	}
-
-	@Override
-	public void onPageShowFailure(GWTPage pageLoadResult,
-			PageParameters parameters, PageRequestSession session) {
-	}
-
-	@Override
-	public void onPageRequest(String pageToken, String historyToken,
-			PageRequestSession session) {
-	}
-
-	@Override
-	public void onPageLoaded(GWTPage result) {
+	public void onPageLoaded(LoadedPageContainer result) {
 	}
 
 	@Override
@@ -102,8 +99,11 @@ public class AuthenticationPageEventHandler implements PageEventHandler {
 	public void onPageLoadFailure(String historyToken, Throwable cause) {
 	}
 
-	public static GWTPageAttributes metaData() {
-		return new GWTPageAttributes().put(AuthenticationData.class,
+	private static final UserInfoServiceAsync svc = GWT
+			.create(UserInfoService.class);
+
+	public static PageAttributes createPageAttributes() {
+		return new PageAttributes().put(AuthenticationData.class,
 				new AuthenticationData() {
 				});
 	}

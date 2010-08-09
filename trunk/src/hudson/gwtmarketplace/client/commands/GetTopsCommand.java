@@ -9,7 +9,7 @@ import hudson.gwtmarketplace.client.model.Top10Lists;
 
 import java.util.Date;
 
-import com.google.gwt.gwtpages.client.GWTPagesSettings;
+import com.google.gwt.gwtpages.client.Pages;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public abstract class GetTopsCommand extends AbstractAsyncCommand<Top10Lists> {
@@ -17,7 +17,7 @@ public abstract class GetTopsCommand extends AbstractAsyncCommand<Top10Lists> {
 	private static Top10Lists top10Lists;
 
 	static {
-		GWTPagesSettings
+		Pages
 				.get()
 				.getEventBus()
 				.addHandler(TopsDateCheckEvent.TYPE,
@@ -45,7 +45,7 @@ public abstract class GetTopsCommand extends AbstractAsyncCommand<Top10Lists> {
 						public void onSuccess(Top10Lists result) {
 							GetTopsCommand.top10Lists = result;
 							GetTopsCommand.this.onSuccess(result);
-							GWTPagesSettings.get().getEventBus()
+							Pages.get().getEventBus()
 									.fireEvent(new TopsUpdatedEvent(result));
 						}
 

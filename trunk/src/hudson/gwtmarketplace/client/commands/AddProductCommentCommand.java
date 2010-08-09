@@ -12,7 +12,7 @@ import hudson.gwtmarketplace.client.model.Triple;
 
 import java.util.Date;
 
-import com.google.gwt.gwtpages.client.GWTPagesSettings;
+import com.google.gwt.gwtpages.client.Pages;
 
 public abstract class AddProductCommentCommand extends
 		AbstractAsyncCommand<Triple<ProductComment, Product, Date>> {
@@ -34,21 +34,21 @@ public abstract class AddProductCommentCommand extends
 						public void onSuccess(
 								Triple<ProductComment, Product, Date> result) {
 							if (null != result.getEntity3())
-								GWTPagesSettings
+								Pages
 										.get()
 										.getEventBus()
 										.fireEvent(
 												new TopsDateCheckEvent(result
 														.getEntity3()));
 							if (null != result.getEntity2()) {
-								GWTPagesSettings
+								Pages
 										.get()
 										.getEventBus()
 										.fireEvent(
 												new ProductUpdatedEvent(result
 														.getEntity2()));
 							}
-							GWTPagesSettings
+							Pages
 									.get()
 									.getEventBus()
 									.fireEvent(

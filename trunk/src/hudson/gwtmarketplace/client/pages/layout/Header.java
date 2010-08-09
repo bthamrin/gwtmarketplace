@@ -14,7 +14,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyUpEvent;
 import com.google.gwt.event.dom.client.KeyUpHandler;
-import com.google.gwt.gwtpages.client.page.GWTPages;
+import com.google.gwt.gwtpages.client.Pages;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Window;
@@ -72,7 +72,7 @@ public class Header extends Composite implements ClickHandler, KeyUpHandler {
 	}
 
 	private void onSearch() {
-		GWTPages.get().gotoPage(PageLoader.PAGE_SEARCH)
+		Pages.get().gotoPage(PageLoader.PAGE_SEARCH)
 			.addParameter(searchBox.getValue()).execute();
 		searchBox.setValue(null);
 	}

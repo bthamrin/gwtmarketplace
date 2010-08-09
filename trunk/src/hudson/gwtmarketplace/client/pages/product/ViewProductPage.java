@@ -13,10 +13,10 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.HeadingElement;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
-import com.google.gwt.gwtpages.client.GWTPagesSettings;
+import com.google.gwt.gwtpages.client.PageRequestSession;
+import com.google.gwt.gwtpages.client.Pages;
 import com.google.gwt.gwtpages.client.page.AsyncPageCallback;
 import com.google.gwt.gwtpages.client.page.CompositePage;
-import com.google.gwt.gwtpages.client.page.PageRequestSession;
 import com.google.gwt.gwtpages.client.page.parameters.PageParameters;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -54,7 +54,7 @@ public class ViewProductPage extends CompositePage implements
 				false);
 		tabs.addSelectionHandler(this);
 		tabs.selectTab(0);
-		GWTPagesSettings.get().getEventBus().addHandler(ProductCommentEvent.TYPE, this);
+		Pages.get().getEventBus().addHandler(ProductCommentEvent.TYPE, this);
 	}
 
 	public void show(String alias, final AsyncPageCallback callback) {
@@ -105,7 +105,7 @@ public class ViewProductPage extends CompositePage implements
 	}
 
 	@Override
-	public void onShowPage(PageParameters parameters,
+	public void onEnter(PageParameters parameters,
 			PageRequestSession pageRequestData, AsyncPageCallback callback) {
 		if (parameters.listSize() > 0)
 			show(parameters.asString(0), callback);
@@ -113,8 +113,8 @@ public class ViewProductPage extends CompositePage implements
 			show(parameters.getHistoryToken(), callback);
 		callback.onSuccess();
 	}
-
+	
 	@Override
-	public void onHidePage() {
+	public void onExit() {
 	}
 }

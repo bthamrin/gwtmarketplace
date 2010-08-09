@@ -12,7 +12,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-import com.google.gwt.gwtpages.client.GWTPagesSettings;
+import com.google.gwt.gwtpages.client.Pages;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public abstract class GetProductDetailsCommand extends
@@ -22,7 +22,7 @@ public abstract class GetProductDetailsCommand extends
 	public static Map<Long, Product> productIdMap = new HashMap<Long, Product>();
 
 	static {
-		GWTPagesSettings
+		Pages
 				.get()
 				.getEventBus()
 				.addHandler(ProductUpdatedEvent.TYPE,
@@ -75,8 +75,7 @@ public abstract class GetProductDetailsCommand extends
 						@Override
 						public void onSuccess(Pair<Product, Date> result) {
 							if (null != result && null != result.getEntity2())
-								GWTPagesSettings
-										.get()
+								Pages.get()
 										.getEventBus()
 										.fireEvent(
 												new TopsDateCheckEvent(result
