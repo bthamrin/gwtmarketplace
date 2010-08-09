@@ -440,7 +440,7 @@ public class ProductManager extends AbstractManager {
 				throw new InvalidAccessException();
 			if (!orig.getCategoryId().equals(product.getCategoryId())) {
 				Category category1 = singleResult(noTx().query(Category.class)
-						.filter("name", orig.getCategoryId()));
+						.filter("alias", orig.getCategoryId()));
 				if (null != category1) {
 					if (null == category1.getNumProducts()) category1.setNumProducts(0);
 					else {
@@ -449,7 +449,7 @@ public class ProductManager extends AbstractManager {
 					}
 				}
 				Category category2 = singleResult(noTx().query(Category.class)
-						.filter("name", product.getCategoryId()));
+						.filter("alias", product.getCategoryId()));
 				if (null == category2.getNumProducts()) category2.setNumProducts(1);
 				else {
 					category2

@@ -7,6 +7,7 @@ import hudson.gwtmarketplace.client.service.ProductService;
 import hudson.gwtmarketplace.client.service.ProductServiceAsync;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.gwtpages.client.message.Messages;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public abstract class AbstractAsyncCommand<T> implements AsyncCommand<T> {
@@ -21,7 +22,10 @@ public abstract class AbstractAsyncCommand<T> implements AsyncCommand<T> {
 
 	@Override
 	public void onFailure(Throwable e) {
-		e.printStackTrace();
+		if (null == e.getMessage())
+			Messages.get().error("An error occured while processing your request");
+		else
+			Messages.get().error("An error occured while processing your request: " + e.getMessage());
 	}
 
 	private static ProductServiceAsync productService;
