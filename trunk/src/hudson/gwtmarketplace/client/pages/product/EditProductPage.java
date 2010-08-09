@@ -32,6 +32,7 @@ import com.google.gwt.gwtpages.client.PageRequestSession;
 import com.google.gwt.gwtpages.client.Pages;
 import com.google.gwt.gwtpages.client.message.Message;
 import com.google.gwt.gwtpages.client.message.Messages;
+import com.google.gwt.gwtpages.client.message.PageRequestSessionWithMessage;
 import com.google.gwt.gwtpages.client.page.AsyncPageCallback;
 import com.google.gwt.gwtpages.client.page.CompositePage;
 import com.google.gwt.gwtpages.client.page.parameters.PageParameters;
@@ -238,15 +239,14 @@ public class EditProductPage extends CompositePage implements ClickHandler, Subm
 		new SaveProductCommand(product) {
 			@Override
 			public void onSuccess(Product result) {
-				Pages.get().gotoPage(result.getAlias()).execute();
+				Pages.get().gotoPage(result.getAlias(), new PageRequestSessionWithMessage("The product details were saved.")).execute();
 			}
 		}.execute();
 	}
 
 	public void onCancel() {
 		if (Window.confirm("Are you sure you want to cancel?")) {
-			Pages.get().gotoPage(PageLoader.PAGE_VIEW_PRODUCT)
-				.addParameter(product.getAlias()).execute();
+			Pages.get().gotoPage(product.getAlias()).execute();
 		}
 	}
 

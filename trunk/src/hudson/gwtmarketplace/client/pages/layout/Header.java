@@ -38,7 +38,7 @@ public class Header extends Composite implements ClickHandler, KeyUpHandler {
 	@UiField
 	Image searchImg;
 	Boolean isLoggedIn;
-	
+
 	public Header() {
 		initWidget(uiBinder.createAndBindUi(this));
 		loginLogout.setVisible(false);
@@ -47,15 +47,14 @@ public class Header extends Composite implements ClickHandler, KeyUpHandler {
 		searchImg.setUrl("images/search.png");
 		searchBox.addKeyUpHandler(this);
 		new LoginCommand() {
-			
+
 			@Override
 			public void onSuccess(UserInfo result) {
 				loginLogout.setVisible(true);
 				isLoggedIn = result.isLoggedIn();
 				if (result.isLoggedIn()) {
 					loginLogout.setText("logout");
-				}
-				else {
+				} else {
 					loginLogout.setText("login");
 				}
 			}
@@ -65,15 +64,14 @@ public class Header extends Composite implements ClickHandler, KeyUpHandler {
 	private void onLoginLogout() {
 		if (isLoggedIn) {
 			Window.Location.assign(Session.get().getLogoutUrl());
-		}
-		else {
+		} else {
 			Window.Location.assign(Session.get().getLoginUrl());
 		}
 	}
 
 	private void onSearch() {
-		Pages.get().gotoPage(PageLoader.PAGE_SEARCH)
-			.addParameter(searchBox.getValue()).execute();
+		Pages.get().gotoPage(PageLoader.PAGE_SEARCH, searchBox.getValue())
+				.execute();
 		searchBox.setValue(null);
 	}
 
@@ -81,8 +79,7 @@ public class Header extends Composite implements ClickHandler, KeyUpHandler {
 	public void onClick(ClickEvent event) {
 		if (event.getSource().equals(loginLogout)) {
 			onLoginLogout();
-		}
-		else if (event.getSource().equals(searchImg)) {
+		} else if (event.getSource().equals(searchImg)) {
 			onSearch();
 		}
 	}
