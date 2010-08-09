@@ -44,6 +44,5 @@ public abstract class SaveProductCommand extends AbstractAsyncCommand<Product> {
 				}
 			});
 		}
-
 	}
 }
