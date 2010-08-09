@@ -440,13 +440,21 @@ public class ProductManager extends AbstractManager {
 				throw new InvalidAccessException();
 			if (!orig.getCategoryId().equals(product.getCategoryId())) {
 				Category category1 = singleResult(noTx().query(Category.class)
-						.filter("id", orig.getCategoryId()));
-				category1
-						.setNumProducts(category1.getNumProducts().intValue() - 1);
+						.filter("name", orig.getCategoryId()));
+				if (null != category1) {
+					if (null == category1.getNumProducts()) category1.setNumProducts(0);
+					else {
+					category1
+							.setNumProducts(category1.getNumProducts().intValue() - 1);
+					}
+				}
 				Category category2 = singleResult(noTx().query(Category.class)
-						.filter("id", product.getCategoryId()));
-				category2
-						.setNumProducts(category1.getNumProducts().intValue() + 1);
+						.filter("name", product.getCategoryId()));
+				if (null == category2.getNumProducts()) category2.setNumProducts(1);
+				else {
+					category2
+							.setNumProducts(category1.getNumProducts().intValue() + 1);
+				}
 				List<Category> toUpdate = new ArrayList<Category>();
 				toUpdate.add(category1);
 				toUpdate.add(category2);

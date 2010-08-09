@@ -11,9 +11,15 @@
 				GWT users to rate, comment and search on GWT products.
 				<br/><br/>
 			</g:HTML>
-			<g:FlowPanel>
-				<g:Hyperlink targetHistoryToken="_new">Register a new product</g:Hyperlink>
-			</g:FlowPanel>
+			<g:HTMLPanel>
+				<table>
+					<tr>
+						<td><g:Hyperlink targetHistoryToken="_new">Register a new product</g:Hyperlink></td>
+						<td>or</td>
+						<td><a href="http://code.google.com/p/gwtmarketplace/issues/list" target="_blank">Submit a bug or feature request</a></td>
+					</tr>
+				</table>
+			</g:HTMLPanel>
 		</c:Section>		
 		<g:HorizontalPanel ui:field="horizPanel" width="100%" spacing="12">
 			<c:Section ui:field="newAndUpdated" title="New and Updated"></c:Section>

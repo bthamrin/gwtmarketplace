@@ -88,6 +88,11 @@ public class AuthenticationPageEventHandler implements PageEventHandler {
 	}
 
 	@Override
+	public void onPageWaitForAsync(LoadedPageContainer loadedPageContainer,
+			PageParameters parameters, GotoPageCommand command) {
+	}
+
+	@Override
 	public void onPageLoaded(LoadedPageContainer result) {
 	}
 
