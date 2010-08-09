@@ -15,9 +15,9 @@ import hudson.gwtmarketplace.client.pages.product.ProductSectionEntry;
 import java.util.List;
 
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.gwtpages.client.PageRequestSession;
 import com.google.gwt.gwtpages.client.page.AsyncPageCallback;
 import com.google.gwt.gwtpages.client.page.CompositePage;
-import com.google.gwt.gwtpages.client.page.PageRequestSession;
 import com.google.gwt.gwtpages.client.page.parameters.PageParameters;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -57,10 +57,10 @@ public class MainPage extends CompositePage implements FeedListener {
 	}
 
 	@Override
-	public void onShowPage(PageParameters parameters,
-			PageRequestSession pageRequestData, final AsyncPageCallback callback) {
+	public void onEnter(PageParameters parameters,
+			PageRequestSession pageRequestData,
+			final AsyncPageCallback callback) {
 		new GetTopsCommand() {
-
 			@Override
 			public void onSuccess(Top10Lists result) {
 				callback.onSuccess();
@@ -80,7 +80,7 @@ public class MainPage extends CompositePage implements FeedListener {
 	}
 
 	@Override
-	public void onHidePage() {
+	public void onExit() {
 	}
 
 	public void refresh(Top10Lists top10Lists) {

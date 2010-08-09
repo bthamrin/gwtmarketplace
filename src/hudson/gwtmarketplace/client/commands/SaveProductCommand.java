@@ -6,7 +6,7 @@ package hudson.gwtmarketplace.client.commands;
 import hudson.gwtmarketplace.client.event.ProductUpdatedEvent;
 import hudson.gwtmarketplace.client.model.Product;
 
-import com.google.gwt.gwtpages.client.GWTPagesSettings;
+import com.google.gwt.gwtpages.client.Pages;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public abstract class SaveProductCommand extends AbstractAsyncCommand<Product> {
@@ -23,7 +23,7 @@ public abstract class SaveProductCommand extends AbstractAsyncCommand<Product> {
 			productService().save(product, new AsyncCommandCallback() {
 				@Override
 				public void onSuccess(Product result) {
-					GWTPagesSettings.get().getEventBus()
+					Pages.get().getEventBus()
 							.fireEvent(new ProductUpdatedEvent(result));
 					super.onSuccess(result);
 				}
@@ -32,7 +32,7 @@ public abstract class SaveProductCommand extends AbstractAsyncCommand<Product> {
 			productService().update(product, new AsyncCallback<Void>() {
 				@Override
 				public void onSuccess(Void result) {
-					GWTPagesSettings.get().getEventBus()
+					Pages.get().getEventBus()
 							.fireEvent(new ProductUpdatedEvent(product));
 					SaveProductCommand.this.onSuccess(product);
 					GetProductCategoriesCommand.refresh();

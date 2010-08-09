@@ -6,7 +6,7 @@ package hudson.gwtmarketplace.client.pages.product;
 import hudson.gwtmarketplace.client.model.Product;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.gwtpages.client.page.GWTPages;
+import com.google.gwt.gwtpages.client.Pages;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -48,7 +48,7 @@ public class ProductSectionEntry extends Composite {
 		panel.setCellHorizontalAlignment(panel.getWidget(1),
 				HorizontalPanel.ALIGN_RIGHT);
 		productLink.setText(product.getName());
-		productLink.setTargetHistoryToken(GWTPages.get().createHistoryToken(
+		productLink.setTargetHistoryToken(Pages.get().createHistoryToken(
 				product.getAlias()));
 		if (type == TYPE_UPDATE_AGE)
 			custom.add(new Label(dateFormat.format(product.getUpdatedDate())));

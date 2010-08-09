@@ -9,7 +9,7 @@ import hudson.gwtmarketplace.client.model.DisplayEntity;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.gwt.gwtpages.client.message.GWTMessage;
+import com.google.gwt.gwtpages.client.message.Message;
 import com.google.gwt.user.client.ui.Focusable;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextBox;
@@ -129,19 +129,19 @@ public class WidgetUtil {
 	}
 
 	public static void checkNull(LabeledContainer[] components,
-			List<GWTMessage> messages) {
+			List<Message> messages) {
 		for (LabeledContainer lc : components) {
 			Widget component = lc.getComponent();
 			if (component instanceof TextBox) {
 				if (isNull(((TextBox) component).getValue()))
-					messages.add(GWTMessage.error("'" + lc.getLabel()
+					messages.add(Message.error("'" + lc.getLabel()
 							+ "' is a required field", (component instanceof Focusable)?(Focusable)component:null));
 			} else if (component instanceof ListBox) {
 				if (((ListBox) component).getSelectedIndex() < 0
 						|| isNull(((ListBox) component)
 								.getValue(((ListBox) component)
 										.getSelectedIndex()))) {
-					messages.add(GWTMessage.error("'" + lc.getLabel()
+					messages.add(Message.error("'" + lc.getLabel()
 							+ "' is a required field", (component instanceof Focusable)?(Focusable)component:null));
 				}
 			}

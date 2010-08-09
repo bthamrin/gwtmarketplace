@@ -28,12 +28,12 @@ import com.google.gwt.dom.client.ImageElement;
 import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.gwtpages.client.message.GWTMessage;
-import com.google.gwt.gwtpages.client.message.GWTMessages;
+import com.google.gwt.gwtpages.client.PageRequestSession;
+import com.google.gwt.gwtpages.client.Pages;
+import com.google.gwt.gwtpages.client.message.Message;
+import com.google.gwt.gwtpages.client.message.Messages;
 import com.google.gwt.gwtpages.client.page.AsyncPageCallback;
 import com.google.gwt.gwtpages.client.page.CompositePage;
-import com.google.gwt.gwtpages.client.page.GWTPages;
-import com.google.gwt.gwtpages.client.page.PageRequestSession;
 import com.google.gwt.gwtpages.client.page.parameters.PageParameters;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -128,8 +128,8 @@ public class EditProductPage extends CompositePage implements ClickHandler, Subm
 	}
 
 	@Override
-	public void onShowPage(PageParameters parameters,
-			PageRequestSession session, final AsyncPageCallback callback) {
+	public void onEnter(PageParameters parameters,
+			PageRequestSession pageRequestData, final AsyncPageCallback callback) {
 		if (parameters.getParameters().length > 0) {
 			productService.getForEditing(parameters.asString(0),
 					new AsyncCallback<Pair<Product, String>>() {
@@ -142,18 +142,17 @@ public class EditProductPage extends CompositePage implements ClickHandler, Subm
 
 						@Override
 						public void onFailure(Throwable caught) {
-							GWTMessages.get().error(caught.getMessage(), null);
+							Messages.get().error(caught.getMessage(), null);
 						}
 					});
 		}
 	}
-
+	
 	@Override
-	public void onHidePage() {
+	public void onExit() {
 		show(new Pair<Product, String>(new Product(), null));
 	}
-	
-	
+
 	public void show(final Pair<Product, String> productPair) {
 		this.product = productPair.getEntity1();
 		if (null != product.getDescription())
@@ -204,14 +203,14 @@ public class EditProductPage extends CompositePage implements ClickHandler, Subm
 	}
 
 	public void onSave() {
-		List<GWTMessage> messages = new ArrayList<GWTMessage>();
+		List<Message> messages = new ArrayList<Message>();
 		WidgetUtil.checkNull(new LabeledContainer[] { name, category,
 				status, license, webpageUrl }, messages);
 		if (isNull(description.getText())) {
-			messages.add(GWTMessage.error("Please enter the description", description));
+			messages.add(Message.error("Please enter the description", description));
 		}
 		if (messages.size() > 0) {
-			GWTMessages.get().setMessages(messages);
+			Messages.get().setMessages(messages);
 			return;
 		}
 
@@ -239,14 +238,14 @@ public class EditProductPage extends CompositePage implements ClickHandler, Subm
 		new SaveProductCommand(product) {
 			@Override
 			public void onSuccess(Product result) {
-				GWTPages.get().gotoPage(result.getAlias()).execute();
+				Pages.get().gotoPage(result.getAlias()).execute();
 			}
 		}.execute();
 	}
 
 	public void onCancel() {
 		if (Window.confirm("Are you sure you want to cancel?")) {
-			GWTPages.get().gotoPage(PageLoader.PAGE_VIEW_PRODUCT)
+			Pages.get().gotoPage(PageLoader.PAGE_VIEW_PRODUCT)
 				.addParameter(product.getAlias()).execute();
 		}
 	}

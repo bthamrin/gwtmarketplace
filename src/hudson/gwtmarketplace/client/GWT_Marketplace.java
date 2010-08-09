@@ -9,8 +9,7 @@ import hudson.gwtmarketplace.client.pages.LayoutPage;
 
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.event.shared.HandlerManager;
-import com.google.gwt.gwtpages.client.GWTPagesSettings;
-import com.google.gwt.gwtpages.client.page.GWTPages;
+import com.google.gwt.gwtpages.client.Pages;
 import com.google.gwt.user.client.ui.RootPanel;
 
 /**
@@ -24,7 +23,7 @@ public class GWT_Marketplace implements EntryPoint {
 	 * This is the entry point method.
 	 */
 	public void onModuleLoad() {
-		GWTPagesSettings
+		Pages
 				.init(this.layoutPage = new LayoutPage(), new PageLoader(),
 						new HandlerManager(null), true)
 				.addDefaultEventHandlers()
@@ -35,11 +34,11 @@ public class GWT_Marketplace implements EntryPoint {
 		new LoginCommand() {
 			@Override
 			public void onSuccess(UserInfo result) {
-				GWTPages.get().showStartPage(true);
+				Pages.get().showStartPage(true);
 			}
 
 			public void onFailure(Throwable e) {
-				GWTPages.get().showStartPage(false);
+				Pages.get().showStartPage(false);
 			};
 		}.execute();
 	}

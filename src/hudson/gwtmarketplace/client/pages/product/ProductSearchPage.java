@@ -25,9 +25,9 @@ import org.look.widgets.client.datatable.MetaData;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.gwtpages.client.PageRequestSession;
 import com.google.gwt.gwtpages.client.page.AsyncPageCallback;
 import com.google.gwt.gwtpages.client.page.CompositePage;
-import com.google.gwt.gwtpages.client.page.PageRequestSession;
 import com.google.gwt.gwtpages.client.page.parameters.PageParameters;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.NumberFormat;
@@ -40,7 +40,8 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.SubmitButton;
 
-public class ProductSearchPage extends CompositePage implements ChangeSortListener, ClickHandler {
+public class ProductSearchPage extends CompositePage implements
+		ChangeSortListener, ClickHandler {
 
 	interface MyUiBinder extends UiBinder<FlowPanel, ProductSearchPage> {
 	}
@@ -123,7 +124,7 @@ public class ProductSearchPage extends CompositePage implements ChangeSortListen
 	}
 
 	@Override
-	public void onShowPage(PageParameters parameters,
+	public void onEnter(PageParameters parameters,
 			PageRequestSession pageRequestData, AsyncPageCallback callback) {
 		generalParams.clear();
 		if (parameters.listSize() > 0) {
@@ -143,13 +144,16 @@ public class ProductSearchPage extends CompositePage implements ChangeSortListen
 			}
 		}
 		String _tag = params.get("tag");
-		if (null != _tag) tag.getComponent().setValue(_tag);
+		if (null != _tag)
+			tag.getComponent().setValue(_tag);
 		String _category = params.get("category");
-		if (null != _category) WidgetUtil.selectValue(category.getComponent(), _category);
+		if (null != _category)
+			WidgetUtil.selectValue(category.getComponent(), _category);
 		if (generalParams.size() > 0) {
 			StringBuilder sb = new StringBuilder();
 			for (String s : generalParams) {
-				if (sb.length() > 0) sb.append(" ");
+				if (sb.length() > 0)
+					sb.append(" ");
 				sb.append(s);
 			}
 			searchFor.getComponent().setValue(sb.toString());
@@ -159,7 +163,7 @@ public class ProductSearchPage extends CompositePage implements ChangeSortListen
 	}
 
 	@Override
-	public void onHidePage() {
+	public void onExit() {
 		generalParams.clear();
 		params.clear();
 		sortColumn = "name";
@@ -181,10 +185,10 @@ public class ProductSearchPage extends CompositePage implements ChangeSortListen
 						ArrayList<Product> entries = result.getEntries();
 						if (entries.size() == 0) {
 							showInfo("No products could be found matching the requested criteria.");
-						}
-						else {
+						} else {
 							hideInfo();
-							DataRecord[] results = new DataRecord[entries.size()];
+							DataRecord[] results = new DataRecord[entries
+									.size()];
 							for (int i = 0; i < entries.size(); i++) {
 								results[i] = new ProductDataRecord(result
 										.getEntries().get(i));
@@ -195,7 +199,8 @@ public class ProductSearchPage extends CompositePage implements ChangeSortListen
 
 					@Override
 					public void onFailure(Throwable caught) {
-						showInfo("Sorry, an error occured.  " + caught.getMessage());
+						showInfo("Sorry, an error occured.  "
+								+ caught.getMessage());
 						caught.printStackTrace();
 					}
 				});

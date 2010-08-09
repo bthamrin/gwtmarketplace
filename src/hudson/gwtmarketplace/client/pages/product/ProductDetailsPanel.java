@@ -24,8 +24,7 @@ import com.google.gwt.dom.client.Style.Unit;
 import com.google.gwt.dom.client.TableRowElement;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.gwtpages.client.GWTPagesSettings;
-import com.google.gwt.gwtpages.client.page.GWTPages;
+import com.google.gwt.gwtpages.client.Pages;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.NumberFormat;
 import com.google.gwt.uibinder.client.UiBinder;
@@ -110,7 +109,7 @@ public class ProductDetailsPanel extends Composite implements FeedListener,
 		container.getWidget(0).getElement().getStyle()
 				.setPaddingRight(12, Unit.PX);
 		rateIt.addClickHandler(this);
-		GWTPagesSettings.get().getEventBus().addHandler(ProductUpdatedEvent.TYPE, this);
+		Pages.get().getEventBus().addHandler(ProductUpdatedEvent.TYPE, this);
 	}
 
 	@Override
@@ -162,7 +161,7 @@ public class ProductDetailsPanel extends Composite implements FeedListener,
 			if (null != userInfo
 					&& userInfo.getId().equals(product.getUserId())) {
 				links.add(new HTML("<br/>"));
-				links.add(new Hyperlink("Edit settings", GWTPages.get().createHistoryToken(
+				links.add(new Hyperlink("Edit settings", Pages.get().createHistoryToken(
 						PageLoader.PAGE_EDIT_PRODUCT,
 								product.getAlias())));
 			}

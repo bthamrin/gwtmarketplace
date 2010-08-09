@@ -11,7 +11,7 @@ import hudson.gwtmarketplace.client.service.ProductServiceAsync;
 import java.util.ArrayList;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.gwtpages.client.GWTPagesSettings;
+import com.google.gwt.gwtpages.client.Pages;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
 public abstract class GetProductCategoriesCommand extends
@@ -29,7 +29,7 @@ public abstract class GetProductCategoriesCommand extends
 			@Override
 			public void onSuccess(ArrayList<Category> result) {
 				GetProductCategoriesCommand.categories = result;
-				GWTPagesSettings.get().getEventBus()
+				Pages.get().getEventBus()
 						.fireEvent(new CategoriesUpdatedEvent(result));
 			}
 

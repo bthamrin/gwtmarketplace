@@ -7,11 +7,10 @@ import hudson.gwtmarketplace.client.pages.layout.Header;
 import hudson.gwtmarketplace.client.pages.layout.LeftNav;
 
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.gwtpages.client.GWTPagesSettings;
+import com.google.gwt.gwtpages.client.Pages;
 import com.google.gwt.gwtpages.client.message.MessagePanel;
-import com.google.gwt.gwtpages.client.page.GWTPage;
-import com.google.gwt.gwtpages.client.page.GWTPagesApplicationPresenter;
-import com.google.gwt.gwtpages.client.page.PageRequestSession;
+import com.google.gwt.gwtpages.client.page.ApplicationPresenter;
+import com.google.gwt.gwtpages.client.page.LoadedPageContainer;
 import com.google.gwt.gwtpages.client.page.parameters.PageParameters;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -20,7 +19,7 @@ import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.Widget;
 
-public class LayoutPage extends Composite implements GWTPagesApplicationPresenter {
+public class LayoutPage extends Composite implements ApplicationPresenter {
 
 	interface Binder extends UiBinder<FlowPanel, LayoutPage> {
 	}
@@ -41,16 +40,16 @@ public class LayoutPage extends Composite implements GWTPagesApplicationPresente
 	}
 
 	@Override
-	public void showPage(GWTPage page, PageParameters parameters,
-			PageRequestSession session) {
-		Widget widget = page.getPresenter().asWidget();
+	public void showPage(LoadedPageContainer pageContainer, PageParameters parameters,
+			com.google.gwt.gwtpages.client.PageRequestSession session) {
+		Widget widget = pageContainer.getPage().asWidget();
 		Widget current = (bodyContainer.getWidget());
 		if (null != current) bodyContainer.remove(current);
 		bodyContainer.add(widget);
 	}
-
+	
 	@Override
-	public void init(GWTPagesSettings settings) {
+	public void init(Pages settings) {
 		headContainer.add(new Header());
 		navContainer.add(new LeftNav());
 		messagesContainer.add(new MessagePanel());
