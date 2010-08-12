@@ -48,8 +48,7 @@ public class ViewProductPage extends CompositePage implements
 			protected void onRateIt() {
 				tabs.selectTab(1);
 			};
-		}, "Details",
-				false);
+		}, "Details", false);
 		tabs.add(this.productComments = new ProductCommentsPanel(), "Comments",
 				false);
 		tabs.addSelectionHandler(this);
@@ -113,9 +112,8 @@ public class ViewProductPage extends CompositePage implements
 			show(parameters.asString(0), callback);
 		else if (!parameters.getHistoryToken().startsWith("_"))
 			show(parameters.getHistoryToken(), callback);
-		callback.onSuccess();
 	}
-	
+
 	@Override
 	public void onExitPage() {
 	}
