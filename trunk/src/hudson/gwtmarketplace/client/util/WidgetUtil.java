@@ -9,8 +9,8 @@ import hudson.gwtmarketplace.client.model.DisplayEntity;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.google.gwt.event.shared.HasHandlers;
 import com.google.gwt.gwtpages.client.message.Message;
-import com.google.gwt.user.client.ui.Focusable;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.Widget;
@@ -135,14 +135,14 @@ public class WidgetUtil {
 			if (component instanceof TextBox) {
 				if (isNull(((TextBox) component).getValue()))
 					messages.add(Message.error("'" + lc.getLabel()
-							+ "' is a required field", (component instanceof Focusable)?(Focusable)component:null));
+							+ "' is a required field", (component instanceof HasHandlers)?(HasHandlers)component:null));
 			} else if (component instanceof ListBox) {
 				if (((ListBox) component).getSelectedIndex() < 0
 						|| isNull(((ListBox) component)
 								.getValue(((ListBox) component)
 										.getSelectedIndex()))) {
 					messages.add(Message.error("'" + lc.getLabel()
-							+ "' is a required field", (component instanceof Focusable)?(Focusable)component:null));
+							+ "' is a required field", (component instanceof HasHandlers)?(HasHandlers)component:null));
 				}
 			}
 		}

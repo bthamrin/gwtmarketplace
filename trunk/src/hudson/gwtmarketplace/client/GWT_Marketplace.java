@@ -24,7 +24,7 @@ public class GWT_Marketplace implements EntryPoint {
 	 */
 	public void onModuleLoad() {
 		Pages
-				.init(this.layoutPage = new LayoutPage(), new PageLoader(),
+				.init(new PageLoader(), this.layoutPage = new LayoutPage(),
 						new HandlerManager(null), true)
 				.addDefaultEventHandlers()
 				.add(new AuthenticationPageEventHandler());

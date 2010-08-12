@@ -8,7 +8,7 @@ import hudson.gwtmarketplace.client.pages.layout.LeftNav;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.gwtpages.client.Pages;
-import com.google.gwt.gwtpages.client.message.MessagePanel;
+import com.google.gwt.gwtpages.client.message.ui.MessagePanel;
 import com.google.gwt.gwtpages.client.page.ApplicationPresenter;
 import com.google.gwt.gwtpages.client.page.LoadedPageContainer;
 import com.google.gwt.gwtpages.client.page.parameters.PageParameters;
