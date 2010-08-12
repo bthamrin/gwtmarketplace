@@ -63,8 +63,8 @@ public class ProductManager extends AbstractManager {
 				return 1;
 			else {
 				if (obj1.getRating().equals(obj2.getRating())) {
-					return obj1.getTotalRatings().compareTo(
-							obj2.getTotalRatings());
+					return (-1 * obj1.getTotalRatings().compareTo(
+							obj2.getTotalRatings()));
 				} else {
 					return -1 * obj1.getRating().compareTo(obj2.getRating());
 				}
@@ -278,8 +278,9 @@ public class ProductManager extends AbstractManager {
 		ArrayList<Product> products = (ArrayList<Product>) getCache().get(
 				cacheKey);
 		if (null == products) {
-			products = toList(noTx().query(Product.class)
+			products = toList(noTx().query(Product.class).filter("numDailyViews>", 0)
 					.order("-numDailyViews").limit(10));
+			Collections.sort(products, top10MostViewedComparator);
 			getCache().put(cacheKey, products);
 		}
 		return products;
