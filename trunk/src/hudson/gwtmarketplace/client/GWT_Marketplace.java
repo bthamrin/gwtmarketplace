@@ -10,6 +10,7 @@ import hudson.gwtmarketplace.client.pages.LayoutPage;
 import com.google.gwt.core.client.EntryPoint;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.gwtpages.client.Pages;
+import com.google.gwt.user.client.Element;
 import com.google.gwt.user.client.ui.RootPanel;
 
 /**
@@ -28,18 +29,29 @@ public class GWT_Marketplace implements EntryPoint {
 						new HandlerManager(null), true)
 				.addDefaultEventHandlers()
 				.add(new AuthenticationPageEventHandler());
-		RootPanel.get("content").add(layoutPage);
 
 		// load the current logged in user
 		new LoginCommand() {
 			@Override
 			public void onSuccess(UserInfo result) {
+				clearContent();
+				RootPanel.get("content").add(layoutPage);
 				Pages.get().showStartPage(true);
 			}
 
 			public void onFailure(Throwable e) {
+				clearContent();
+				RootPanel.get("content").add(layoutPage);
 				Pages.get().showStartPage(false);
 			};
 		}.execute();
+	}
+
+	private void clearContent() {
+		Element element = RootPanel.get("content").getElement();
+		int count = element.getChildCount();
+		for (int i=count-1; i>=0; i--) {
+			element.getChild(i).removeFromParent();
+		}
 	}
 }
