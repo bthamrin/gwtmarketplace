@@ -5,6 +5,13 @@ body {
 	background: url(images/bg.png);
 }
 
+.ajax-loading {
+	cursor: wait;
+}
+.ajax-loading a {
+	cursor: wait;
+}
+
 #titlebar {
 	color: #425A70;
 	font-weight: bold;
