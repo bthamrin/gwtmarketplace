@@ -57,9 +57,9 @@ public class MainPage extends CompositePage implements FeedListener {
 	}
 
 	@Override
-	public void onEnter(PageParameters parameters,
-			PageRequestSession pageRequestData,
-			final AsyncPageCallback callback) {
+	public void onEnterPage(PageParameters parameters,
+			PageRequestSession session, final AsyncPageCallback callback) {
+		callback.waitForAsync();
 		new GetTopsCommand() {
 			@Override
 			public void onSuccess(Top10Lists result) {
@@ -76,11 +76,11 @@ public class MainPage extends CompositePage implements FeedListener {
 		if (!blogfeedLoaded) {
 			Feed f = new Feed();
 			f.getFeed("http://feeds.feedburner.com/blogspot/NWLT?format=xml", this);
-		}
+		}		
 	}
 
 	@Override
-	public void onExit() {
+	public void onExitPage() {
 	}
 
 	public void refresh(Top10Lists top10Lists) {

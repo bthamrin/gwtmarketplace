@@ -6,6 +6,7 @@ package hudson.gwtmarketplace.client.pages.product;
 import hudson.gwtmarketplace.client.model.Pair;
 import hudson.gwtmarketplace.client.model.Product;
 
+import com.google.gwt.gwtpages.client.PageRequestSession;
 import com.google.gwt.gwtpages.client.Pages;
 import com.google.gwt.gwtpages.client.page.AsyncPageCallback;
 import com.google.gwt.gwtpages.client.page.Page;
@@ -32,16 +33,14 @@ public class NewProductPage extends SimplePanel implements Page {
 	}
 
 	@Override
-	public void onEnter(PageParameters parameters,
-			com.google.gwt.gwtpages.client.PageRequestSession pageRequestData,
-			AsyncPageCallback callback) {
+	public void onEnterPage(PageParameters parameters,
+			PageRequestSession session, AsyncPageCallback callback) {
 		wrapped.show(new Pair<Product, String>(new Product(), null));
-		callback.onSuccess();
 	}
-
+	
 	@Override
-	public void onExit() {
-		wrapped.onExit();
+	public void onExitPage() {
+		wrapped.onExitPage();
 	}
 
 	@Override

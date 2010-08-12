@@ -3,7 +3,6 @@
  */
 package hudson.gwtmarketplace.client.pages.product;
 
-import hudson.gwtmarketplace.client.PageLoader;
 import hudson.gwtmarketplace.client.commands.GetProductCategoriesCommand;
 import hudson.gwtmarketplace.client.commands.SaveProductCommand;
 import hudson.gwtmarketplace.client.components.LabeledContainer;
@@ -129,8 +128,9 @@ public class EditProductPage extends CompositePage implements ClickHandler, Subm
 	}
 
 	@Override
-	public void onEnter(PageParameters parameters,
-			PageRequestSession pageRequestData, final AsyncPageCallback callback) {
+	public void onEnterPage(PageParameters parameters,
+			PageRequestSession session, final AsyncPageCallback callback) {
+		callback.waitForAsync();
 		if (parameters.getParameters().length > 0) {
 			productService.getForEditing(parameters.asString(0),
 					new AsyncCallback<Pair<Product, String>>() {
@@ -148,9 +148,9 @@ public class EditProductPage extends CompositePage implements ClickHandler, Subm
 					});
 		}
 	}
-	
+
 	@Override
-	public void onExit() {
+	public void onExitPage() {
 		show(new Pair<Product, String>(new Product(), null));
 	}
 
@@ -204,14 +204,14 @@ public class EditProductPage extends CompositePage implements ClickHandler, Subm
 	}
 
 	public void onSave() {
-		List<Message> messages = new ArrayList<Message>();
+		ArrayList<Message> messages = new ArrayList<Message>();
 		WidgetUtil.checkNull(new LabeledContainer[] { name, category,
 				status, license, webpageUrl }, messages);
 		if (isNull(description.getText())) {
 			messages.add(Message.error("Please enter the description", description));
 		}
 		if (messages.size() > 0) {
-			Messages.get().setMessages(messages);
+			Messages.get().setMessages(null, messages);
 			return;
 		}
 

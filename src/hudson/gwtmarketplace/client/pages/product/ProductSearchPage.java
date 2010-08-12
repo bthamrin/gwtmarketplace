@@ -124,8 +124,8 @@ public class ProductSearchPage extends CompositePage implements
 	}
 
 	@Override
-	public void onEnter(PageParameters parameters,
-			PageRequestSession pageRequestData, AsyncPageCallback callback) {
+	public void onEnterPage(PageParameters parameters,
+			PageRequestSession session, AsyncPageCallback callback) {
 		generalParams.clear();
 		if (parameters.listSize() > 0) {
 			String[] arr = parameters.asString(0).split(" ");
@@ -159,11 +159,10 @@ public class ProductSearchPage extends CompositePage implements
 			searchFor.getComponent().setValue(sb.toString());
 		}
 		resetGrid();
-		callback.onSuccess();
 	}
 
 	@Override
-	public void onExit() {
+	public void onExitPage() {
 		generalParams.clear();
 		params.clear();
 		sortColumn = "name";

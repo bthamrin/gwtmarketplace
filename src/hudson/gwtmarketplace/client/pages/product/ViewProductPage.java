@@ -105,8 +105,9 @@ public class ViewProductPage extends CompositePage implements
 	}
 
 	@Override
-	public void onEnter(PageParameters parameters,
-			PageRequestSession pageRequestData, AsyncPageCallback callback) {
+	public void onEnterPage(PageParameters parameters,
+			PageRequestSession session, AsyncPageCallback callback) {
+		callback.waitForAsync();
 		if (parameters.listSize() > 0)
 			show(parameters.asString(0), callback);
 		else if (!parameters.getHistoryToken().startsWith("_"))
@@ -115,6 +116,6 @@ public class ViewProductPage extends CompositePage implements
 	}
 	
 	@Override
-	public void onExit() {
+	public void onExitPage() {
 	}
 }
