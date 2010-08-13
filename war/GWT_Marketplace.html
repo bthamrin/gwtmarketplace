@@ -5,12 +5,161 @@
 <!-- with a "Quirks Mode" doctype may lead to some -->
 <!-- differences in layout.                        -->
 
-<html>
+<html style="height: 100%">
   <head>
     <meta http-equiv="content-type" content="text/html; charset=UTF-8">
 
-    <link type="text/css" rel="stylesheet" href="GWT_Marketplace.css">
-    <link type="text/css" rel="stylesheet" href="components.css">
+    <style type="text/css">
+body {
+	font: 13.34px helvetica, arial, freesans, clean, sans-serif;
+	background: url(images/bg.png);
+	height: 100%;
+}
+
+.ajax-loading {
+	cursor: wait;
+}
+.ajax-loading a {
+	cursor: wait;
+}
+
+#titlebar {
+	color: #425A70;
+	font-weight: bold;
+	font-size: 20px;	
+}
+
+#header {
+	position: relative;
+}
+#headerlinks {
+	background: url(images/line2.png);
+	color: #FFFFFF;
+	font-weight: bold;
+}
+#headerlinks a {
+	font-weight: bold;
+	color: #FFFFFF;
+	text-decoration: none;	
+}
+#headerlinks a:hover {
+	color: #FFFFFF;
+	text-decoration: underline;	
+}
+#subtitlebar {
+	position: absolute;
+	left: 220px;
+	top: 4px;
+	color: #425A70;
+	font-size: 14px;
+}
+
+.feed-odd {
+	background-color: #FFFFFF;
+	margin-bottom: 2px;
+	margin-top: 2px;
+	padding-bottom: 2px;
+}
+
+.gwt-TabPanel {
+	width: 100%;
+}
+.margin-top {
+	margin-top: 12px;	
+}
+.padding-top {
+	padding-top: 12px;	
+}
+
+.navContainer {
+	position: absolute;
+	width: 155px;
+}
+
+.bodyContainer {
+	margin-left: 167px;
+	margin-top: 12px;
+}
+
+.mainSectionContainer {
+	margin-left: 12px;
+	margin-right: 12px;	
+}
+
+a {
+	color: #4183C4;
+}
+
+h2 {
+	margin-top: 0;
+	margin-bottom: 6px;
+}
+
+.tag {
+	font-size: larger;	
+}
+
+.lookdatatable {
+	border: solid 1px #CCCCCC;
+}
+
+.lookdatatable-row {
+	background-color: #FAFAFA;
+	border-bottom: solid 6px #CCCCCC;		
+}
+
+:focus {
+	outline: 0;
+}
+
+h3 {
+	border-bottom:1px solid #AAAAAA;
+	color:#666666;
+	font-size:16px;
+	height:24px;
+	line-height:18px;
+	padding-left:4px;
+	padding-top:4px;	
+}
+.productIcon {
+	border: solid 2px #CCCCCC;
+}
+.field-short {
+	width: 80px;
+}
+
+.field-medium {
+	width: 140px;
+}
+
+.field-long {
+	width: 240px;
+}
+
+.field-xlong {
+	width: 440px;
+}
+.section {
+	background-color: #FAFAFA;
+	border: solid 1px #CCCCCC;
+	-moz-border-radius: 3px;	
+}
+
+.section-title {
+	color: #666;
+	font-size: 16px;
+	border-bottom: solid 1px #AAA;
+	padding-left: 4px;
+	padding-top: 4px;
+	line-height: 18px;
+	height: 24px;
+}
+
+.section-body {
+	min-height: 40px;
+	padding: 6px;
+}
+    </style>
 
     <title>GWT Marketplace</title>
   </head>
@@ -20,24 +169,26 @@
   <!-- you can leave the body empty if you want  -->
   <!-- to create a completely dynamic UI.        -->
   <!--                                           -->
-  <body class="ajax-loading" height="100%">
-	<div style="width: 1024px; margin: auto; text-align: center">
-		<div style="text-align: left;">
-			<div id="content">
-				<table width="100%">
-					<tr>
-						<td  height="180px" width="100%" align="center" valign="middle">
-							<div class="section" style="width: 300px; height: 180px">
-								<h3>Loading GWT Marketplace...</h3>
-								<br/>
-								<img src="images/ajax-loader.gif" alt="loading"/>
-							</div>
-						</td>
-					</tr>
-				</table>
-			</div>
-		</div>
-	</div>
+  <body height="100%">
+  	<table height="100%" width="1024px" style="margin: auto">
+  		<tr>
+  			<td style="width: 1024px; height: 100%" valign="top">
+  				<div id="content" style="height: 100%">
+	  				<table width="100%" height="100%">
+	  					<tr>
+	  						<td align="center" valign="middle">
+								<div class="section" style="width: 300px; height: 180px">
+									<h3>Loading GWT Marketplace...</h3>
+									<br/>
+									<img src="images/ajax-loader.gif" alt="loading"/>
+								</div>
+	  						</td>
+	  					</tr>
+	  				</table>
+  				</div>
+  			</td>
+  		</tr>
+  	</table>
 
     <script type="text/javascript" src="http://www.google.com/jsapi?key=ABQIAAAAaPJiiPJ2crhOiGtTjAslwhRi_j0U6kJrkFvY4-OX2XYmEAa76BQoIZ-ZRhVcgpXNnMbRlKiHKf-MNA"></script>
     <script type="text/javascript">

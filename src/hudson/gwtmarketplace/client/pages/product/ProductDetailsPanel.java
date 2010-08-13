@@ -125,6 +125,7 @@ public class ProductDetailsPanel extends Composite implements FeedListener,
 		links.clear();
 		if (null == product) {
 			newsfeedContainer.setVisible(false);
+			newsfeed.clear();
 			description.setInnerText("");
 			tags.setInnerHTML("");
 			category.setInnerText("");
@@ -194,7 +195,7 @@ public class ProductDetailsPanel extends Composite implements FeedListener,
 			views.setInnerText(product.getNumDailyViews() + " / "
 					+ product.getNumMonthlyViews());
 
-			if (null == _previous || _previous.equals(product)) {
+			if (null == _previous || !_previous.equals(product)) {
 				newsfeed.clear();
 				if (null != product.getNewsUrl()
 						&& product.getNewsUrl().length() > 0) {
