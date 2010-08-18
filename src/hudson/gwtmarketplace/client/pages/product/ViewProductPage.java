@@ -57,7 +57,6 @@ public class ViewProductPage extends CompositePage implements
 	}
 
 	public void show(String alias, final AsyncPageCallback callback) {
-		callback.waitForAsync();
 		new GetProductDetailsCommand(alias) {
 			@Override
 			public void onSuccess(Product product) {

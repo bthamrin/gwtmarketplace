@@ -54,21 +54,19 @@ public abstract class GetProductDetailsCommand extends
 	@Override
 	public void execute() {
 		Product p = null;
+		boolean successCalled = false;
 		if (null != productId)
 			p = productIdMap.get(productId);
 		else if (null != alias)
 			p = productAliasMap.get(alias);
-		if (null != p)
+		if (null != p) {
+			successCalled = true;
 			onSuccess(p);
-
-		final AsyncCommandCallback callback = new AsyncCommandCallback() {
-			public void onSuccess(Product result) {
-				cache(result);
-				GetProductDetailsCommand.this.onSuccess(result);
-			};
-		};
+		}
 
 		if (forViewing) {
+			final boolean _successCalled = successCalled;
+			// we may need to update the view count so hit the server
 			productService().getForViewing(alias,
 					new AsyncCallback<Pair<Product, Date>>() {
 
@@ -80,21 +78,18 @@ public abstract class GetProductDetailsCommand extends
 										.fireEvent(
 												new TopsDateCheckEvent(result
 														.getEntity2()));
-							callback.onSuccess(result.getEntity1());
+							cache(result.getEntity1());
+							if (!_successCalled)
+								GetProductDetailsCommand.this.onSuccess(result.getEntity1());
 						}
 
 						@Override
 						public void onFailure(Throwable caught) {
-							callback.onFailure(caught);
+							if (!_successCalled)
+								GetProductDetailsCommand.this.onFailure(caught);
 						}
 					});
 		}
-		if (null != productId)
-			productService().getById(productId, callback);
-		else if (null != alias)
-			productService().getByAlias(alias, callback);
-		else
-			onSuccess(null);
 	}
 
 	public static void cache(Product p) {
