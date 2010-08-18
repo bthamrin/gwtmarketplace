@@ -124,6 +124,42 @@ h3 {
 .productIcon {
 	border: solid 2px #CCCCCC;
 }
+
+.labeled-field td {
+	padding: 4px;
+}
+
+.labeled-field .field-label {
+	display: block;
+	float: left;
+	width: 11em;
+	margin-right: 1em;
+	margin-left: 4px;
+	font-size: 12px;
+	text-indent: 8px;
+}
+
+/* LABEL SIZES */
+.label-short .field-label {
+	width: 5em;
+}
+
+.label-xlong .field-label {
+	width: 19em;
+}
+
+.label-xxlong .field-label {
+	width: 28em;
+}
+
+.label-xxxlong .field-label {
+	width: 31em;
+}
+
+.label-long .field-label {
+	width: 15em;
+}
+
 .field-short {
 	width: 80px;
 }
@@ -158,6 +194,125 @@ h3 {
 .section-body {
 	min-height: 40px;
 	padding: 6px;
+}
+
+/** DATA TABLE **/
+.datagrid {
+	border-color: #aaa;
+	border-style: solid;
+	border-width: 1px 1px 0px 0px;
+}
+
+.datagrid td {
+	border-color: #aaa;
+	border-style: solid;
+	border-width: 0px 0px 1px 1px;
+	white-space: nowrap;
+	overflow: hidden;
+}
+
+.datagrid .header td {
+	background: #D8D8DA url(images/layout/sprite.png) repeat-x scroll 0 0;
+}
+
+.datagrid tr.selectable {
+	cursor: hand;
+	cursor: pointer;
+}
+
+.datagrid tr.even {
+	background: #FAFAFA;
+	color: #000000;
+}
+
+.datagrid tr.odd {
+	background: #FFFFFF;
+	color: #000000;
+}
+
+.datagrid tr.selected {
+	background: #4183C4 !important;
+	color: #FFFFFF !important;
+}
+
+.datagrid tr.highlighted {
+	background: #B2D2FF !important;
+}
+
+/** SECTIONS **/
+.info {
+	background-color: #F7FAFD;
+	border-bottom: 2px solid #B5D3FF;
+	border-top: 2px solid #B5D3FF;
+	padding: 4px;
+}
+
+/** COMMENT BOX **/
+.commentbox {
+	background-color: #FFFFFF;
+	border: solid 1px #cccccc;
+	-moz-border-radius: 6px;
+	padding: 10px;
+}
+
+.commentfooter {
+	background: url(images/components/comment-arrow.png) 20px 0 no-repeat;
+	/*20px 0 equals horizontal and vertical position of arrow. Adjust as desired (ie: 20px -5px).*/
+	padding-left: 58px;
+	padding-top: 1px;
+	margin-bottom: 2em;
+	font-size: 90%;
+	color: #4A4A4A;
+	position: relative;
+	top: -1px;
+}
+
+.gwt-TabBar {
+	background: #E4E4E4 url(images/components/tab_background.gif) repeat-x
+		!important;
+	height: 26px;
+	padding: 6px 10px;
+}
+
+.gwt-TabBar .gwt-TabBarItem {
+	-moz-border-radius: 4px 4px 4px 4px;
+	color: #666666;
+	float: left;
+	font-size: 14px;
+	height: 26px;
+	line-height: 26px;
+	margin-right: 10px;
+	padding: 0 8px;
+	text-shadow: 1px 1px 0 rgba(255, 255, 255, 0.7);
+	cursor: pointer;
+}
+
+.gwt-TabBar .gwt-TabBarItem-selected {
+	background: none repeat scroll 0 0 #FFFFFF;
+	border-color: #CCCCCC #EEEEEE #EEEEEE #CCCCCC;
+	border-style: solid;
+	border-width: 1px;
+	color: #333333;
+	font-weight: bold;
+	position: relative;
+	top: -1px;
+}
+
+.gwt-TabPanelBottom {
+	padding: 6px;
+	border-color: #CCCCCC #EEEEEE #EEEEEE #CCCCCC;
+	border-style: solid;
+	border-width: 1px;
+	background-color: #FAFAFA;
+}
+
+.form-panel {
+	background-color: #FAFAFA;
+	border-width: 1px;
+	border-color: #CCCCCC;
+	border-style: solid;
+	padding: 6px;
+	-moz-border-radius: 3px;
 }
     </style>
 

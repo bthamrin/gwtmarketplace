@@ -204,6 +204,7 @@ public class ProductManager extends AbstractManager {
 			// we don't need to put it here because we will once we add the
 			// entry
 		}
+
 		if (null == viewCache.get(prodToken)) {
 			viewCache.put(prodToken, Boolean.TRUE);
 			getCache().put(TOKEN_VIEWS_BY_IP, viewCache);
@@ -278,8 +279,13 @@ public class ProductManager extends AbstractManager {
 		ArrayList<Product> products = (ArrayList<Product>) getCache().get(
 				cacheKey);
 		if (null == products) {
-			products = toList(noTx().query(Product.class).filter("numDailyViews>", 0)
+			products = toList(noTx().query(Product.class)
 					.order("-numDailyViews").limit(10));
+			// for some reason, the > 0 filter isn't working
+			for (int i=products.size()-1; i>=0; i--) {
+				if (products.get(0).getNumDailyViews() == 0)
+					products.remove(i);
+			}
 			Collections.sort(products, top10MostViewedComparator);
 			getCache().put(cacheKey, products);
 		}
@@ -556,46 +562,23 @@ public class ProductManager extends AbstractManager {
 	private boolean updateTop10MostViewed(Product product) {
 		int dailyViews = product.getNumDailyViews();
 		List<Product> top10 = getTop10MostViewed();
-		// see if we need to re-order
 		boolean needsReordering = false;
-		boolean entityFound = false;
-		for (int i = 0; i < top10.size(); i++) {
-			Product _p = top10.get(i);
-			if (_p.equals(product)) {
-				entityFound = true;
-				if (i > 0) {
-					_p = top10.get(i - 1);
-					int _ndv = _p.getNumDailyViews();
-					if (_ndv < dailyViews)
-						needsReordering = true;
-				}
-				if (i < (top10.size() - 1)) {
-					_p = top10.get(i + 1);
-					int _ndv = _p.getNumDailyViews();
-					if (_ndv > dailyViews)
-						needsReordering = true;
-				}
-				if (!needsReordering) {
-					int _ndv = _p.getNumDailyViews();
-					if (_ndv != dailyViews) {
-						needsReordering = true;
-						top10.remove(i);
-						top10.add(i, product);
-					}
-				}
-				break;
-			}
-		}
-		if (!entityFound) {
-			if (top10.size() < 10) {
-				needsReordering = true;
-			} else if (top10.get(9).getNumDailyViews() < dailyViews) {
-				needsReordering = true;
-			}
-		}
+		if (top10.size() < 10)
+			needsReordering = true;
+		else if (top10.get(9).getNumDailyViews() < product.getNumDailyViews())
+			needsReordering = true;
 		synchronized (ProductManager.class) {
 			if (needsReordering) {
-				if (!entityFound) {
+				if (!top10.contains(product)) {
+					if (top10.size() < 10)
+						top10.add(product);
+					else {
+						top10.remove(9);
+						top10.add(product);
+					}
+				}
+				else {
+					top10.remove(product);
 					top10.add(product);
 				}
 				Collections.sort(top10, top10MostViewedComparator);
