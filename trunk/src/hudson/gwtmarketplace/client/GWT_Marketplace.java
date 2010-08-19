@@ -8,6 +8,7 @@ import hudson.gwtmarketplace.client.model.UserInfo;
 import hudson.gwtmarketplace.client.pages.LayoutPage;
 
 import com.google.gwt.core.client.EntryPoint;
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.shared.HandlerManager;
 import com.google.gwt.gwtpages.client.Pages;
 import com.google.gwt.user.client.Element;
@@ -25,7 +26,8 @@ public class GWT_Marketplace implements EntryPoint {
 	 */
 	public void onModuleLoad() {
 		Pages
-				.init(new PageLoader(), this.layoutPage = new LayoutPage(),
+				.init((PageLoader) GWT.create(PageLoader.class),
+						this.layoutPage = new LayoutPage(),
 						new HandlerManager(null), true)
 				.addDefaultEventHandlers()
 				.add(new AuthenticationPageEventHandler());

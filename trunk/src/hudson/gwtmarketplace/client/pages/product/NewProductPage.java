@@ -33,6 +33,10 @@ public class NewProductPage extends SimplePanel implements Page {
 	}
 
 	@Override
+	public void init(Pages pages) {
+	}
+
+	@Override
 	public void onEnterPage(PageParameters parameters,
 			PageRequestSession session, AsyncPageCallback callback) {
 		wrapped.show(new Pair<Product, String>(new Product(), null));

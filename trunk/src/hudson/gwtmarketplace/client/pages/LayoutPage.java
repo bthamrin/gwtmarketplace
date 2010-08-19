@@ -47,6 +47,10 @@ public class LayoutPage extends Composite implements ApplicationPresenter {
 		if (null != current) bodyContainer.remove(current);
 		bodyContainer.add(widget);
 	}
+
+	@Override
+	public void clearPage() {
+	}
 	
 	@Override
 	public void init(Pages settings) {
