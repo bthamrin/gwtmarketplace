@@ -3,7 +3,6 @@ package hudson.gwtmarketplace.client;
 import hudson.gwtmarketplace.client.service.UserInfoService;
 import hudson.gwtmarketplace.client.service.UserInfoServiceAsync;
 
-import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 
@@ -13,19 +12,19 @@ import com.google.gwt.gwtpages.client.PageRequestSession;
 import com.google.gwt.gwtpages.client.Pages;
 import com.google.gwt.gwtpages.client.page.LoadedPageContainer;
 import com.google.gwt.gwtpages.client.page.PageAttributes;
-import com.google.gwt.gwtpages.client.page.PageEventHandler;
+import com.google.gwt.gwtpages.client.page.event.PageRequestEventHandler;
 import com.google.gwt.gwtpages.client.page.parameters.PageParameters;
-import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.History;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 
-public class AuthenticationPageEventHandler implements PageEventHandler {
+public class AuthenticationPageEventHandler implements PageRequestEventHandler {
 
-	
-	
+	private static UserInfoServiceAsync svc = null;
+
 	@Override
 	public void init(Pages pages) {
+		svc = GWT.create(UserInfoService.class);
 	}
 
 	@Override
@@ -101,36 +100,10 @@ public class AuthenticationPageEventHandler implements PageEventHandler {
 	}
 
 	@Override
-	public void onPageRedirect(LoadedPageContainer currentLoadedPageContainer,
+	public void onPageForward(LoadedPageContainer currentLoadedPageContainer,
 			PageParameters currentParameters, GotoPageCommand currentCommand,
 			GotoPageCommand forwardCommand) {
 	}
-
-	@Override
-	public Command onIllegalPageAccess(LoadedPageContainer loadedPageContainer,
-			PageParameters pageParameters, GotoPageCommand command,
-			Serializable... parameters) {
-		return null;
-	}
-
-	@Override
-	public Command onPageEnterFailure(LoadedPageContainer pageLoadResult,
-			PageParameters parameters, GotoPageCommand command) {
-		return null;
-	}
-
-	@Override
-	public Command onPageNotFound(String historyToken) {
-		return null;
-	}
-
-	@Override
-	public Command onPageLoadFailure(String historyToken, Throwable cause) {
-		return null;
-	}
-
-	private static final UserInfoServiceAsync svc = GWT
-			.create(UserInfoService.class);
 
 	public static PageAttributes createPageAttributes() {
 		return new PageAttributes().put(AuthenticationData.class,

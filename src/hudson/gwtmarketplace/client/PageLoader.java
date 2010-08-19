@@ -6,15 +6,12 @@ import hudson.gwtmarketplace.client.pages.product.NewProductPage;
 import hudson.gwtmarketplace.client.pages.product.ProductSearchPage;
 import hudson.gwtmarketplace.client.pages.product.ViewProductPage;
 
-import java.util.Arrays;
-import java.util.List;
-
 import com.google.gwt.gwtpages.client.Pages;
 import com.google.gwt.gwtpages.client.page.LoadedPageContainer;
 import com.google.gwt.gwtpages.client.page.loader.PageLoadCallback;
-import com.google.gwt.gwtpages.client.page.loader.SimplePageLoader;
+import com.google.gwt.gwtpages.client.page.loader.StandardPageLoader;
 
-public class PageLoader extends SimplePageLoader {
+public class PageLoader extends StandardPageLoader {
 
 	public static final String PAGE_DEFAULT = "";
 	public static final String PAGE_VIEW_PRODUCT = "_view";
@@ -23,9 +20,6 @@ public class PageLoader extends SimplePageLoader {
 	public static final String PAGE_EDIT_PRODUCT = "_edit";
 
 	public static final String SEARCH_CATEGORY = "cat";
-
-	private static final List<String> VIEW_PRODUCT_PAGE_TOKEN_ARR = Arrays
-			.asList(new String[] { PAGE_VIEW_PRODUCT });
 
 	private ViewProductPage viewProductPage;
 
@@ -48,6 +42,7 @@ public class PageLoader extends SimplePageLoader {
 				|| pageToken.startsWith("_")) {
 			super.getPage(pageToken, pageHandler);
 		} else {
+			if (null == viewProductPage) viewProductPage = new ViewProductPage();
 			pageHandler.onPageFound(new LoadedPageContainer(pageToken, viewProductPage,
 					null, this));
 		}
@@ -55,13 +50,12 @@ public class PageLoader extends SimplePageLoader {
 
 	@Override
 	public void init(Pages settings) {
-		viewProductPage = new ViewProductPage();
-		registerPage(PAGE_DEFAULT, new MainPage());
-		registerPage(PAGE_NEW_PRODUCT, new NewProductPage(),
+		registerPage(PAGE_DEFAULT, MainPage.class);
+		registerPage(PAGE_NEW_PRODUCT, NewProductPage.class,
 				AuthenticationPageEventHandler.createPageAttributes());
-		registerPage(PAGE_VIEW_PRODUCT, viewProductPage);
-		registerPage(PAGE_EDIT_PRODUCT, new EditProductPage(),
+		registerPage(PAGE_VIEW_PRODUCT, ViewProductPage.class);
+		registerPage(PAGE_EDIT_PRODUCT, EditProductPage.class,
 				AuthenticationPageEventHandler.createPageAttributes());
-		registerPage(PAGE_SEARCH, new ProductSearchPage());
+		registerPage(PAGE_SEARCH, ProductSearchPage.class);
 	}
 }
