@@ -24,8 +24,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.logging.Logger;
 
-//import com.google.appengine.api.blobstore.BlobstoreServiceFactory;
 import com.google.appengine.api.datastore.Blob;
 import com.google.appengine.api.datastore.EntityNotFoundException;
 import com.google.appengine.api.users.User;
@@ -42,6 +42,9 @@ public class ProductManager extends AbstractManager {
 	private static final String TOKEN_TOP10_HIGHEST_RATED = "top10HighestRates";
 	private static final String TOKEN_TOP10_RECENT_UPDATED = "top10RecentUpdated";
 	private static final String TOKEN_RATINGS_BY_IP = "ratingsByPi";
+
+	private static final Logger log = Logger.getLogger(ProductManager.class
+			.getName());
 
 	private static final Comparator<Product> top10MostViewedComparator = new Comparator<Product>() {
 		public int compare(Product obj1, Product obj2) {
@@ -282,7 +285,7 @@ public class ProductManager extends AbstractManager {
 			products = toList(noTx().query(Product.class)
 					.order("-numDailyViews").limit(10));
 			// for some reason, the > 0 filter isn't working
-			for (int i=products.size()-1; i>=0; i--) {
+			for (int i = products.size() - 1; i >= 0; i--) {
 				if (products.get(0).getNumDailyViews() == 0)
 					products.remove(i);
 			}
@@ -439,6 +442,7 @@ public class ProductManager extends AbstractManager {
 	}
 
 	public void update(Product product) throws InvalidAccessException {
+		log.info("Updating product '" + product.getAlias() + "'");
 		try {
 			User user = UserServiceFactory.getUserService().getCurrentUser();
 			Product orig = noTx().get(
@@ -446,22 +450,30 @@ public class ProductManager extends AbstractManager {
 			if (null == user || !user.getUserId().equals(orig.getUserId()))
 				throw new InvalidAccessException();
 			if (!orig.getCategoryId().equals(product.getCategoryId())) {
+				log.info("Category '" + product.getCategoryId()
+						+ "' does not equal '" + orig.getCategoryId() + "'");
 				Category category1 = singleResult(noTx().query(Category.class)
 						.filter("alias", orig.getCategoryId()));
 				if (null != category1) {
-					if (null == category1.getNumProducts()) category1.setNumProducts(0);
+					if (null == category1.getNumProducts())
+						category1.setNumProducts(0);
 					else {
-					category1
-							.setNumProducts(category1.getNumProducts().intValue() - 1);
+						category1.setNumProducts(category1.getNumProducts()
+								.intValue() - 1);
 					}
+					log.info("Previous category products: '"
+							+ category1.getNumProducts());
 				}
 				Category category2 = singleResult(noTx().query(Category.class)
 						.filter("alias", product.getCategoryId()));
-				if (null == category2.getNumProducts()) category2.setNumProducts(1);
+				if (null == category2.getNumProducts())
+					category2.setNumProducts(1);
 				else {
-					category2
-							.setNumProducts(category1.getNumProducts().intValue() + 1);
+					category2.setNumProducts(category2.getNumProducts()
+							.intValue() + 1);
 				}
+				log.info("New category products: '"
+						+ category2.getNumProducts());
 				List<Category> toUpdate = new ArrayList<Category>();
 				toUpdate.add(category1);
 				toUpdate.add(category2);
@@ -576,8 +588,7 @@ public class ProductManager extends AbstractManager {
 						top10.remove(9);
 						top10.add(product);
 					}
-				}
-				else {
+				} else {
 					top10.remove(product);
 					top10.add(product);
 				}
