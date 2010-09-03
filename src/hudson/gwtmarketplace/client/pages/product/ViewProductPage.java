@@ -9,27 +9,20 @@ import hudson.gwtmarketplace.client.event.ProductCommentEvent.ProductCommentHand
 import hudson.gwtmarketplace.client.model.Product;
 import hudson.gwtmarketplace.client.model.ProductComment;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.HeadingElement;
 import com.google.gwt.event.logical.shared.SelectionEvent;
 import com.google.gwt.event.logical.shared.SelectionHandler;
 import com.google.gwt.gwtpages.client.PageRequestSession;
 import com.google.gwt.gwtpages.client.Pages;
 import com.google.gwt.gwtpages.client.page.AsyncPageCallback;
-import com.google.gwt.gwtpages.client.page.CompositePage;
+import com.google.gwt.gwtpages.client.page.impl.UiBoundPage;
 import com.google.gwt.gwtpages.client.page.parameters.PageParameters;
-import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.TabPanel;
 
-public class ViewProductPage extends CompositePage implements
+public class ViewProductPage extends UiBoundPage<FlowPanel> implements
 		SelectionHandler<Integer>, ProductCommentHandler {
-
-	interface MyUiBinder extends UiBinder<FlowPanel, ViewProductPage> {
-	}
-
-	private static MyUiBinder uiBinder = GWT.create(MyUiBinder.class);
 
 	private Product product;
 
@@ -42,8 +35,8 @@ public class ViewProductPage extends CompositePage implements
 	ProductDetailsPanel productDetails;
 	ProductCommentsPanel productComments;
 
-	public ViewProductPage() {
-		initWidget(uiBinder.createAndBindUi(this));
+	@Override
+	protected void onConstruct(FlowPanel view) {
 		tabs.add(this.productDetails = new ProductDetailsPanel() {
 			protected void onRateIt() {
 				tabs.selectTab(1);
@@ -111,9 +104,5 @@ public class ViewProductPage extends CompositePage implements
 			show(parameters.asString(0), callback);
 		else if (!parameters.getHistoryToken().startsWith("_"))
 			show(parameters.getHistoryToken(), callback);
-	}
-
-	@Override
-	public void onExitPage() {
 	}
 }

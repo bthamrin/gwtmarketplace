@@ -7,48 +7,27 @@ import hudson.gwtmarketplace.client.model.Pair;
 import hudson.gwtmarketplace.client.model.Product;
 
 import com.google.gwt.gwtpages.client.PageRequestSession;
-import com.google.gwt.gwtpages.client.Pages;
 import com.google.gwt.gwtpages.client.page.AsyncPageCallback;
-import com.google.gwt.gwtpages.client.page.Page;
 import com.google.gwt.gwtpages.client.page.parameters.PageParameters;
 import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.SimplePanel;
-import com.google.gwt.user.client.ui.Widget;
 
-public class NewProductPage extends SimplePanel implements Page {
+public class NewProductPage extends EditProductPage {
 
-	EditProductPage wrapped;
-
-	public NewProductPage() {
-		add(this.wrapped = new EditProductPage(true) {
-			public void onSave() {
-				super.onSave();
-			};
-			public void onCancel() {
-				if (Window.confirm("Are you sure you want to cancel?")) {
-					Pages.get().showStartPage(false);
-				}
-			};
-		});
-	}
+	protected void onConstruct(com.google.gwt.user.client.ui.HorizontalPanel view) {
+		super.onConstruct(view);
+		name.getComponent().setEnabled(true);
+	};
 
 	@Override
-	public void init(Pages pages) {
+	public void onCancel() {
+		if (Window.confirm("Are you sure you want to cancel?")) {
+			pages.showStartPage(false);
+		}
 	}
 
 	@Override
 	public void onEnterPage(PageParameters parameters,
 			PageRequestSession session, AsyncPageCallback callback) {
-		wrapped.show(new Pair<Product, String>(new Product(), null));
-	}
-	
-	@Override
-	public void onExitPage() {
-		wrapped.onExitPage();
-	}
-
-	@Override
-	public Widget asWidget() {
-		return this;
+		show(new Pair<Product, String>(new Product(), null));
 	}
 }

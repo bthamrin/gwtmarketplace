@@ -49,7 +49,8 @@ public class LayoutPage extends Composite implements ApplicationPresenter {
 	}
 
 	@Override
-	public void clearPage() {
+	public void clearCurrentPage() {
+		bodyContainer.clear();
 	}
 	
 	@Override

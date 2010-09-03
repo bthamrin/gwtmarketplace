@@ -14,22 +14,15 @@ import hudson.gwtmarketplace.client.pages.product.ProductSectionEntry;
 
 import java.util.List;
 
-import com.google.gwt.core.client.GWT;
 import com.google.gwt.gwtpages.client.PageRequestSession;
 import com.google.gwt.gwtpages.client.page.AsyncPageCallback;
-import com.google.gwt.gwtpages.client.page.CompositePage;
+import com.google.gwt.gwtpages.client.page.impl.UiBoundPage;
 import com.google.gwt.gwtpages.client.page.parameters.PageParameters;
-import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.ui.FlowPanel;
 import com.google.gwt.user.client.ui.HorizontalPanel;
 
-public class MainPage extends CompositePage implements FeedListener {
-
-	interface Binder extends UiBinder<FlowPanel, MainPage> {
-	}
-
-	private static Binder uiBinder = GWT.create(Binder.class);
+public class MainPage extends UiBoundPage<FlowPanel> implements FeedListener {
 
 	private Top10Lists top10Lists;
 	private boolean blogfeedLoaded = false;
@@ -47,8 +40,8 @@ public class MainPage extends CompositePage implements FeedListener {
 	@UiField
 	Section blogFeed;
 
-	public MainPage() {
-		initWidget(uiBinder.createAndBindUi(this));
+	@Override
+	protected void onConstruct(FlowPanel view) {
 		horizPanel.setCellWidth(horizPanel.getWidget(0), "33%");
 		horizPanel.setCellWidth(horizPanel.getWidget(1), "34%");
 		horizPanel.setCellWidth(horizPanel.getWidget(2), "33%");

@@ -27,11 +27,10 @@ import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.gwtpages.client.PageRequestSession;
 import com.google.gwt.gwtpages.client.page.AsyncPageCallback;
-import com.google.gwt.gwtpages.client.page.CompositePage;
+import com.google.gwt.gwtpages.client.page.impl.UiBoundPage;
 import com.google.gwt.gwtpages.client.page.parameters.PageParameters;
 import com.google.gwt.i18n.client.DateTimeFormat;
 import com.google.gwt.i18n.client.NumberFormat;
-import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.DisclosurePanel;
@@ -40,13 +39,8 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.SimplePanel;
 import com.google.gwt.user.client.ui.SubmitButton;
 
-public class ProductSearchPage extends CompositePage implements
+public class ProductSearchPage extends UiBoundPage<FlowPanel> implements
 		ChangeSortListener, ClickHandler {
-
-	interface MyUiBinder extends UiBinder<FlowPanel, ProductSearchPage> {
-	}
-
-	private static MyUiBinder uiBinder = GWT.create(MyUiBinder.class);
 
 	private static ProductServiceAsync productService = GWT
 			.create(ProductService.class);
@@ -77,9 +71,8 @@ public class ProductSearchPage extends CompositePage implements
 	private boolean orderingAsc = true;
 	private Integer knownRowCount;
 
-	public ProductSearchPage() {
-		initWidget(uiBinder.createAndBindUi(this));
-
+	@Override
+	protected void onConstruct(FlowPanel view) {
 		metaData = new MetaData();
 		metaData.setColumnData(new ColumnMetaData[] {
 				new SimpleColumn("Product", "name"),
