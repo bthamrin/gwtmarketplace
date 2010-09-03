@@ -6,6 +6,7 @@ import hudson.gwtmarketplace.client.pages.product.NewProductPage;
 import hudson.gwtmarketplace.client.pages.product.ProductSearchPage;
 import hudson.gwtmarketplace.client.pages.product.ViewProductPage;
 
+import com.google.gwt.core.client.GWT;
 import com.google.gwt.gwtpages.client.Pages;
 import com.google.gwt.gwtpages.client.page.LoadedPageContainer;
 import com.google.gwt.gwtpages.client.page.loader.PageLoadCallback;
@@ -42,14 +43,14 @@ public class PageLoader extends StandardPageLoader {
 				|| pageToken.startsWith("_")) {
 			super.getPage(pageToken, pageHandler);
 		} else {
-			if (null == viewProductPage) viewProductPage = new ViewProductPage();
+			if (null == viewProductPage) viewProductPage = GWT.create(ViewProductPage.class);
 			pageHandler.onPageFound(new LoadedPageContainer(pageToken, viewProductPage,
 					null, this));
 		}
 	}
 
 	@Override
-	public void init(Pages settings) {
+	public void registerPages() {
 		registerPage(PAGE_DEFAULT, MainPage.class);
 		registerPage(PAGE_NEW_PRODUCT, NewProductPage.class,
 				AuthenticationPageEventHandler.createPageAttributes());

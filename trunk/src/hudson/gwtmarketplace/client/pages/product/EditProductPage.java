@@ -28,12 +28,11 @@ import com.google.gwt.dom.client.Style.Display;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.gwtpages.client.PageRequestSession;
-import com.google.gwt.gwtpages.client.Pages;
 import com.google.gwt.gwtpages.client.message.Message;
 import com.google.gwt.gwtpages.client.message.Messages;
 import com.google.gwt.gwtpages.client.message.PageRequestSessionWithMessage;
 import com.google.gwt.gwtpages.client.page.AsyncPageCallback;
-import com.google.gwt.gwtpages.client.page.CompositePage;
+import com.google.gwt.gwtpages.client.page.impl.UiBoundPage;
 import com.google.gwt.gwtpages.client.page.parameters.PageParameters;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -47,7 +46,8 @@ import com.google.gwt.user.client.ui.HorizontalPanel;
 import com.google.gwt.user.client.ui.RichTextArea;
 import com.google.gwt.user.client.ui.SimplePanel;
 
-public class EditProductPage extends CompositePage implements ClickHandler, SubmitCompleteHandler {
+public class EditProductPage extends UiBoundPage<HorizontalPanel> implements
+		ClickHandler, SubmitCompleteHandler {
 
 	interface MyUiBinder extends UiBinder<HorizontalPanel, EditProductPage> {
 	}
@@ -101,14 +101,10 @@ public class EditProductPage extends CompositePage implements ClickHandler, Subm
 	@UiField
 	SimplePanel uploaderContainer;
 
-
-	public EditProductPage() {
-		this(false);
-	}
-
-	public EditProductPage(boolean isNew) {
-		containerPanel = uiBinder.createAndBindUi(this);
-		initWidget(containerPanel);
+	@Override
+	protected void onConstruct(HorizontalPanel view) {
+		name.getComponent().setEnabled(false);
+		this.containerPanel = view;
 		descriptionToolbarContainer.add(new RichTextToolbar(description));
 		WidgetUtil
 				.load(status.getComponent(), Status.VALUES, "Choose a status");
@@ -116,8 +112,6 @@ public class EditProductPage extends CompositePage implements ClickHandler, Subm
 				"Choose a license");
 		saveBtn.addClickHandler(this);
 		cancelBtn.addClickHandler(this);
-		if (!isNew)
-			name.getComponent().setEnabled(false);
 		new GetProductCategoriesCommand() {
 			@Override
 			public void onSuccess(ArrayList<Category> result) {
@@ -205,10 +199,11 @@ public class EditProductPage extends CompositePage implements ClickHandler, Subm
 
 	public void onSave() {
 		ArrayList<Message> messages = new ArrayList<Message>();
-		WidgetUtil.checkNull(new LabeledContainer[] { name, category,
-				status, license, webpageUrl }, messages);
+		WidgetUtil.checkNull(new LabeledContainer[] { name, category, status,
+				license, webpageUrl }, messages);
 		if (isNull(description.getText())) {
-			messages.add(Message.error("Please enter the description", description));
+			messages.add(Message.error("Please enter the description",
+					description));
 		}
 		if (messages.size() > 0) {
 			Messages.get().setMessages(null, messages);
@@ -228,7 +223,8 @@ public class EditProductPage extends CompositePage implements ClickHandler, Subm
 		product.setVersionNumber(versionNumber.getComponent().getValue());
 		product.setStatus(status.getValue(status.getSelectedIndex()));
 		product.setLicense(license.getValue(license.getSelectedIndex()));
-		product.setCategoryId(WidgetUtil.getSelectedValue(category.getComponent()));
+		product.setCategoryId(WidgetUtil.getSelectedValue(category
+				.getComponent()));
 		product.setWebsiteUrl(webpageUrl.getValue());
 		product.setDownloadUrl(downloadUrl.getValue());
 		product.setWikiUrl(wikiUrl.getValue());
@@ -239,14 +235,18 @@ public class EditProductPage extends CompositePage implements ClickHandler, Subm
 		new SaveProductCommand(product) {
 			@Override
 			public void onSuccess(Product result) {
-				Pages.get().gotoPage(result.getAlias(), new PageRequestSessionWithMessage("The product details were saved.")).execute();
+				pages
+						.goTo(result.getAlias(),
+								new PageRequestSessionWithMessage(
+										"The product details were saved."))
+						.execute();
 			}
 		}.execute();
 	}
 
 	public void onCancel() {
 		if (Window.confirm("Are you sure you want to cancel?")) {
-			Pages.get().gotoPage(product.getAlias()).execute();
+			pages.goTo(product.getAlias()).execute();
 		}
 	}
 

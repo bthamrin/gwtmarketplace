@@ -286,7 +286,7 @@ public class ProductManager extends AbstractManager {
 					.order("-numDailyViews").limit(10));
 			// for some reason, the > 0 filter isn't working
 			for (int i = products.size() - 1; i >= 0; i--) {
-				if (products.get(0).getNumDailyViews() == 0)
+				if (products.get(i).getNumDailyViews() == 0)
 					products.remove(i);
 			}
 			Collections.sort(products, top10MostViewedComparator);

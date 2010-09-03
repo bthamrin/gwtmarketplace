@@ -70,7 +70,7 @@ public class Header extends Composite implements ClickHandler, KeyUpHandler {
 	}
 
 	private void onSearch() {
-		Pages.get().gotoPage(PageLoader.PAGE_SEARCH, searchBox.getValue())
+		Pages.get().goTo(PageLoader.PAGE_SEARCH, searchBox.getValue())
 				.execute();
 		searchBox.setValue(null);
 	}
